@@ -188,14 +188,9 @@
         <span>Syslog: UDP 1514</span>
         <span>Flow: UDP 2055</span>
       </div>
-      <div class="mt-2 text-[9px] text-violet-400 text-center tracking-wider font-mono truncate">
-        {{ fwStore.branding.footerNotice }}
-      </div>
-      <div class="mt-2 pt-1.5 border-t border-violet-800/40 text-[9px] text-violet-300 font-medium text-center">
-        Made by ICTD CSIR-SERC for CSIR with ❤️
-      </div>
     </div>
   </aside>
+
 </template>
 
 <script setup lang="ts">

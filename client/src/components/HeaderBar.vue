@@ -3,59 +3,35 @@
     <!-- UX4G Mandated Government of India Top Banner & Tricolor Accent Strip -->
     <div class="h-1 w-full bg-gradient-to-r from-[#FF9933] via-white to-[#138808]"></div>
     
-    <div class="px-6 py-2.5 flex flex-wrap items-center justify-between gap-4 border-b border-violet-900/50 bg-violet-950/60">
-      <div class="flex items-center gap-3">
-        <!-- Dynamic Organization Brand Logo -->
-        <div class="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 bg-violet-900/60 border border-violet-700/50 shadow-md">
-          <img
-            v-if="fwStore.branding.logoBase64"
-            :src="fwStore.branding.logoBase64"
-            class="w-full h-full object-contain p-0.5"
-            alt="Logo"
-          />
-          <img
-            v-else-if="fwStore.branding.logoUrl"
-            :src="fwStore.branding.logoUrl"
-            class="w-full h-full object-contain p-0.5"
-            alt="Logo"
-          />
-          <div v-else-if="fwStore.branding.presetLogo === 'shield'" class="w-full h-full bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-cyan-400 p-0.5 flex items-center justify-center">
-            <div class="w-full h-full bg-violet-950 rounded flex items-center justify-center">
-              <Shield class="w-4 h-4 text-cyan-300" />
-            </div>
-          </div>
-          <div v-else-if="fwStore.branding.presetLogo === 'cyber'" class="w-full h-full bg-gradient-to-tr from-emerald-600 to-cyan-500 p-0.5 flex items-center justify-center">
-            <div class="w-full h-full bg-violet-950 rounded flex items-center justify-center">
-              <Cpu class="w-4 h-4 text-emerald-400" />
-            </div>
-          </div>
-          <div v-else-if="fwStore.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 flex items-center justify-center">
-            <div class="w-full h-full bg-violet-950 rounded flex items-center justify-center">
-              <Globe class="w-4 h-4 text-blue-300" />
-            </div>
-          </div>
-          <div v-else class="w-full h-full rounded-full bg-gradient-to-tr from-amber-500 to-violet-600 p-0.5 flex items-center justify-center">
-            <div class="w-full h-full rounded-full bg-violet-950 flex items-center justify-center">
-              <span class="text-amber-400 font-bold text-xs">🇮🇳</span>
-            </div>
-          </div>
+    <!-- Unified Single Header Bar -->
+    <div class="px-6 py-2.5 flex items-center justify-between gap-4">
+      <!-- Left: Active Page Title & Breadcrumb Navigation -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-8 h-8 rounded-lg bg-violet-900/60 border border-violet-700/50 flex items-center justify-center flex-shrink-0 text-cyan-300 shadow-md">
+          <Shield class="w-4 h-4 text-neon-cyan" />
         </div>
-        <div>
+        <div class="min-w-0">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold tracking-wide text-white font-sans">
-              {{ fwStore.branding.apexBody }} <span class="text-violet-400 font-normal">| {{ fwStore.branding.orgName }}</span>
-            </span>
+            <h1 class="text-sm font-bold tracking-tight text-white font-sans truncate">{{ pageTitle }}</h1>
+            <span class="text-violet-600 hidden sm:inline">•</span>
+            <span class="text-xs text-violet-300/80 font-medium truncate hidden sm:inline">{{ pageSubtitle }}</span>
           </div>
-          <div class="text-[11px] text-violet-300/80 font-medium">
-            {{ fwStore.branding.orgDivision }}
+          <div class="text-[10px] font-mono text-violet-400/80 flex items-center gap-2">
+            <span>{{ fwStore.branding.orgName }}</span>
+            <span>•</span>
+            <span class="text-emerald-400 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+              Live Telemetry
+            </span>
+            <span class="hidden md:inline">• {{ fwStore.branding.ntpBadgeText }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Right: Real-Time Internet Speed Ticker & 15-min Countdown -->
-      <div class="flex items-center gap-3 text-xs">
+      <!-- Right: Real-Time Speed Ticker, Storage, Alerts & Settings -->
+      <div class="flex items-center gap-2.5 flex-shrink-0 text-xs">
         <!-- 15-Min Automated Speed Test Badge -->
-        <div class="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-violet-900/50 border border-violet-700/40">
+        <div class="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-violet-900/50 border border-violet-700/40">
           <Gauge class="w-4 h-4 text-neon-cyan animate-pulse" />
           <div class="text-left">
             <div class="text-[10px] text-violet-400 font-semibold uppercase tracking-wider">
@@ -71,7 +47,7 @@
           
           <!-- Countdown to Next Test -->
           <div class="ml-2 pl-2 border-l border-violet-700/50 text-right">
-            <div class="text-[9px] text-violet-400">Next Test in</div>
+            <div class="text-[9px] text-violet-400">Next in</div>
             <div class="text-[11px] font-mono font-bold text-neon-amber">
               {{ formattedCountdown }}
             </div>
@@ -81,7 +57,7 @@
           <button
             @click="telemetry.runSpeedTestNow()"
             :disabled="telemetry.isTestingSpeed"
-            class="ml-1 p-1 rounded bg-violet-800/80 hover:bg-violet-700 text-neon-cyan transition disabled:opacity-50"
+            class="ml-1 p-1 rounded bg-violet-800/80 hover:bg-violet-700 text-neon-cyan transition disabled:opacity-50 cursor-pointer"
             title="Trigger Immediate Speed Test"
           >
             <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': telemetry.isTestingSpeed }" />
@@ -92,10 +68,10 @@
         <button
           @click="telemetry.isStorageModalOpen = true"
           class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-900/50 hover:bg-violet-800 border border-violet-700/40 text-cyan-300 hover:text-white text-xs font-medium transition cursor-pointer"
-          title="Telemetry Storage &amp; Database Engine Status"
+          title="Telemetry Storage & Database Engine Status"
         >
           <Database class="w-3.5 h-3.5 text-neon-cyan" />
-          <span class="hidden md:inline">Log &amp; DB Storage</span>
+          <span class="hidden md:inline">Storage</span>
         </button>
 
         <!-- Live Purposeful Alerts Center Button -->
@@ -120,32 +96,13 @@
         </RouterLink>
       </div>
     </div>
-
-    <!-- Subheader Navigation / Breadcrumb Row -->
-    <div class="px-6 py-2 flex items-center justify-between text-xs">
-      <div class="flex items-center gap-2 text-violet-300 font-medium">
-        <Shield class="w-4 h-4 text-violet-400" />
-        <span class="text-white font-bold">{{ pageTitle }}</span>
-        <span class="text-violet-600">/</span>
-        <span class="text-violet-400">{{ pageSubtitle }}</span>
-      </div>
-
-      <div class="flex items-center gap-3 text-[11px] font-mono text-violet-400">
-        <span class="hidden sm:inline">{{ fwStore.branding.ntpBadgeText }}</span>
-        <span class="text-violet-600">•</span>
-        <span class="text-emerald-400 flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          Telemetry Streaming
-        </span>
-      </div>
-    </div>
   </header>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { Bell, RefreshCw, Gauge, Shield, Settings, Cpu, Globe, Database } from 'lucide-vue-next';
+import { Bell, RefreshCw, Gauge, Shield, Settings, Database } from 'lucide-vue-next';
 import { useTelemetryStore } from '../stores/telemetry.store.js';
 import { useFirewallStore } from '../stores/firewall.store.js';
 
@@ -177,6 +134,7 @@ const pageTitle = computed(() => {
     case '/config-diff': return 'Configuration Drift & Audit Trail';
     case '/logs': return 'Live Firewall Syslog Audit Stream';
     case '/compliance': return 'CERT-In Security Compliance';
+    case '/users': return 'User Management & Access Control';
     case '/settings': return 'System Settings & Alert Configuration';
     default: return fwStore.branding.portalTitle;
   }
@@ -193,6 +151,7 @@ const pageSubtitle = computed(() => {
     case '/config-diff': return 'Policy Revisions and Audit Verification';
     case '/logs': return `Live Hardware Event Stream from ${fwIp}`;
     case '/compliance': return 'Section 70B & Indian Security Baseline Standards';
+    case '/users': return 'System Operators, CISO & Auditor Accounts';
     case '/settings': return 'SNMP Target, Email/Telegram Alerts & Portal Labels';
     default: return fwStore.branding.portalSubtitle;
   }

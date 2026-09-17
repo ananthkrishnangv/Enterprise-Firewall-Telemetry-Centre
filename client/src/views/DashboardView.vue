@@ -1,37 +1,18 @@
 <template>
   <div class="space-y-6 pb-12 select-none">
-    <!-- Top Telemetry Operations Control Bar: Gateway Status, Log Storage & Continuous Auto-Refresh -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-violet-950/70 border border-violet-800/50 backdrop-blur-md shadow-lg shadow-violet-950/40">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-violet-900/60 border border-violet-700/50 flex items-center justify-center text-cyan-300">
-          <Activity class="w-5 h-5 text-neon-cyan animate-pulse" />
-        </div>
-        <div>
-          <div class="text-xs font-bold text-white flex items-center gap-2">
-            <span>{{ fwStore.activeFirewall?.name || 'FortiGate-CSIR-SERC' }}</span>
-            <span class="text-violet-500">•</span>
-            <span class="text-[11px] font-mono font-bold text-emerald-400">
-              {{ fwStore.activeFirewall?.ipAddress || '10.10.3.15' }} (SNMP v2c Online)
-            </span>
-          </div>
-          <div class="text-[10px] text-violet-300/80 font-mono">
-            Real-Time Ingress/Egress Inspection • Postgres Telemetry Engine Active
-          </div>
-        </div>
+    <!-- Dashboard Live Toolbar: Continuous Auto-Refresh & Gateway Status -->
+    <div class="flex flex-wrap items-center justify-between gap-3 py-1">
+      <div class="flex items-center gap-2 text-xs font-mono text-violet-300/80">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-[10px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          LIVE TRAFFIC INGEST
+        </span>
+        <span class="text-white font-bold font-sans">{{ fwStore.activeFirewall?.name || 'FortiGate-CSIR-SERC' }}</span>
+        <span class="text-violet-600">•</span>
+        <span class="text-cyan-400 font-mono">{{ fwStore.activeFirewall?.ipAddress || '10.10.3.15' }}</span>
       </div>
 
-      <div class="flex items-center gap-2.5">
-        <!-- Log & DB Storage Locations Modal Trigger -->
-        <button
-          @click="telemetry.isStorageModalOpen = true"
-          class="px-3 py-1.5 rounded-xl bg-violet-900/40 hover:bg-violet-800/80 border border-violet-700/50 text-cyan-300 hover:text-white text-xs font-mono font-bold flex items-center gap-1.5 transition cursor-pointer"
-          title="Inspect where logs &amp; telemetry are stored"
-        >
-          <Database class="w-3.5 h-3.5 text-neon-cyan" />
-          <span>Storage Locations</span>
-        </button>
-
-        <!-- Continuous Hands-Free Auto-Refresh Component -->
+      <div class="flex items-center gap-2">
         <AutoRefreshControl
           storageKey="auto_refresh_dashboard"
           :defaultInterval="10"
