@@ -2,6 +2,7 @@ import dgram from 'node:dgram';
 import { v4 as uuidv4 } from 'uuid';
 import { TrafficFlow, FirewallVendor } from '../types/index.js';
 import { telemetryStore } from '../storage/telemetry.store.js';
+import { influxService } from '../storage/influx.service.js';
 
 export class FlowCollector {
   private server: dgram.Socket;
@@ -84,6 +85,34 @@ export class FlowCollector {
         };
 
         telemetryStore.addFlow(flow);
+
+        try {
+          const isInternal = flow.sourceIp.startsWith('10.') || flow.sourceIp.startsWith('192.168.');
+          const isDestInternal = flow.destIp.startsWith('10.') || flow.destIp.startsWith('192.168.');
+          const direction = isInternal && isDestInternal ? 'internal' : isInternal ? 'outbound' : 'inbound';
+          influxService.storeTrafficLog({
+            id: flow.id,
+            timestamp: flow.timestamp,
+            firewallId: flow.firewallId,
+            direction,
+            action: flow.action,
+            sourceIp: flow.sourceIp,
+            sourcePort: flow.sourcePort,
+            destIp: flow.destIp,
+            destPort: flow.destPort,
+            destCountry: flow.countryDest,
+            protocol: flow.protocol,
+            application: flow.application,
+            bytesIn: flow.bytesIn,
+            bytesOut: flow.bytesOut,
+            packetsIn: flow.packetsIn,
+            packetsOut: flow.packetsOut,
+            policyName: flow.ruleName,
+            severity: flow.threatSeverity === 'critical' ? 'critical' : flow.action === 'drop' ? 'warning' : 'info',
+            threatCategory: flow.threatCategory
+          });
+        } catch {}
+
         offset += 48;
       }
     }

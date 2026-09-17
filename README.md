@@ -5,6 +5,7 @@
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-24-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18_Alpine-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![InfluxDB](https://img.shields.io/badge/InfluxDB-2.7_TSDB-22ADF6?style=for-the-badge&logo=influxdata&logoColor=white)](https://www.influxdata.com/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![CERT-In Compliant](https://img.shields.io/badge/CERT--In-Section_70B_Baseline-FF9933?style=for-the-badge)](https://www.cert-in.org.in/)
 [![License: CSIR-SERC](https://img.shields.io/badge/License-CSIR--SERC_Community_v1.0-8A2BE2?style=for-the-badge)](#licensing-structure)
@@ -21,7 +22,7 @@ The **Enterprise Firewall Telemetry & Security Operations Center** is an on-prem
 
 Engineered from the ground up for high-throughput perimeter firewalls (specifically **Fortinet FortiGate** along with support for **Check Point**, **Palo Alto Networks**, and **pfSense**), the system aggregates hardware telemetry, sub-second interface metrics, binary NetFlow/IPFIX records, high-velocity syslogs, and canonical security policies into a unified, responsive operations center conforming to **UX4G** design standards.
 
-The application is architected as an **all-in-one Virtual Appliance (VM)** featuring a guided first-time setup wizard, customizable organization branding and logos, role-based access control with superadmin safeguards, automated PostgreSQL 18 telemetry persistence, and over-the-air (OTA) update readiness.
+The application is architected as an **all-in-one Virtual Appliance (VM)** featuring a guided first-time setup wizard, customizable organization branding and logos, role-based access control with superadmin safeguards, high-velocity **InfluxDB 2.7 Time-Series** log ingestion, automated **PostgreSQL 18** telemetry persistence, and over-the-air (OTA) update readiness.
 
 ---
 
@@ -74,10 +75,15 @@ Canonical Rule Abstract Syntax Tree (AST) engine that parses and models multi-ve
 
 ---
 
-### 6. Live Hardware Syslog Audit Stream
-High-speed UDP syslog receiver (Port 1514 / 514) streaming RFC 5424 / RFC 3164 events directly from firewall hardware into a terminal-style interface with real-time substring filtering, severity colorization, pause/resume buffers, and CSV export.
+### 6. Full-Spectrum Firewall Traffic & Log Analyzer (InfluxDB 2.7 TSDB Engine)
+A high-velocity time-series traffic intelligence and log analyzer monitoring all traffic passing through the institutional firewall across all 46+ interfaces, departmental VLANs, HPC clusters, and external WAN:
+- **InfluxDB 2.7 Time-Series Ingestion**: High-throughput non-blocking line-protocol batch pipeline with CERT-In mandated 180-day retention bucket and microsecond query latency.
+- **Multi-Parameter Filtering**: Instantly isolate traffic by Time Range (15m, 1h, 6h, 24h, 7d), Traffic Direction (`Inbound`, `Outbound`, `Internal`), Enforcement Action (`All`, `Allowed`, `Blocked`), Protocol (`TCP`, `UDP`, `ICMP`), and free-text search (IP/CIDR, hostname, subnet, or App-ID).
+- **Allowed vs. Blocked Volume Timeline**: Interactive ECharts velocity stream visualizing permitted campus bandwidth alongside blocked threat attacks (Tor C2 beacons, botnet probes, mining pools, unauthorized P2P).
+- **Deep Log Explorer & Live Stream**: High-performance streaming log explorer table with bi-directional volume counters, destination country flags, policy names, and one-click CSV export.
 
-![Live Firewall Syslog Audit Stream](docs/screenshots/07_live_syslog_stream.png)
+![InfluxDB Traffic & Threat Ingestion Analytics](docs/screenshots/07_live_syslog_stream.png)
+![Deep Multi-Parameter Log Explorer & Live Stream](docs/screenshots/07b_traffic_log_explorer.png)
 
 ---
 
@@ -170,8 +176,9 @@ Centralized settings console enabling custom institutional identity:
 | **Data Visualization**| Apache ECharts 5.6, vue-echarts, Lucide Vue Next | Speedometer gauges, area charts, protocol distribution bars |
 | **Backend Core** | Node.js 24, Express 4.21, TypeScript 5.8 | High-throughput asynchronous runtime, NetFlow binary decoders |
 | **SNMP Engine** | `net-snmp`, Net-SNMP CLI tools, Subtree walkers | 64-bit HC octet counters, rate deltas, FortiOS sensor MIBs |
-| **Database Engine** | PostgreSQL 18 Alpine (`postgres:18-alpine`) | Normalized telemetry schema, JSONB metrics, foreign keys |
-| **Container Runtime** | Docker Compose v2, Linux Macvlan Bridge | Isolated network IPs (`10.40.0.150`, `10.40.0.151`) |
+| **Time-Series TSDB** | InfluxDB 2.7 Alpine (`influxdb:2.7-alpine`) | High-throughput Line-Protocol writes, 180-day retention bucket |
+| **Relational Database**| PostgreSQL 18 Alpine (`postgres:18-alpine`) | Normalized telemetry schema, JSONB metrics, RBAC, backups |
+| **Container Runtime** | Docker Compose v2, Linux Macvlan Bridge | Isolated network IPs (`10.40.0.150`, `10.40.0.151`, `10.40.0.152`) |
 | **Design Standards** | Government of India UX4G Framework | Clean single-header layout, accessible typography, violet theme |
 
 ---
@@ -186,6 +193,7 @@ Ensure the telemetry host or virtual machine has direct routing to monitored per
 | **161** | UDP | Outbound | SNMPv2c / SNMPv3 queries to Firewall Gateways |
 | **1514 / 514**| UDP | Inbound | Syslog stream reception from firewalls |
 | **2055** | UDP | Inbound | NetFlow v5 / v9 & IPFIX binary flow records |
+| **8086** | TCP | Internal | InfluxDB 2.7 TSDB Line-Protocol & Flux queries |
 | **5432** | TCP | Internal | PostgreSQL 18 database connectivity |
 | **123** | UDP | Outbound | NTP clock synchronization (NPL / NIC India Stratum-1) |
 
@@ -210,8 +218,14 @@ Ensure the telemetry host or virtual machine has direct routing to monitored per
    SYSLOG_PORT=1514
    FLOW_PORT=2055
 
+   # InfluxDB 2.7 Time-Series TSDB Configuration
+   INFLUX_URL=http://10.40.0.152:8086
+   INFLUX_TOKEN=influx-firewall-token-2026-supersecret
+   INFLUX_ORG=csir-serc
+   INFLUX_BUCKET=firewall_logs
+
    # PostgreSQL 18 Engine Configuration
-   DATABASE_URL=postgresql://telemetry_admin:TelemetrySecure2026!@10.40.0.151:5432/firewall_telemetry
+   DATABASE_URL=postgresql://postgres:firewall_secret_2026!@10.40.0.151:5432/firewall_telemetry
 
    # Default Firewall Target
    DEFAULT_FW_IP=10.10.3.15

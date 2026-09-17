@@ -13,6 +13,24 @@ services:
       mcvlanprod:
         ipv4_address: 10.40.0.151
 
+  firewall-monitoring-tsdb:
+    image: influxdb:2.7-alpine
+    container_name: firewall-monitoring-tsdb
+    restart: unless-stopped
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=InfluxSecure2026!
+      - DOCKER_INFLUXDB_INIT_ORG=csir-serc
+      - DOCKER_INFLUXDB_INIT_BUCKET=firewall_logs
+      - DOCKER_INFLUXDB_INIT_RETENTION=180d
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=influx-firewall-token-2026-supersecret
+    volumes:
+      - ./influxdata:/var/lib/influxdb2
+    networks:
+      mcvlanprod:
+        ipv4_address: 10.40.0.152
+
   firewall-monitoring:
     build:
       context: .
@@ -22,6 +40,7 @@ services:
     restart: unless-stopped
     depends_on:
       - firewall-monitoring-db
+      - firewall-monitoring-tsdb
     environment:
       - PORT=80
       - SYSLOG_PORT=1514
@@ -30,6 +49,10 @@ services:
       - UPLOADS_DIR=/app/uploads
       - BACKUP_DIR=/app/backups
       - DATABASE_URL=postgresql://postgres:firewall_secret_2026!@10.40.0.151:5432/firewall_telemetry
+      - INFLUX_URL=http://10.40.0.152:8086
+      - INFLUX_TOKEN=influx-firewall-token-2026-supersecret
+      - INFLUX_ORG=csir-serc
+      - INFLUX_BUCKET=firewall_logs
     volumes:
       - ./data:/app/data
       - ./uploads:/app/uploads

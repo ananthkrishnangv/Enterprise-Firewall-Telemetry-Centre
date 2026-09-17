@@ -234,7 +234,7 @@ const navItems = computed<NavItem[]>(() => [
   { name: 'Policy & Shadow Analysis', path: '/policies', icon: Layers },
   { name: 'Firewalls & SNMP Probes', path: '/devices', icon: Server },
   { name: 'Config Drift & Diffs', path: '/config-diff', icon: GitCompare },
-  { name: 'Live Syslog Tail', path: '/logs', icon: Terminal },
+  { name: 'Traffic & Log Analyzer', path: '/logs', icon: Terminal },
   { name: 'Compliance Audit (CERT-In)', path: '/compliance', icon: FileCheck2 },
   { name: 'User Management & Access', path: '/users', icon: Users },
   { name: 'Enterprise Settings', path: '/settings', icon: Settings },

@@ -19,6 +19,7 @@ const imgBento = getBase64Image('docs/screenshots/04_bento_traffic.png');
 const imgSnmp = getBase64Image('docs/screenshots/05_snmp_telemetry_center.png');
 const imgPolicies = getBase64Image('docs/screenshots/06_firewall_policies.png');
 const imgLogs = getBase64Image('docs/screenshots/07_live_syslog_stream.png');
+const imgLogsExplorer = getBase64Image('docs/screenshots/07b_traffic_log_explorer.png');
 const imgCompliance = getBase64Image('docs/screenshots/08_certin_compliance.png');
 const imgUsers = getBase64Image('docs/screenshots/09_user_management.png');
 const imgSettings = getBase64Image('docs/screenshots/10_settings_branding.png');
@@ -273,9 +274,9 @@ const htmlContent = `<!DOCTYPE html>
       <div class="meta-box">
         <div><strong>Document Reference:</strong> CSIR-SERC/ICTD/EFTC/2026/DOC-01</div>
         <div><strong>Classification:</strong> Official Institutional Technical Manual</div>
-        <div><strong>Release Version:</strong> 1.0.0 (PostgreSQL 18 & Parallel SNMP Edition)</div>
+        <div><strong>Release Version:</strong> 1.1.0 (InfluxDB 2.7 TSDB & PostgreSQL 18 Multi-Tier Edition)</div>
         <div><strong>Target Appliance:</strong> Fortinet FortiGate NGFW (10.10.3.15)</div>
-        <div><strong>Deployment Mode:</strong> Single-Package Virtual Machine (OVA/Docker)</div>
+        <div><strong>Deployment Mode:</strong> Multi-Container Microservices Appliance (Docker)</div>
         <div><strong>Issuing Division:</strong> Information & Communication Technology Division (ICTD)</div>
         <div><strong>Institution:</strong> CSIR - Structural Engineering Research Centre, Chennai</div>
       </div>
@@ -313,11 +314,12 @@ const htmlContent = `<!DOCTYPE html>
         <tr><td>4.0</td><td>Live FortiGate SNMP Telemetry Engine Specification</td><td>Hardware OIDs</td></tr>
         <tr><td>5.0</td><td>Bento Traffic Analytics & App-ID Identification</td><td>Flows</td></tr>
         <tr><td>6.0</td><td>Canonical Policy Governance & Conflict Engine</td><td>Security</td></tr>
-        <tr><td>7.0</td><td>Live Syslog Stream & CERT-In Section 70B Compliance</td><td>Audit</td></tr>
-        <tr><td>8.0</td><td>User Management & Telegram Alert Integration</td><td>RBAC</td></tr>
-        <tr><td>9.0</td><td>PostgreSQL 18 Telemetry Database & Automated Backups</td><td>Storage</td></tr>
-        <tr><td>10.0</td><td>Deployment, Health Diagnostics & Troubleshooting</td><td>DevOps</td></tr>
-        <tr><td>11.0</td><td>CSIR-SERC Free Community & Institutional License v1.0</td><td>Legal</td></tr>
+        <tr><td>7.0</td><td>Full-Spectrum Traffic & Log Analyzer (InfluxDB 2.7 TSDB Engine)</td><td>Log Analysis</td></tr>
+        <tr><td>8.0</td><td>CERT-In Section 70B National Cybersecurity Compliance</td><td>Audit</td></tr>
+        <tr><td>9.0</td><td>User Management & Telegram Alert Integration</td><td>RBAC</td></tr>
+        <tr><td>10.0</td><td>Dual Database Engines: InfluxDB 2.7 TSDB & PostgreSQL 18</td><td>Storage</td></tr>
+        <tr><td>11.0</td><td>Deployment, Health Diagnostics & Troubleshooting</td><td>DevOps</td></tr>
+        <tr><td>12.0</td><td>CSIR-SERC Free Community & Institutional License v1.0</td><td>Legal</td></tr>
       </tbody>
     </table>
 
@@ -332,16 +334,16 @@ const htmlContent = `<!DOCTYPE html>
   <!-- SECTION 1: ARCHITECTURE -->
   <h1>1. System Architecture & Ingestion Pipeline</h1>
   <p>
-    The Enterprise Firewall Telemetry & Security Operations Center is architected as an all-in-one on-premises virtual appliance designed to monitor mission-critical perimeter gateways without cloud dependencies or external data egress.
+    The Enterprise Firewall Telemetry & Security Operations Center is architected as a high-performance on-premises operations center designed to monitor all traffic passing through perimeter gateways without cloud dependencies or external data egress.
   </p>
 
   <h2>Core Components</h2>
   <ul>
     <li><strong>Parallel SNMP Poller (<200ms)</strong>: Concurrently queries FortiGate appliances across MIB-II, IF-MIB, and FortiOS enterprise sensor trees. Tracks 64-bit High Capacity (HC) octets, thermal zones, fan tachometers, dual power supplies, and security policy accounting counters.</li>
-    <li><strong>High-Velocity Syslog Ingester</strong>: Listens on UDP port 1514 (and 514) to ingest RFC 5424 and RFC 3164 events directly from firewall hardware into a streaming terminal console.</li>
-    <li><strong>NetFlow / IPFIX Binary Parser</strong>: Decodes layer-4 flow headers on UDP port 2055 with zero-copy buffer views, extracting App-ID classifications.</li>
-    <li><strong>PostgreSQL 18 Database Engine</strong>: Relational time-series persistence in an optimized Alpine container with automated daily backup schedulers.</li>
-    <li><strong>Reactive Vue 3.5 & ECharts Console</strong>: Single-page application conforming to Government of India UX4G design standards with continuous auto-refresh.</li>
+    <li><strong>Full-Spectrum Traffic & Log Ingester</strong>: Listens on UDP port 1514 (Syslog) and port 2055 (NetFlow v5/v9 & IPFIX) with multi-subnet institutional host resolution, capturing all ingress, egress, inter-VLAN, and blocked security threats across the entire perimeter.</li>
+    <li><strong>InfluxDB 2.7 Time-Series TSDB Engine</strong>: High-throughput batch Line-Protocol ingestion engine maintaining dedicated time-series buckets with a 180-day automated retention lifecycle meeting CERT-In national mandates.</li>
+    <li><strong>PostgreSQL 18 Database Engine</strong>: Relational persistence layer in an optimized Alpine container managing operator accounts, RBAC permissions, and automated configuration/log backups.</li>
+    <li><strong>Reactive Vue 3.5 & ECharts Operations Console</strong>: Single-page application conforming to Government of India UX4G design standards with real-time WebSocket streaming and multi-parameter log filtering.</li>
   </ul>
 
   <h2>Network Port Matrix</h2>
@@ -361,7 +363,8 @@ const htmlContent = `<!DOCTYPE html>
       <tr><td>161</td><td>UDP</td><td>Outbound</td><td>Telemetry Console</td><td>FortiGate Gateway</td><td>SNMPv2c / SNMPv3 Polling</td></tr>
       <tr><td>1514 / 514</td><td>UDP</td><td>Inbound</td><td>FortiGate Gateway</td><td>Telemetry Console</td><td>Hardware Syslog Forwarding</td></tr>
       <tr><td>2055</td><td>UDP</td><td>Inbound</td><td>FortiGate Gateway</td><td>Telemetry Console</td><td>NetFlow v5/v9 & IPFIX Records</td></tr>
-      <tr><td>5432</td><td>TCP</td><td>Internal</td><td>Web Console</td><td>PostgreSQL Container</td><td>Database Persistence Sync</td></tr>
+      <tr><td>8086</td><td>TCP</td><td>Internal</td><td>Web Console</td><td>InfluxDB 2.7 TSDB</td><td>Time-Series Line Protocol Writes & Flux Queries</td></tr>
+      <tr><td>5432</td><td>TCP</td><td>Internal</td><td>Web Console</td><td>PostgreSQL 18 DB</td><td>Relational Metadata & Audit Persistence</td></tr>
     </tbody>
   </table>
 
@@ -460,24 +463,24 @@ const htmlContent = `<!DOCTYPE html>
   <div class="page-break"></div>
 
   <div class="avoid-break">
-    <h2>2.6 Live Syslog Audit Stream & CERT-In Compliance</h2>
+    <h2>2.6 Full-Spectrum Firewall Traffic & Log Analyzer (InfluxDB 2.7 TSDB Engine)</h2>
     <p>
-      Streaming terminal-style hardware syslog receiver with pause/resume buffers and automated verification against CERT-In Section 70B directives (180-day retention and Stratum-1 IST clock synchronization).
+      High-velocity time-series traffic ingestion and multi-parameter log analyzer capturing all traffic passing through the perimeter gateway across all 46+ interfaces, departmental VLANs, HPC clusters, and external WAN. Features multi-parameter filtering (time range, direction, enforcement action, protocol, and search), timeline aggregation, and security drop inspection.
     </p>
 
     <div class="screenshot-card">
-      <img src="${imgLogs}" alt="Live Syslog Stream">
+      <img src="${imgLogs}" alt="Firewall Traffic & Threat Analytics">
       <div class="screenshot-caption">
-        <span>Figure 7: Terminal-Style Live Firewall Syslog Stream</span>
-        <span class="badge badge-primary">Syslog Stream</span>
+        <span>Figure 7: InfluxDB Traffic & Threat Ingestion Velocity Analytics (Allowed vs Blocked)</span>
+        <span class="badge badge-primary">TSDB Analytics</span>
       </div>
     </div>
 
     <div class="screenshot-card">
-      <img src="${imgCompliance}" alt="CERT-In Compliance">
+      <img src="${imgLogsExplorer}" alt="Deep Log Explorer & Live Stream">
       <div class="screenshot-caption">
-        <span>Figure 8: CERT-In National Cyber Security Baseline Compliance Dashboard</span>
-        <span class="badge badge-success">Compliance</span>
+        <span>Figure 8: Deep Multi-Parameter Log Explorer & Live Stream Table (All Subnets & Blocked Threats)</span>
+        <span class="badge badge-success">Log Explorer</span>
       </div>
     </div>
   </div>
@@ -485,15 +488,30 @@ const htmlContent = `<!DOCTYPE html>
   <div class="page-break"></div>
 
   <div class="avoid-break">
-    <h2>2.7 User Management & System Configuration</h2>
+    <h2>2.7 CERT-In Section 70B Compliance & Cybersecurity Baseline</h2>
     <p>
-      Multi-tenant user management console with protected superadmin account, role-based permissions, Telegram alert integration, organization branding, custom logo upload, and PostgreSQL 18 backup operations.
+      Dedicated compliance dashboard validating firewall operational controls against the Indian Computer Emergency Response Team (CERT-In) Section 70B directives, including 180-day secure time-series log retention and Stratum-1 IST NTP clock synchronization.
+    </p>
+
+    <div class="screenshot-card">
+      <img src="${imgCompliance}" alt="CERT-In Compliance">
+      <div class="screenshot-caption">
+        <span>Figure 9: CERT-In National Cyber Security Baseline Compliance Dashboard</span>
+        <span class="badge badge-success">Compliance</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="avoid-break">
+    <h2>2.8 User Management & System Configuration</h2>
+    <p>
+      Multi-tenant user management console with protected superadmin account, role-based permissions, Telegram alert integration, organization branding, custom logo upload, InfluxDB time-series retention, and PostgreSQL 18 automated backup operations.
     </p>
 
     <div class="screenshot-card">
       <img src="${imgUsers}" alt="User Management">
       <div class="screenshot-caption">
-        <span>Figure 9: User Management & Telegram Alert Configuration</span>
+        <span>Figure 10: User Management & Telegram Alert Configuration</span>
         <span class="badge badge-primary">RBAC</span>
       </div>
     </div>
@@ -501,7 +519,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgSettings}" alt="Settings & Branding">
       <div class="screenshot-caption">
-        <span>Figure 10: Institutional Branding, Custom Logo & PostgreSQL 18 Backup Scheduler</span>
+        <span>Figure 11: Institutional Branding, Custom Logo & PostgreSQL 18 / InfluxDB 2.7 Engines</span>
         <span class="badge badge-primary">Administration</span>
       </div>
     </div>

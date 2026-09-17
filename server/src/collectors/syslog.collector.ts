@@ -2,6 +2,7 @@ import dgram from 'node:dgram';
 import { v4 as uuidv4 } from 'uuid';
 import { SyslogEntry, FirewallVendor, RuleAction } from '../types/index.js';
 import { telemetryStore } from '../storage/telemetry.store.js';
+import { influxService } from '../storage/influx.service.js';
 
 export class SyslogCollector {
   private server: dgram.Socket;
@@ -158,6 +159,35 @@ export class SyslogCollector {
     };
 
     telemetryStore.addLog(entry);
+
+    // Forward to InfluxDB Time-Series Engine
+    try {
+      const isInternal = sourceIp.startsWith('10.') || sourceIp.startsWith('192.168.');
+      const isDestInternal = destIp.startsWith('10.') || destIp.startsWith('192.168.');
+      const direction = isInternal && isDestInternal ? 'internal' : isInternal ? 'outbound' : 'inbound';
+      
+      influxService.storeTrafficLog({
+        id: entry.id,
+        timestamp: entry.timestamp,
+        firewallId: entry.firewallId,
+        direction,
+        action,
+        sourceIp,
+        sourcePort,
+        destIp,
+        destPort,
+        protocol,
+        application: protocol === 'TCP' && destPort === 443 ? 'HTTPS' : protocol === 'UDP' && destPort === 53 ? 'DNS' : `${protocol}-${destPort || 'Traffic'}`,
+        bytesIn: 1024,
+        bytesOut: 1024,
+        packetsIn: 1,
+        packetsOut: 1,
+        policyName: ruleName,
+        severity,
+        rawLog: raw
+      });
+    } catch {}
+
     return entry;
   }
 }

@@ -10,6 +10,7 @@ import { speedTestCollector } from '../collectors/speedtest.collector.js';
 import { notificationService } from '../services/notification.service.js';
 import { updateService } from '../services/update.service.js';
 import { postgresService } from '../storage/postgres.service.js';
+import { influxService } from '../storage/influx.service.js';
 import { backupService } from '../services/backup.service.js';
 import fs from 'fs';
 import path from 'path';
@@ -166,6 +167,72 @@ apiRouter.get('/telemetry/logs', (req: Request, res: Response) => {
 
   const logs = telemetryStore.getRecentLogs(limit, { firewallId, severity, search });
   res.json({ success: true, count: logs.length, logs });
+});
+
+// ==========================================
+// 2.1 InfluxDB Traffic Log Analyzer Endpoints
+// ==========================================
+apiRouter.get('/logs/analyzer/stats', (req: Request, res: Response) => {
+  const timeRangeMinutes = parseInt(req.query.timeRange as string, 10) || 60;
+  const analytics = influxService.getTrafficAnalytics(timeRangeMinutes);
+  res.json({ success: true, ...analytics });
+});
+
+apiRouter.get('/logs/analyzer/query', (req: Request, res: Response) => {
+  const direction = req.query.direction as string || 'all';
+  const action = req.query.action as string || 'all';
+  const search = req.query.search as string || '';
+  const protocol = req.query.protocol as string || 'all';
+  const severity = req.query.severity as string || 'all';
+  const timeRangeMinutes = parseInt(req.query.timeRange as string, 10) || 60;
+  const limit = parseInt(req.query.limit as string, 10) || 50;
+  const offset = parseInt(req.query.offset as string, 10) || 0;
+
+  const result = influxService.queryTrafficLogs({
+    direction,
+    action,
+    search,
+    protocol,
+    severity,
+    timeRangeMinutes,
+    limit,
+    offset
+  });
+
+  res.json({ success: true, ...result });
+});
+
+apiRouter.get('/logs/analyzer/timeline', (req: Request, res: Response) => {
+  const timeRangeMinutes = parseInt(req.query.timeRange as string, 10) || 60;
+  const timeline = influxService.getTrafficTimeline(timeRangeMinutes);
+  res.json({ success: true, timeline });
+});
+
+apiRouter.get('/logs/analyzer/export', (req: Request, res: Response) => {
+  const result = influxService.queryTrafficLogs({ limit: 2000, timeRangeMinutes: 1440 });
+  const headers = ['Timestamp', 'Direction', 'Action', 'Source IP', 'Source Port', 'Department', 'Destination IP', 'Dest Port', 'Protocol', 'Application', 'Bytes In', 'Bytes Out', 'Severity', 'Threat Category', 'Policy'];
+  const rows = result.logs.map(l => [
+    `"${l.timestamp}"`,
+    `"${l.direction}"`,
+    `"${l.action.toUpperCase()}"`,
+    `"${l.sourceIp}"`,
+    l.sourcePort,
+    `"${(l.sourceDept || '').replace(/"/g, '""')}"`,
+    `"${l.destIp}"`,
+    l.destPort,
+    `"${l.protocol}"`,
+    `"${l.application}"`,
+    l.bytesIn,
+    l.bytesOut,
+    `"${l.severity}"`,
+    `"${(l.threatCategory || '').replace(/"/g, '""')}"`,
+    `"${(l.policyName || '').replace(/"/g, '""')}"`
+  ].join(','));
+
+  const csv = [headers.join(','), ...rows].join('\n');
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename="firewall_traffic_logs_${Date.now()}.csv"`);
+  res.send(csv);
 });
 
 // 3. Internet Speed Test & 15-Minute Automated Monitor
@@ -787,9 +854,13 @@ apiRouter.post('/upload/logo', (req: Request, res: Response) => {
 apiRouter.get('/system/storage', async (req: Request, res: Response) => {
   try {
     const stats = await postgresService.getStorageStats();
+    const influxStats = influxService.getConnectionDetails();
     res.json({
       success: true,
-      storage: stats
+      storage: {
+        ...stats,
+        influx: influxStats
+      }
     });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });

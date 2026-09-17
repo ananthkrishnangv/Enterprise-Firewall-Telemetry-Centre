@@ -747,6 +747,79 @@ class TelemetryStore {
     }
   };
 
+  public static resolveHostInfo(ip: string): { systemName: string; department: string; zone: string; defaultApp: string; defaultDest: string; defaultSource: string } {
+    if (TelemetryStore.KNOWN_HOSTS[ip]) {
+      return TelemetryStore.KNOWN_HOSTS[ip];
+    }
+    const parts = ip.split('.');
+    const last = parts[3] || '1';
+
+    if (ip.startsWith('10.10.11.')) {
+      return { systemName: `ict-ws${last}.ictd.serc.res.in`, department: 'Information & Comm. Technology Div (ICTD)', zone: 'ICTD-VLAN11', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NIC National Cloud', defaultSource: 'ICTD Access Switch' };
+    }
+    if (ip.startsWith('10.10.12.')) {
+      return { systemName: `bkmd-ws${last}.bkmd.serc.res.in`, department: 'Business Dev & Knowledge Mgmt (BKMD)', zone: 'BKMD-VLAN12', defaultApp: 'e-Office-CSIR', defaultDest: 'CSIR HQ Gateway', defaultSource: 'BKMD Access Switch' };
+    }
+    if (ip.startsWith('10.10.13.')) {
+      return { systemName: `astar-daq${last}.astar.serc.res.in`, department: 'Advanced Structural Testing Lab (ASTAR)', zone: 'ASTAR-VLAN13', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Shake Table DAQ Controller' };
+    }
+    if (ip.startsWith('10.10.14.')) {
+      return { systemName: `smsl-sensor${last}.smsl.serc.res.in`, department: 'Special Materials & Structures (SMSL)', zone: 'SMSL-VLAN14', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Material Sensor Ingest' };
+    }
+    if (ip.startsWith('10.10.15.')) {
+      return { systemName: `krd-kiosk${last}.krd.serc.res.in`, department: 'Knowledge Resource & Library (KRD)', zone: 'KRD-VLAN15', defaultApp: 'ScienceDirect-Journals', defaultDest: 'Elsevier ScienceDirect CDN', defaultSource: 'Library Access Terminal' };
+    }
+    if (ip.startsWith('10.10.16.')) {
+      return { systemName: `actel-ws${last}.actel.serc.res.in`, department: 'Concrete Testing & Evaluation Lab (ACTEL)', zone: 'ACTEL-VLAN16', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC HPC Nodes', defaultSource: 'Concrete Compression Rig' };
+    }
+    if (ip.startsWith('10.10.17.')) {
+      return { systemName: `nafaams-cae${last}.nafaams.serc.res.in`, department: 'Numerical Analysis Facility (NAFAAMS)', zone: 'NAFAAMS-VLAN17', defaultApp: 'OpenMPI-Parallel', defaultDest: 'HPC Compute Array', defaultSource: 'FEA Workstation' };
+    }
+    if (ip.startsWith('10.10.18.')) {
+      return { systemName: `stores-erp${last}.stores.serc.res.in`, department: 'Purchase & Central Stores Div (STORES)', zone: 'STORES-VLAN18', defaultApp: 'e-Office-CSIR', defaultDest: 'Government GeM Portal', defaultSource: 'Stores Terminal' };
+    }
+    if (ip.startsWith('10.10.20.')) {
+      const num = parseInt(last, 10);
+      if (num < 100) {
+        return { systemName: `hpc-compute-node${num.toString().padStart(2, '0')}.serc.res.in`, department: 'Param-SERC Supercomputing Centre', zone: 'HPC-Cluster', defaultApp: 'OpenMPI-Parallel', defaultDest: 'Lustre Storage Fabric', defaultSource: 'Param Master Scheduler' };
+      }
+      return { systemName: `aml-inst${last}.aml.serc.res.in`, department: 'Advanced Materials Lab (AML)', zone: 'AML-VLAN20', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Materials Sensor' };
+    }
+    if (ip.startsWith('10.10.21.')) {
+      return { systemName: `windtunnel-daq${last}.wel.serc.res.in`, department: 'Wind Engineering Laboratory (WEL)', zone: 'WEL-VLAN21', defaultApp: 'Lustre-Storage-Sync', defaultDest: 'HPC BigData Storage', defaultSource: 'Wind Pressure Sensors' };
+    }
+    if (ip.startsWith('10.10.22.')) {
+      return { systemName: `tower-test${last}.tdc.serc.res.in`, department: 'Tower Testing Research Station (TDC)', zone: 'TDC-VLAN22', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'SERC-TTRS VPN Tunnel', defaultSource: 'Tower Strain Gauges' };
+    }
+    if (ip.startsWith('10.10.25.')) {
+      return { systemName: `gh-wifi${last}.gh.serc.res.in`, department: 'CSIR Guest House & Campus Wifi', zone: 'GH-VLAN25', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NKN High-Speed Internet Transit', defaultSource: 'Campus AP' };
+    }
+    if (ip.startsWith('10.10.26.')) {
+      return { systemName: `ffl-daq${last}.ffl.serc.res.in`, department: 'Fatigue & Fracture Laboratory (FFL)', zone: 'FFL-VLAN26', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Fatigue Rig Controller' };
+    }
+    if (ip.startsWith('10.10.28.')) {
+      return { systemName: `cctv-cam${last}.gate.serc.res.in`, department: 'Security Access & Campus Surveillance', zone: 'GATE-VLAN28', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'Campus Central NVR System', defaultSource: 'Gate CCTV' };
+    }
+    if (ip.startsWith('10.20.10.')) {
+      return { systemName: `serc-srv${last}.serc.res.in`, department: 'Central Scientific Database & Core Datacenter', zone: 'SERC_Srv_access', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Campus Core Switch Fabric', defaultSource: 'Datacenter SAN' };
+    }
+    if (ip.startsWith('10.10.40.') || ip.startsWith('10.10.41.') || ip.startsWith('10.10.42.')) {
+      return { systemName: `cad-ws${last}.serc.res.in`, department: 'Advanced Structural Health Monitoring Lab', zone: 'ICT_Lan_Access', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'HPC Compute Cluster', defaultSource: 'CAD Graphics Rig' };
+    }
+    if (ip.startsWith('10.212.134.')) {
+      return { systemName: `vpn-remote-scientist${last}.serc.res.in`, department: 'Remote SSL-VPN Research Scientists', zone: 'ssl.root', defaultApp: 'e-Office-CSIR', defaultDest: 'Perimeter FortiGate Gateway', defaultSource: 'FortiClient SSL' };
+    }
+
+    return {
+      systemName: `host-${ip.replace(/\./g, '-')}.serc.res.in`,
+      department: 'CSIR-SERC Institutional Network',
+      zone: 'Perimeter Gateway (Unified)',
+      defaultApp: 'HTTPS-Web-Portal',
+      defaultDest: 'NKN High-Speed Internet Transit',
+      defaultSource: 'WAN Gateway Switch'
+    };
+  }
+
   public getBentoTrafficAnalytics(): BentoTrafficAnalytics {
     const { metadataStore } = (globalThis as any).metadataStoreHolder || {};
     const liveDev = metadataStore?.getActiveLiveDevice();
@@ -794,26 +867,8 @@ class TelemetryStore {
     let totalUpload = 0;
     let totalDownload = 0;
 
-    // Seed known hosts
-    for (const [ip, hostInfo] of Object.entries(TelemetryStore.KNOWN_HOSTS)) {
-      if (!hostMap.has(ip)) {
-        const apps = new Map<string, number>();
-        apps.set(hostInfo.defaultApp, 1000000);
-        hostMap.set(ip, {
-          uploadBytes: 0,
-          downloadBytes: 0,
-          totalBytes: 0,
-          sessions: 0,
-          apps,
-          lastSeen: new Date().toISOString(),
-          targetEndpoints: new Map(),
-          sourceEndpoints: new Map()
-        });
-      }
-    }
-
-    // Process recent flows
-    const sampleFlows = this.flows.slice(0, 1500);
+    // Process all recent flows dynamically across all subnets
+    const sampleFlows = this.flows.slice(0, 2000);
     for (const f of sampleFlows) {
       const upload = f.bytesOut;
       const download = f.bytesIn;
@@ -880,13 +935,13 @@ class TelemetryStore {
     // Build IP to App-ID Mappings
     const ipAppIdMappings: IpAppIdMapping[] = [];
     for (const [ip, data] of hostMap.entries()) {
-      const known = TelemetryStore.KNOWN_HOSTS[ip];
-      const systemName = known?.systemName || `host-${ip.replace(/\./g, '-')}.serc.res.in`;
-      const department = known?.department || 'CSIR-SERC Campus Network';
-      const zone = known?.zone || 'LAN Port (General)';
+      const hostInfo = TelemetryStore.resolveHostInfo(ip);
+      const systemName = hostInfo.systemName;
+      const department = hostInfo.department;
+      const zone = hostInfo.zone;
 
       const sortedApps = Array.from(data.apps.entries()).sort((a, b) => b[1] - a[1]);
-      const primaryAppId = sortedApps[0] ? sortedApps[0][0] : (known?.defaultApp || 'HTTPS-Web-Portal');
+      const primaryAppId = sortedApps[0] ? sortedApps[0][0] : (hostInfo.defaultApp || 'HTTPS-Web-Portal');
       const secondaryApps = sortedApps.slice(1, 4).map(e => e[0]);
 
       ipAppIdMappings.push({
@@ -896,10 +951,10 @@ class TelemetryStore {
         zone,
         primaryAppId,
         secondaryApps: secondaryApps.length ? secondaryApps : ['HTTPS-Web-Portal', 'DNS-Queries'],
-        uploadBytes: data.uploadBytes || 120000000,
-        downloadBytes: data.downloadBytes || 250000000,
-        totalBytes: data.totalBytes || 370000000,
-        activeSessions: Math.max(data.sessions, 8),
+        uploadBytes: data.uploadBytes,
+        downloadBytes: data.downloadBytes,
+        totalBytes: data.totalBytes,
+        activeSessions: Math.max(data.sessions, 1),
         status: data.sessions > 0 ? 'active' : 'idle',
         lastSeen: data.lastSeen
       });
@@ -913,7 +968,7 @@ class TelemetryStore {
       .sort((a, b) => b.uploadBytes - a.uploadBytes)
       .slice(0, 6)
       .map((item, idx) => {
-        const known = TelemetryStore.KNOWN_HOSTS[item.ip];
+        const hostInfo = TelemetryStore.resolveHostInfo(item.ip);
         const rateMbps = parseFloat(((item.uploadBytes * 8) / (1024 * 1024 * 60)).toFixed(2));
         return {
           rank: idx + 1,
@@ -922,8 +977,8 @@ class TelemetryStore {
           department: item.department,
           appId: item.primaryAppId,
           uploadBytes: item.uploadBytes,
-          uploadRateMbps: Math.max(rateMbps, 12.4),
-          destEndpoint: known?.defaultDest || 'NKN WAN Cloud Gateway'
+          uploadRateMbps: Math.max(rateMbps, 1.2),
+          destEndpoint: hostInfo.defaultDest || 'NKN WAN Cloud Gateway'
         };
       });
 
@@ -933,7 +988,7 @@ class TelemetryStore {
       .sort((a, b) => b.downloadBytes - a.downloadBytes)
       .slice(0, 6)
       .map((item, idx) => {
-        const known = TelemetryStore.KNOWN_HOSTS[item.ip];
+        const hostInfo = TelemetryStore.resolveHostInfo(item.ip);
         const rateMbps = parseFloat(((item.downloadBytes * 8) / (1024 * 1024 * 60)).toFixed(2));
         return {
           rank: idx + 1,
@@ -942,8 +997,8 @@ class TelemetryStore {
           department: item.department,
           appId: item.primaryAppId,
           downloadBytes: item.downloadBytes,
-          downloadRateMbps: Math.max(rateMbps, 18.6),
-          sourceEndpoint: known?.defaultSource || 'Central Web & HPC Service'
+          downloadRateMbps: Math.max(rateMbps, 2.4),
+          sourceEndpoint: hostInfo.defaultSource || 'Perimeter Cloud Gateway'
         };
       });
 

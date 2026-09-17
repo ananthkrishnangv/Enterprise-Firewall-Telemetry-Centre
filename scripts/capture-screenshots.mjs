@@ -114,6 +114,21 @@ try {
     const targetFile = `docs/screenshots/${p.name}.png`;
     fs.writeFileSync(targetFile, Buffer.from(data, 'base64'));
     console.log(`Successfully captured ${targetFile}`);
+
+    // If capturing logs, also capture the deep log explorer tab
+    if (p.name === '07_live_syslog_stream') {
+      console.log('Capturing 07b_traffic_log_explorer (Explorer Tab)...');
+      await send('Runtime.evaluate', {
+        expression: `
+          const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Log Explorer'));
+          if (btn) btn.click();
+        `
+      });
+      await new Promise(r => setTimeout(r, 2000));
+      const resExplorer = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync('docs/screenshots/07b_traffic_log_explorer.png', Buffer.from(resExplorer.data, 'base64'));
+      console.log('Successfully captured docs/screenshots/07b_traffic_log_explorer.png');
+    }
   }
 
   ws.close();
