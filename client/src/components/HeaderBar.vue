@@ -88,22 +88,26 @@
           </button>
         </div>
 
-        <!-- Local On-Prem Badge -->
-        <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-violet-900/40 border border-violet-800/40 text-violet-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span>Local Cluster</span>
-          <span class="text-violet-400 font-mono text-[11px]">LAN 192.168.x</span>
-        </div>
+        <!-- Log & DB Storage Locations Button -->
+        <button
+          @click="telemetry.isStorageModalOpen = true"
+          class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-900/50 hover:bg-violet-800 border border-violet-700/40 text-cyan-300 hover:text-white text-xs font-medium transition cursor-pointer"
+          title="Telemetry Storage &amp; Database Engine Status"
+        >
+          <Database class="w-3.5 h-3.5 text-neon-cyan" />
+          <span class="hidden md:inline">Log &amp; DB Storage</span>
+        </button>
 
-        <!-- Live Alerts Button -->
-        <RouterLink
-          to="/"
-          class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition"
-          :class="telemetry.activeAlertsCount > 0 ? 'bg-rose-500/10 border-rose-500/30 text-rose-300 hover:bg-rose-500/20' : 'bg-violet-900/50 border-violet-700/40 text-violet-200'"
+        <!-- Live Purposeful Alerts Center Button -->
+        <button
+          @click="telemetry.isAlertCenterOpen = true"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold transition cursor-pointer"
+          :class="telemetry.activeAlertsCount > 0 ? 'bg-rose-500/20 border-rose-500/50 text-rose-200 hover:bg-rose-500/30' : 'bg-violet-900/50 border-violet-700/40 text-violet-200 hover:bg-violet-800'"
+          title="Open Security Alerts Center"
         >
           <Bell class="w-3.5 h-3.5" :class="telemetry.activeAlertsCount > 0 ? 'text-rose-400 animate-bounce' : 'text-violet-400'" />
           <span>{{ telemetry.activeAlertsCount }} Alerts</span>
-        </RouterLink>
+        </button>
 
         <!-- Settings Shortcut -->
         <RouterLink
@@ -141,7 +145,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { Bell, RefreshCw, Gauge, Shield, Settings, Cpu, Globe } from 'lucide-vue-next';
+import { Bell, RefreshCw, Gauge, Shield, Settings, Cpu, Globe, Database } from 'lucide-vue-next';
 import { useTelemetryStore } from '../stores/telemetry.store.js';
 import { useFirewallStore } from '../stores/firewall.store.js';
 
@@ -153,6 +157,8 @@ onMounted(() => {
   telemetry.fetchSpeedTest();
   telemetry.startCountdownTicker();
   fwStore.fetchSettings();
+  telemetry.fetchAlerts();
+  telemetry.fetchStorageInfo();
 });
 
 const formattedCountdown = computed(() => {

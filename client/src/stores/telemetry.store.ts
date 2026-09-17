@@ -47,12 +47,14 @@ export interface SyslogEntry {
 export interface AlertItem {
   id: string;
   timestamp: string;
-  firewallId: string;
-  firewallName: string;
+  firewallId?: string;
+  firewallName?: string;
   severity: 'info' | 'warning' | 'high' | 'critical';
   title: string;
-  description: string;
-  category: string;
+  description?: string;
+  detail?: string;
+  category?: string;
+  sourceIp?: string;
   acknowledged: boolean;
 }
 
@@ -327,9 +329,25 @@ export const useTelemetryStore = defineStore('telemetry', () => {
     }
   }
 
+  const storageStats = ref<any>(null);
+  const isAlertCenterOpen = ref<boolean>(false);
+  const isStorageModalOpen = ref<boolean>(false);
+
+  async function fetchAlerts() {
+    try {
+      const res = await fetch('/api/alerts');
+      const data = await res.json();
+      if (data.success && data.alerts) {
+        alerts.value = data.alerts;
+      }
+    } catch (e) {
+      console.error('Failed to fetch alerts', e);
+    }
+  }
+
   async function acknowledgeAlert(alertId: string) {
     try {
-      await fetch(`/api/alerts/${alertId}/ack`, { method: 'POST' });
+      await fetch(`/api/alerts/${alertId}/acknowledge`, { method: 'POST' });
       const target = alerts.value.find(a => a.id === alertId);
       if (target) target.acknowledged = true;
     } catch (e) {
@@ -337,7 +355,38 @@ export const useTelemetryStore = defineStore('telemetry', () => {
     }
   }
 
+  async function clearAcknowledgedAlerts() {
+    try {
+      await fetch('/api/alerts/clear', { method: 'POST' });
+      alerts.value = alerts.value.filter(a => !a.acknowledged);
+    } catch (e) {
+      console.error('Failed to clear alerts', e);
+    }
+  }
+
+  async function fetchStorageInfo() {
+    try {
+      const res = await fetch('/api/system/storage');
+      const data = await res.json();
+      if (data.success) {
+        storageStats.value = data.storage;
+      }
+      return data.storage;
+    } catch (e) {
+      console.error('Failed to fetch storage info', e);
+      return null;
+    }
+  }
+
   const activeAlertsCount = computed(() => alerts.value.filter(a => !a.acknowledged).length);
+
+  function openStorageModal() {
+    isStorageModalOpen.value = true;
+  }
+
+  function closeStorageModal() {
+    isStorageModalOpen.value = false;
+  }
 
   return {
     isConnected,
@@ -356,12 +405,20 @@ export const useTelemetryStore = defineStore('telemetry', () => {
     speedtestHistory,
     isTestingSpeed,
     activeAlertsCount,
+    storageStats,
+    isAlertCenterOpen,
+    isStorageModalOpen,
+    openStorageModal,
+    closeStorageModal,
     fetchSummary,
     fetchAnalytics,
     fetchSpeedTest,
     runSpeedTestNow,
     startCountdownTicker,
     initWebSocket,
+    fetchAlerts,
     acknowledgeAlert,
+    clearAcknowledgedAlerts,
+    fetchStorageInfo,
   };
 });

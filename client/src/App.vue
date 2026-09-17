@@ -41,6 +41,12 @@
       </main>
     </div>
   </div>
+
+  <!-- Global Slide-Over Security Alert Center -->
+  <AlertCenterDrawer />
+
+  <!-- Global Log & Database Storage Registry Modal -->
+  <StorageLocationsModal />
 </template>
 
 <script setup lang="ts">
@@ -48,6 +54,8 @@ import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import Sidebar from './components/Sidebar.vue';
 import HeaderBar from './components/HeaderBar.vue';
+import AlertCenterDrawer from './components/AlertCenterDrawer.vue';
+import StorageLocationsModal from './components/StorageLocationsModal.vue';
 import { useTelemetryStore } from './stores/telemetry.store.js';
 import { useFirewallStore } from './stores/firewall.store.js';
 import { useAuthStore } from './stores/auth.store.js';
@@ -65,7 +73,9 @@ onMounted(async () => {
     telemetry.initWebSocket();
     await Promise.all([
       telemetry.fetchSummary(),
-      fwStore.fetchDevices()
+      fwStore.fetchDevices(),
+      telemetry.fetchAlerts(),
+      telemetry.fetchStorageInfo()
     ]);
   }
 });

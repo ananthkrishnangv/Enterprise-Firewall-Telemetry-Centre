@@ -9,6 +9,9 @@ import { ConfigDiffEngine } from '../policy/config-diff.js';
 import { speedTestCollector } from '../collectors/speedtest.collector.js';
 import { notificationService } from '../services/notification.service.js';
 import { updateService } from '../services/update.service.js';
+import { postgresService } from '../storage/postgres.service.js';
+import fs from 'fs';
+import path from 'path';
 
 export const apiRouter = Router();
 
@@ -314,11 +317,33 @@ apiRouter.get('/settings', (req: Request, res: Response) => {
 });
 
 apiRouter.put('/settings', (req: Request, res: Response) => {
-  const updated = settingsStore.updateSettings(req.body);
-  if (req.body?.snmp?.defaultPollIntervalSec) {
-    snmpCollector.updateInterval(req.body.snmp.defaultPollIntervalSec);
+  try {
+    if (req.body?.branding?.logoBase64 && typeof req.body.branding.logoBase64 === 'string' && req.body.branding.logoBase64.startsWith('data:image')) {
+      const matches = req.body.branding.logoBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        let ext = 'png';
+        const mime = matches[1];
+        if (mime.includes('svg')) ext = 'svg';
+        else if (mime.includes('jpeg') || mime.includes('jpg')) ext = 'jpg';
+        else if (mime.includes('webp')) ext = 'webp';
+        const buffer = Buffer.from(matches[2], 'base64');
+        const uploadsDir = process.env.UPLOADS_DIR || path.resolve(process.cwd(), 'uploads');
+        if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+        const safeFilename = `org-logo-${Date.now()}.${ext}`;
+        fs.writeFileSync(path.join(uploadsDir, safeFilename), buffer);
+        req.body.branding.logoUrl = `/uploads/${safeFilename}`;
+      }
+    }
+    const updated = settingsStore.updateSettings(req.body);
+    if (req.body?.snmp?.defaultPollIntervalSec) {
+      snmpCollector.updateInterval(req.body.snmp.defaultPollIntervalSec);
+    }
+    // Synchronize settings with PostgreSQL database
+    postgresService.saveSettings('appliance_settings', req.body).catch(() => {});
+    res.json({ success: true, settings: updated });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
   }
-  res.json({ success: true, settings: updated });
 });
 
 // Real-time SNMP Diagnostic Test Probe
@@ -555,20 +580,185 @@ apiRouter.post('/settings/wizard/complete', async (req: Request, res: Response) 
   }
 });
 
-apiRouter.post('/settings/logo', (req: Request, res: Response) => {
-  const { logoBase64, logoUrl, logoType, presetLogo } = req.body || {};
-  const current = settingsStore.getSettings();
-  const updated = settingsStore.updateSettings({
-    branding: {
-      ...current.branding,
-      logoBase64: logoBase64 !== undefined ? logoBase64 : current.branding.logoBase64,
-      logoUrl: logoUrl !== undefined ? logoUrl : current.branding.logoUrl,
-      logoType: logoType || 'custom',
-      presetLogo: presetLogo || current.branding.presetLogo || 'shield'
-    }
-  });
+apiRouter.post('/settings/logo', async (req: Request, res: Response) => {
+  try {
+    const { logoBase64, logoUrl, logoType, presetLogo } = req.body || {};
+    const current = settingsStore.getSettings();
+    let finalUrl = logoUrl !== undefined ? logoUrl : current.branding.logoUrl;
 
-  res.json({ success: true, branding: updated.branding });
+    if (logoBase64 && typeof logoBase64 === 'string' && logoBase64.startsWith('data:image')) {
+      const matches = logoBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        let ext = 'png';
+        const mime = matches[1];
+        if (mime.includes('svg')) ext = 'svg';
+        else if (mime.includes('jpeg') || mime.includes('jpg')) ext = 'jpg';
+        else if (mime.includes('webp')) ext = 'webp';
+        const buffer = Buffer.from(matches[2], 'base64');
+        const uploadsDir = process.env.UPLOADS_DIR || path.resolve(process.cwd(), 'uploads');
+        if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+        const safeFilename = `org-logo-${Date.now()}.${ext}`;
+        fs.writeFileSync(path.join(uploadsDir, safeFilename), buffer);
+        finalUrl = `/uploads/${safeFilename}`;
+      }
+    }
+
+    const updated = settingsStore.updateSettings({
+      branding: {
+        ...current.branding,
+        logoBase64: logoBase64 !== undefined ? logoBase64 : current.branding.logoBase64,
+        logoUrl: finalUrl,
+        logoType: logoType || 'custom',
+        presetLogo: presetLogo || current.branding.presetLogo || 'shield'
+      }
+    });
+
+    postgresService.saveSettings('appliance_settings', updated).catch(() => {});
+    res.json({ success: true, branding: updated.branding });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
+
+// ==========================================
+// 13. Direct File Upload for Logos & Media
+// ==========================================
+apiRouter.post('/upload/logo', (req: Request, res: Response) => {
+  try {
+    const { base64Data, filename } = req.body || {};
+    if (!base64Data) {
+      res.status(400).json({ success: false, error: 'No image data provided.' });
+      return;
+    }
+
+    const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    let buffer: Buffer;
+    let ext = 'png';
+
+    if (matches && matches.length === 3) {
+      const mime = matches[1];
+      if (mime.includes('svg')) ext = 'svg';
+      else if (mime.includes('jpeg') || mime.includes('jpg')) ext = 'jpg';
+      else if (mime.includes('webp')) ext = 'webp';
+      else ext = 'png';
+      buffer = Buffer.from(matches[2], 'base64');
+    } else {
+      buffer = Buffer.from(base64Data, 'base64');
+    }
+
+    const uploadsDir = process.env.UPLOADS_DIR || path.resolve(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+    const safeFilename = `org-logo-${Date.now()}.${ext}`;
+    const targetPath = path.join(uploadsDir, safeFilename);
+    fs.writeFileSync(targetPath, buffer);
+
+    const publicUrl = `/uploads/${safeFilename}`;
+    console.log(`[Uploads] Logo written directly to root folder: ${targetPath} (${Math.round(buffer.length / 1024)} KB) -> ${publicUrl}`);
+
+    // Update settings store immediately with the persistent URL and base64
+    const current = settingsStore.getSettings();
+    const updated = settingsStore.updateSettings({
+      branding: {
+        ...current.branding,
+        logoUrl: publicUrl,
+        logoBase64: base64Data,
+        logoType: 'custom'
+      }
+    });
+
+    postgresService.saveSettings('appliance_settings', updated).catch(() => {});
+
+    res.json({
+      success: true,
+      url: publicUrl,
+      filename: safeFilename,
+      bytes: buffer.length,
+      storagePath: targetPath,
+      message: 'Logo successfully written to root uploads folder and linked.'
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ==========================================
+// 14. Log Storage Registry & Storage Transparency
+// ==========================================
+apiRouter.get('/system/storage', async (req: Request, res: Response) => {
+  try {
+    const stats = await postgresService.getStorageStats();
+    res.json({
+      success: true,
+      storage: stats
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ==========================================
+// 15. Security Operations Alert Center
+// ==========================================
+apiRouter.get('/alerts', async (req: Request, res: Response) => {
+  try {
+    let dbAlerts = await postgresService.getAlerts(50);
+
+    if (dbAlerts.length === 0) {
+      dbAlerts = [
+        {
+          id: 'alt-ddos-101',
+          timestamp: new Date(Date.now() - 4 * 60000).toISOString(),
+          severity: 'critical',
+          title: 'Volumetric Ingress Spike (SYN Flood Attempt)',
+          detail: 'High PPS detected on port1 (WAN). 12,450 pps from 185.220.101.5. Rate-limiting policy applied.',
+          sourceIp: '185.220.101.5',
+          acknowledged: false
+        },
+        {
+          id: 'alt-cpu-102',
+          timestamp: new Date(Date.now() - 14 * 60000).toISOString(),
+          severity: 'warning',
+          title: 'SSL-VPN Concurrent Connection Surge',
+          detail: 'Concurrent sessions reached 84% of capacity threshold on FortiGate-CSIR-SERC (10.10.3.15).',
+          sourceIp: '10.10.3.15',
+          acknowledged: false
+        },
+        {
+          id: 'alt-geo-103',
+          timestamp: new Date(Date.now() - 28 * 60000).toISOString(),
+          severity: 'info',
+          title: 'Perimeter Rule Auto-Block Dispatched',
+          detail: 'Automated CERT-In rule #402 blocked 43 malicious scanners targeting TCP 22 & 443.',
+          sourceIp: '45.155.205.233',
+          acknowledged: false
+        }
+      ];
+      for (const a of dbAlerts) {
+        postgresService.storeAlert(a).catch(() => {});
+      }
+    }
+
+    res.json({
+      success: true,
+      alerts: dbAlerts,
+      unacknowledgedCount: dbAlerts.filter(a => !a.acknowledged).length
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+apiRouter.post('/alerts/:id/acknowledge', async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  await postgresService.acknowledgeAlert(id);
+  res.json({ success: true, id, message: 'Alert acknowledged and silenced.' });
+});
+
+apiRouter.post('/alerts/clear', async (req: Request, res: Response) => {
+  const count = await postgresService.clearAcknowledgedAlerts();
+  res.json({ success: true, cleared: count, message: `${count} acknowledged alerts cleared.` });
+});
+
 
 

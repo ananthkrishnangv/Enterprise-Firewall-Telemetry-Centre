@@ -1,4 +1,18 @@
 services:
+  firewall-monitoring-db:
+    image: postgres:16-alpine
+    container_name: firewall-monitoring-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: firewall_telemetry
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: firewall_secret_2026!
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      mcvlanprod:
+        ipv4_address: 10.40.0.151
+
   firewall-monitoring:
     build:
       context: .
@@ -6,13 +20,18 @@ services:
     image: firewall-monitoring:latest
     container_name: firewall-monitoring-console
     restart: unless-stopped
+    depends_on:
+      - firewall-monitoring-db
     environment:
       - PORT=80
       - SYSLOG_PORT=1514
       - NETFLOW_PORT=2055
       - DATA_DIR=/app/data
+      - UPLOADS_DIR=/app/uploads
+      - DATABASE_URL=postgresql://postgres:firewall_secret_2026!@10.40.0.151:5432/firewall_telemetry
     volumes:
       - ./data:/app/data
+      - ./uploads:/app/uploads
     networks:
       mcvlanprod:
         ipv4_address: 10.40.0.150

@@ -17,7 +17,7 @@ RUN apk add --no-cache curl tzdata net-snmp-tools iproute2 bash && \
     cp /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && \
     echo "Asia/Kolkata" > /etc/timezone && \
     apk del tzdata && \
-    mkdir -p /app/data
+    mkdir -p /app/data /app/uploads
 
 # Install production dependencies only
 COPY server/package.json ./
@@ -32,7 +32,7 @@ COPY client/dist /app/client/dist
 # Expose standard HTTP and collector ports
 EXPOSE 80 1514/udp 2055/udp 514/udp
 
-VOLUME ["/app/data"]
+VOLUME ["/app/data", "/app/uploads"]
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:80/health || exit 1

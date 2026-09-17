@@ -50,6 +50,13 @@
         >
           Reset
         </button>
+
+        <AutoRefreshControl
+          storageKey="auto_refresh_traffic"
+          :defaultInterval="10"
+          :defaultEnabled="true"
+          @refresh="handleRefresh"
+        />
       </div>
     </div>
 
@@ -226,12 +233,20 @@ import { Search } from 'lucide-vue-next';
 import { useTelemetryStore } from '../stores/telemetry.store.js';
 import { useFirewallStore } from '../stores/firewall.store.js';
 import VendorBadge from '../components/VendorBadge.vue';
+import AutoRefreshControl from '../components/AutoRefreshControl.vue';
 
 const telemetry = useTelemetryStore();
 const fwStore = useFirewallStore();
 const selectedFw = ref('');
 const selectedAction = ref('');
 const searchQuery = ref('');
+
+async function handleRefresh() {
+  await Promise.all([
+    telemetry.fetchSummary(),
+    telemetry.fetchAnalytics()
+  ]);
+}
 
 const filteredFlows = computed(() => {
   return telemetry.flows.filter(f => {

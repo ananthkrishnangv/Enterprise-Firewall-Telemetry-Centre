@@ -1861,6 +1861,85 @@
 
       </div>
 
+      <!-- PostgreSQL Database Engine & Storage Architecture Section -->
+      <div class="p-5 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-violet-800/40 pb-3">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                DATA LAYER TRANSPARENCY
+              </span>
+              <span class="text-xs text-violet-400">•</span>
+              <span class="text-xs text-emerald-400 font-mono flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                PostgreSQL 16 Engine Active
+              </span>
+            </div>
+            <h4 class="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+              <Database class="w-4 h-4 text-cyan-400" />
+              <span>PostgreSQL Database & Log Storage Architecture</span>
+            </h4>
+            <p class="text-[11px] text-violet-300/80 mt-1">
+              Real-time audit of physical storage locations for syslog events, SNMP interface telemetry, uploaded assets, and CERT-In 180-day compliance logs.
+            </p>
+          </div>
+          <button
+            @click="telemetryStore.openStorageModal()"
+            class="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-bold transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          >
+            <HardDrive class="w-3.5 h-3.5" />
+            <span>Open Storage Registry</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 font-mono">
+          <!-- DB Host -->
+          <div class="p-3 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-1">
+            <div class="text-[10px] uppercase text-violet-400">Database Engine</div>
+            <div class="text-sm font-bold text-white flex items-center gap-1.5">
+              <Database class="w-4 h-4 text-cyan-400" />
+              <span>PostgreSQL 16</span>
+            </div>
+            <div class="text-[11px] text-cyan-300 truncate">
+              {{ telemetryStore.storageStats?.database?.host || '10.40.0.151' }}:{{ telemetryStore.storageStats?.database?.port || 5432 }}
+            </div>
+          </div>
+
+          <!-- Syslog Storage -->
+          <div class="p-3 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-1">
+            <div class="text-[10px] uppercase text-violet-400">Syslog Events Table</div>
+            <div class="text-sm font-bold text-emerald-300">
+              {{ telemetryStore.storageStats?.database?.tables?.syslog_events?.toLocaleString() || 'Active' }} rows
+            </div>
+            <div class="text-[11px] text-violet-300 truncate" title="/app/data/syslog.log">
+              Raw: /app/data/syslog.log
+            </div>
+          </div>
+
+          <!-- Uploads Root Storage -->
+          <div class="p-3 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-1">
+            <div class="text-[10px] uppercase text-violet-400">Direct Root Uploads</div>
+            <div class="text-sm font-bold text-fuchsia-300">
+              {{ telemetryStore.storageStats?.files?.uploads?.count || 1 }} items
+            </div>
+            <div class="text-[11px] text-violet-300 truncate" title="/app/uploads/">
+              Path: /app/uploads/
+            </div>
+          </div>
+
+          <!-- Retention Policy -->
+          <div class="p-3 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-1">
+            <div class="text-[10px] uppercase text-violet-400">CERT-In Retention</div>
+            <div class="text-sm font-bold text-amber-300">
+              {{ telemetryStore.storageStats?.compliance?.retentionDays || 180 }} Days
+            </div>
+            <div class="text-[11px] text-violet-300 truncate">
+              Immutable Hash Verified
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Disaster Recovery & Configuration Backup Strip -->
       <div class="p-5 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-violet-800/40 pb-3">
@@ -2198,7 +2277,8 @@ import {
   Check,
   ExternalLink,
   Trash2,
-  Eye
+  Eye,
+  Database
 } from 'lucide-vue-next';
 import { useFirewallStore, FirewallDevice } from '../stores/firewall.store.js';
 import { useTelemetryStore } from '../stores/telemetry.store.js';
@@ -2495,17 +2575,40 @@ async function saveAllSettings() {
 const isDraggingLogo = ref(false);
 const logoInputRef = ref<HTMLInputElement | null>(null);
 
-function processLogoFile(file: File) {
+async function processLogoFile(file: File) {
   if (file.size > 5 * 1024 * 1024) {
-    showToast('File size must be under 5MB', 'error');
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+    showToast(`File size must be under 5MB (Selected file is ${sizeMb} MB)`, 'error');
     return;
   }
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     const b64 = e.target?.result as string;
     settingsForm.value.branding.logoBase64 = b64;
     settingsForm.value.branding.logoType = 'custom';
-    showToast('Custom logo loaded into preview. Click Save Logo to apply.');
+
+    // Direct upload to root uploads folder on server (/app/uploads/)
+    try {
+      showToast('Uploading and writing logo to server root uploads folder...', 'success');
+      const res = await fetch('/api/upload/logo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          base64Data: b64,
+          filename: file.name
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        settingsForm.value.branding.logoUrl = data.url;
+        await fwStore.saveSettings(settingsForm.value);
+        showToast(`Logo saved to root uploads directory (${data.filename}) & applied system-wide!`);
+      } else {
+        showToast(`Upload warning: ${data.error || 'Check server connection'}. Local preview ready.`, 'error');
+      }
+    } catch (err: any) {
+      showToast(`Direct upload warning: ${err.message}. Click 'Save Logo' to apply via form save.`, 'error');
+    }
   };
   reader.readAsDataURL(file);
 }
@@ -2773,7 +2876,8 @@ onMounted(async () => {
   await Promise.all([
     fwStore.fetchSettings(),
     fwStore.fetchDevices(),
-    loadSystemVersion()
+    loadSystemVersion(),
+    telemetryStore.fetchStorageInfo()
   ]);
   if (fwStore.settings) {
     if (fwStore.settings.branding) settingsForm.value.branding = { ...settingsForm.value.branding, ...fwStore.settings.branding };

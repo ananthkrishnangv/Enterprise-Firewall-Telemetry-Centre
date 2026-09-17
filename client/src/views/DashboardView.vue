@@ -1,5 +1,46 @@
 <template>
   <div class="space-y-6 pb-12 select-none">
+    <!-- Top Telemetry Operations Control Bar: Gateway Status, Log Storage & Continuous Auto-Refresh -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-violet-950/70 border border-violet-800/50 backdrop-blur-md shadow-lg shadow-violet-950/40">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-violet-900/60 border border-violet-700/50 flex items-center justify-center text-cyan-300">
+          <Activity class="w-5 h-5 text-neon-cyan animate-pulse" />
+        </div>
+        <div>
+          <div class="text-xs font-bold text-white flex items-center gap-2">
+            <span>{{ fwStore.activeFirewall?.name || 'FortiGate-CSIR-SERC' }}</span>
+            <span class="text-violet-500">•</span>
+            <span class="text-[11px] font-mono font-bold text-emerald-400">
+              {{ fwStore.activeFirewall?.ipAddress || '10.10.3.15' }} (SNMP v2c Online)
+            </span>
+          </div>
+          <div class="text-[10px] text-violet-300/80 font-mono">
+            Real-Time Ingress/Egress Inspection • Postgres Telemetry Engine Active
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <!-- Log & DB Storage Locations Modal Trigger -->
+        <button
+          @click="telemetry.isStorageModalOpen = true"
+          class="px-3 py-1.5 rounded-xl bg-violet-900/40 hover:bg-violet-800/80 border border-violet-700/50 text-cyan-300 hover:text-white text-xs font-mono font-bold flex items-center gap-1.5 transition cursor-pointer"
+          title="Inspect where logs &amp; telemetry are stored"
+        >
+          <Database class="w-3.5 h-3.5 text-neon-cyan" />
+          <span>Storage Locations</span>
+        </button>
+
+        <!-- Continuous Hands-Free Auto-Refresh Component -->
+        <AutoRefreshControl
+          storageKey="auto_refresh_dashboard"
+          :defaultInterval="10"
+          :defaultEnabled="true"
+          @refresh="handleAutoRefresh"
+        />
+      </div>
+    </div>
+
     <!-- Top Speed Monitoring & Liquid Flow Hero Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <!-- Inbound Speed Dial Gauge (Live Liquid Rainbow Style) -->
@@ -667,8 +708,10 @@ import {
   ShieldCheck,
   RefreshCw,
   Network,
-  TrendingUp
+  TrendingUp,
+  Database
 } from 'lucide-vue-next';
+import AutoRefreshControl from '../components/AutoRefreshControl.vue';
 import { useFirewallStore } from '../stores/firewall.store.js';
 import { useTelemetryStore } from '../stores/telemetry.store.js';
 
@@ -677,11 +720,21 @@ const telemetry = useTelemetryStore();
 
 const selectedSiteCategory = ref('All');
 
+async function handleAutoRefresh() {
+  await Promise.all([
+    fwStore.fetchDevices(),
+    telemetry.fetchSummary(),
+    telemetry.fetchAnalytics(),
+    telemetry.fetchAlerts(),
+  ]);
+}
+
 onMounted(async () => {
   await Promise.all([
     fwStore.fetchDevices(),
     telemetry.fetchSummary(),
-    telemetry.fetchSpeedTest()
+    telemetry.fetchSpeedTest(),
+    telemetry.fetchAlerts()
   ]);
   telemetry.startCountdownTicker();
 });

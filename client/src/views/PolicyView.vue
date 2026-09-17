@@ -19,6 +19,13 @@
               {{ dev.name }} ({{ dev.model }})
             </option>
           </select>
+
+          <AutoRefreshControl
+            storageKey="auto_refresh_policies"
+            :defaultInterval="15"
+            :defaultEnabled="true"
+            @refresh="loadPolicyData"
+          />
         </div>
       </div>
 
@@ -211,6 +218,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { AlertTriangle } from 'lucide-vue-next';
+import AutoRefreshControl from '../components/AutoRefreshControl.vue';
 import { useFirewallStore } from '../stores/firewall.store.js';
 
 const fwStore = useFirewallStore();

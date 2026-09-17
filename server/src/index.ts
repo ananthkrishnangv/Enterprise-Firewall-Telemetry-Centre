@@ -9,10 +9,31 @@ import { FlowCollector } from './collectors/flow.collector.js';
 import { snmpCollector } from './collectors/snmp.collector.js';
 import { telemetrySimulator } from './collectors/telemetry.simulator.js';
 import { speedTestCollector } from './collectors/speedtest.collector.js';
+import { postgresService } from './storage/postgres.service.js';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Initialize PostgreSQL Database & Schema
+postgresService.init().catch(() => {});
+
+const uploadsDir = process.env.UPLOADS_DIR || path.resolve(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+
+// Configure 50MB body limit to smoothly support high-res images and base64 payloads
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Serve uploaded logos and files statically
+app.use('/uploads', express.static(uploadsDir));
 
 // Health check endpoints for container and load balancers
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString(), uptime: process.uptime() }));
@@ -20,13 +41,6 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Dat
 
 // Mount API routes
 app.use('/api', apiRouter);
-
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Production frontend static path
 const candidates = [
@@ -69,6 +83,8 @@ server.listen(config.port, () => {
   console.log(`📡 HTTP & REST API:   http://localhost:${config.port}/api`);
   console.log(`⚡ WebSocket Stream:   ws://localhost:${config.port}/ws`);
   console.log(`🛡️  Live Gateway:      FortiGate (10.10.3.15 • SNMP Active)`);
+  console.log(`🗄️  PostgreSQL DB:     ${postgresService.getConnectionDetails().host}:${postgresService.getConnectionDetails().port}/${postgresService.getConnectionDetails().database}`);
+  console.log(`📁 File Storage:       Data: /app/data | Uploads: /app/uploads`);
   console.log(`⚡ Speed Test Engine:  15-minute automated live internet speed check`);
   console.log(`🎨 Theme:              UX4G Mandated Core Violet & Rainbow Data Flow`);
   console.log(`📜 License:            CSIR-SERC Free Community & Institutional License v1.0`);
