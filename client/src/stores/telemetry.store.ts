@@ -1,0 +1,367 @@
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+
+export interface TrafficFlow {
+  id: string;
+  timestamp: string;
+  firewallId: string;
+  vendor: 'checkpoint' | 'paloalto' | 'fortinet' | 'pfsense';
+  sourceIp: string;
+  destIp: string;
+  sourcePort: number;
+  destPort: number;
+  protocol: string;
+  application: string;
+  userIdentity?: string;
+  ruleName: string;
+  action: 'allow' | 'deny' | 'drop' | 'reject';
+  bytesIn: number;
+  bytesOut: number;
+  packetsIn: number;
+  packetsOut: number;
+  threatCategory?: string;
+  threatSeverity?: 'none' | 'low' | 'medium' | 'high' | 'critical';
+  countryDest?: string;
+}
+
+export interface SyslogEntry {
+  id: string;
+  timestamp: string;
+  firewallId: string;
+  vendor: 'checkpoint' | 'paloalto' | 'fortinet' | 'pfsense';
+  facility: number;
+  severity: string;
+  raw: string;
+  parsed: {
+    action: string;
+    sourceIp?: string;
+    destIp?: string;
+    sourcePort?: number;
+    destPort?: number;
+    protocol?: string;
+    ruleName?: string;
+    user?: string;
+  };
+}
+
+export interface AlertItem {
+  id: string;
+  timestamp: string;
+  firewallId: string;
+  firewallName: string;
+  severity: 'info' | 'warning' | 'high' | 'critical';
+  title: string;
+  description: string;
+  category: string;
+  acknowledged: boolean;
+}
+
+export interface SpeedTestState {
+  id: string;
+  timestamp: string;
+  pingMs: number;
+  jitterMs: number;
+  downloadMbps: number;
+  uploadMbps: number;
+  serverLocation: string;
+  isp: string;
+  testStatus: string;
+  nextTestInSec: number;
+}
+
+export interface TopVisitedSite {
+  rank: number;
+  domain: string;
+  category: string;
+  requests: number;
+  bytes: number;
+  action: 'allow' | 'monitored' | 'throttled' | 'blocked';
+  policyApplied: string;
+}
+
+export interface SecurityThreatItem {
+  id: string;
+  signature: string;
+  category: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  sourceIp: string;
+  country: string;
+  targetPort: number;
+  service: string;
+  hits: number;
+  action: 'dropped' | 'quarantined';
+  lastSeen: string;
+}
+
+export interface TopIpUsageItem {
+  ip: string;
+  hostname: string;
+  zone: string;
+  bytesIn: number;
+  bytesOut: number;
+  totalBytes: number;
+  flowsCount: number;
+  primaryService: string;
+}
+
+export interface WebFilterCategoryItem {
+  category: string;
+  percentage: number;
+  requestCount: number;
+  bytes: number;
+  policyNote: string;
+}
+
+export interface PolicyFlowItem {
+  policyId: number;
+  policyName: string;
+  fromInterface: string;
+  toInterface: string;
+  action: 'allow' | 'drop';
+  currentThroughputMbps: number;
+  activeSessions: number;
+  blockedCount?: number;
+}
+
+export const useTelemetryStore = defineStore('telemetry', () => {
+  const isConnected = ref<boolean>(false);
+  const flows = ref<TrafficFlow[]>([]);
+  const logs = ref<SyslogEntry[]>([]);
+  const alerts = ref<AlertItem[]>([]);
+  const throughputHistory = ref<{ time: string; inBps: number; outBps: number }[]>([]);
+  const isTestingSpeed = ref<boolean>(false);
+
+  const speedtest = ref<SpeedTestState>({
+    id: 'st-default',
+    timestamp: new Date().toISOString(),
+    pingMs: 4.2,
+    jitterMs: 0.8,
+    downloadMbps: 942.5,
+    uploadMbps: 884.1,
+    serverLocation: 'New Delhi - NIXI Gateway (NIC / MeitY)',
+    isp: 'National Knowledge Network (NKN) / BSNL Enterprise Fiber',
+    testStatus: 'completed',
+    nextTestInSec: 900,
+  });
+
+  const speedtestHistory = ref<SpeedTestState[]>([]);
+
+  const summary = ref({
+    totalFlows: 0,
+    totalBytesIn: 0,
+    totalBytesOut: 0,
+    allowedCount: 0,
+    droppedCount: 0,
+    blockRatePercent: '0',
+    vendorDistribution: {} as Record<string, number>,
+    threatDistribution: {} as Record<string, number>,
+  });
+
+  const topTalkers = ref<{
+    topSources: any[];
+    topDestinations: any[];
+    topApplications: any[];
+    topPorts: any[];
+  }>({
+    topSources: [],
+    topDestinations: [],
+    topApplications: [],
+    topPorts: []
+  });
+
+  const topSites = ref<TopVisitedSite[]>([]);
+  const topThreats = ref<SecurityThreatItem[]>([]);
+  const topIpUsage = ref<TopIpUsageItem[]>([]);
+  const webCategories = ref<WebFilterCategoryItem[]>([]);
+  const policyFlows = ref<PolicyFlowItem[]>([]);
+
+  let ws: WebSocket | null = null;
+  let reconnectTimer: any = null;
+  let countdownTimer: any = null;
+
+  async function fetchSummary() {
+    try {
+      const [sumRes, topRes, flowRes, logRes, altRes, speedRes] = await Promise.all([
+        fetch('/api/telemetry/summary'),
+        fetch('/api/telemetry/top-talkers?limit=10'),
+        fetch('/api/telemetry/flows?limit=100'),
+        fetch('/api/telemetry/logs?limit=100'),
+        fetch('/api/alerts'),
+        fetch('/api/speedtest')
+      ]);
+
+      const sumData = await sumRes.json();
+      const topData = await topRes.json();
+      const flowData = await flowRes.json();
+      const logData = await logRes.json();
+      const altData = await altRes.json();
+      const speedData = await speedRes.json();
+
+      if (sumData.success) summary.value = sumData.summary;
+      if (topData.success) topTalkers.value = topData.topTalkers;
+      if (flowData.success) flows.value = flowData.flows;
+      if (logData.success) logs.value = logData.logs;
+      if (altData.success) alerts.value = altData.alerts;
+      if (speedData.success && speedData.speedtest) speedtest.value = speedData.speedtest;
+      await fetchAnalytics();
+    } catch (e) {
+      console.error('Failed to fetch initial telemetry', e);
+    }
+  }
+
+  async function fetchAnalytics() {
+    try {
+      const res = await fetch('/api/telemetry/analytics');
+      const data = await res.json();
+      if (data.success) {
+        if (data.topSites) topSites.value = data.topSites;
+        if (data.topThreats) topThreats.value = data.topThreats;
+        if (data.topIpUsage) topIpUsage.value = data.topIpUsage;
+        if (data.webCategories) webCategories.value = data.webCategories;
+        if (data.policyFlows) policyFlows.value = data.policyFlows;
+      }
+    } catch (e) {
+      console.error('Failed to fetch analytics', e);
+    }
+  }
+
+  async function fetchSpeedTest() {
+    try {
+      const res = await fetch('/api/speedtest');
+      const data = await res.json();
+      if (data.success && data.speedtest) {
+        speedtest.value = data.speedtest;
+      }
+    } catch (e) {
+      console.error('Failed to fetch speed test', e);
+    }
+  }
+
+  async function runSpeedTestNow() {
+    isTestingSpeed.value = true;
+    try {
+      const res = await fetch('/api/speedtest/run', { method: 'POST' });
+      const data = await res.json();
+      if (data.success && data.speedtest) {
+        speedtest.value = data.speedtest;
+      }
+    } catch (e) {
+      console.error('Failed to run speed test', e);
+    } finally {
+      setTimeout(() => {
+        isTestingSpeed.value = false;
+      }, 800);
+    }
+  }
+
+  function startCountdownTicker() {
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(() => {
+      if (speedtest.value.nextTestInSec > 0) {
+        speedtest.value.nextTestInSec--;
+      } else {
+        // Trigger auto refresh
+        fetchSpeedTest();
+      }
+    }, 1000);
+  }
+
+  function initWebSocket() {
+    if (ws) return;
+
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    // In dev (port 5173), target port 3001; in production (macvlan port 80), target same host
+    const wsUrl = window.location.port === '5173'
+      ? `${protocol}//${window.location.hostname}:3001/ws`
+      : `${protocol}//${window.location.host}/ws`;
+
+    try {
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        isConnected.value = true;
+        console.log('[TelemetryStore] WebSocket connected');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'log') {
+            logs.value.unshift(payload.data);
+            if (logs.value.length > 300) logs.value.pop();
+          } else if (payload.type === 'flow') {
+            flows.value.unshift(payload.data);
+            if (flows.value.length > 300) flows.value.pop();
+
+            const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            throughputHistory.value.push({
+              time: nowStr,
+              inBps: payload.data.bytesIn * 8,
+              outBps: payload.data.bytesOut * 8,
+            });
+            if (throughputHistory.value.length > 25) {
+              throughputHistory.value.shift();
+            }
+          } else if (payload.type === 'alert') {
+            alerts.value.unshift(payload.data);
+          }
+        } catch (err) {
+          console.warn('WS message parse error', err);
+        }
+      };
+
+      ws.onclose = () => {
+        isConnected.value = false;
+        ws = null;
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(() => {
+          initWebSocket();
+        }, 3000);
+      };
+
+      ws.onerror = () => {
+        ws?.close();
+      };
+    } catch (err) {
+      console.error('WS init error', err);
+    }
+  }
+
+  async function acknowledgeAlert(alertId: string) {
+    try {
+      await fetch(`/api/alerts/${alertId}/ack`, { method: 'POST' });
+      const target = alerts.value.find(a => a.id === alertId);
+      if (target) target.acknowledged = true;
+    } catch (e) {
+      console.error('Failed to ack alert', e);
+    }
+  }
+
+  const activeAlertsCount = computed(() => alerts.value.filter(a => !a.acknowledged).length);
+
+  return {
+    isConnected,
+    flows,
+    logs,
+    alerts,
+    throughputHistory,
+    summary,
+    topTalkers,
+    topSites,
+    topThreats,
+    topIpUsage,
+    webCategories,
+    policyFlows,
+    speedtest,
+    speedtestHistory,
+    isTestingSpeed,
+    activeAlertsCount,
+    fetchSummary,
+    fetchAnalytics,
+    fetchSpeedTest,
+    runSpeedTestNow,
+    startCountdownTicker,
+    initWebSocket,
+    acknowledgeAlert,
+  };
+});

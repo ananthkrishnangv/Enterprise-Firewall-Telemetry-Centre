@@ -1,0 +1,22 @@
+services:
+  firewall-monitoring:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: firewall-monitoring:latest
+    container_name: firewall-monitoring-console
+    restart: unless-stopped
+    environment:
+      - PORT=80
+      - SYSLOG_PORT=1514
+      - NETFLOW_PORT=2055
+      - DATA_DIR=/app/data
+    volumes:
+      - ./data:/app/data
+    networks:
+      mcvlanprod:
+        ipv4_address: 10.40.0.150
+
+networks:
+  mcvlanprod:
+    external: true
