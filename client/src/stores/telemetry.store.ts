@@ -125,6 +125,91 @@ export interface PolicyFlowItem {
   blockedCount?: number;
 }
 
+export interface IpAppIdMapping {
+  ip: string;
+  systemName: string;
+  department: string;
+  zone: string;
+  primaryAppId: string;
+  secondaryApps: string[];
+  uploadBytes: number;
+  downloadBytes: number;
+  totalBytes: number;
+  activeSessions: number;
+  status: 'active' | 'idle' | 'throttled';
+  lastSeen: string;
+}
+
+export interface AppIdUsageItem {
+  appId: string;
+  displayName: string;
+  category: string;
+  protocol: string;
+  uploadBytes: number;
+  downloadBytes: number;
+  totalBytes: number;
+  sessionCount: number;
+  percentage: number;
+  riskLevel: 'Critical Infrastructure' | 'Productive Research' | 'Collaboration' | 'General Internet' | 'High Risk';
+}
+
+export interface HeavyDataIpItem {
+  rank: number;
+  ip: string;
+  systemName: string;
+  zone: string;
+  uploadBytes: number;
+  downloadBytes: number;
+  totalBytes: number;
+  percentOfTotal: number;
+  primaryAppId: string;
+  flowsCount: number;
+}
+
+export interface TopUploadItem {
+  rank: number;
+  ip: string;
+  systemName: string;
+  department: string;
+  appId: string;
+  uploadBytes: number;
+  uploadRateMbps: number;
+  destEndpoint: string;
+}
+
+export interface TopDownloadItem {
+  rank: number;
+  ip: string;
+  systemName: string;
+  department: string;
+  appId: string;
+  downloadBytes: number;
+  downloadRateMbps: number;
+  sourceEndpoint: string;
+}
+
+export interface BentoTrafficAnalytics {
+  isLive: boolean;
+  activeGateway: string;
+  timestamp: string;
+  totals: {
+    totalUploadBytes: number;
+    totalDownloadBytes: number;
+    totalBytes: number;
+    uploadRatioPercent: number;
+    downloadRatioPercent: number;
+    activeAppIdsCount: number;
+    monitoredHostsCount: number;
+    peakUploadMbps: number;
+    peakDownloadMbps: number;
+  };
+  ipAppIdMappings: IpAppIdMapping[];
+  topApplications: AppIdUsageItem[];
+  heavyDataIps: HeavyDataIpItem[];
+  topUploaders: TopUploadItem[];
+  topDownloaders: TopDownloadItem[];
+}
+
 export const useTelemetryStore = defineStore('telemetry', () => {
   const isConnected = ref<boolean>(false);
   const flows = ref<TrafficFlow[]>([]);
@@ -176,6 +261,7 @@ export const useTelemetryStore = defineStore('telemetry', () => {
   const topIpUsage = ref<TopIpUsageItem[]>([]);
   const webCategories = ref<WebFilterCategoryItem[]>([]);
   const policyFlows = ref<PolicyFlowItem[]>([]);
+  const bentoAnalytics = ref<BentoTrafficAnalytics | null>(null);
 
   let ws: WebSocket | null = null;
   let reconnectTimer: any = null;
@@ -206,6 +292,7 @@ export const useTelemetryStore = defineStore('telemetry', () => {
       if (altData.success) alerts.value = altData.alerts;
       if (speedData.success && speedData.speedtest) speedtest.value = speedData.speedtest;
       await fetchAnalytics();
+      await fetchBentoAnalytics();
     } catch (e) {
       console.error('Failed to fetch initial telemetry', e);
     }
@@ -221,9 +308,22 @@ export const useTelemetryStore = defineStore('telemetry', () => {
         if (data.topIpUsage) topIpUsage.value = data.topIpUsage;
         if (data.webCategories) webCategories.value = data.webCategories;
         if (data.policyFlows) policyFlows.value = data.policyFlows;
+        if (data.bentoAnalytics) bentoAnalytics.value = data.bentoAnalytics;
       }
     } catch (e) {
       console.error('Failed to fetch analytics', e);
+    }
+  }
+
+  async function fetchBentoAnalytics() {
+    try {
+      const res = await fetch('/api/telemetry/bento-analytics');
+      const data = await res.json();
+      if (data.success) {
+        bentoAnalytics.value = data;
+      }
+    } catch (e) {
+      console.error('Failed to fetch bento analytics', e);
     }
   }
 
@@ -401,6 +501,7 @@ export const useTelemetryStore = defineStore('telemetry', () => {
     topIpUsage,
     webCategories,
     policyFlows,
+    bentoAnalytics,
     speedtest,
     speedtestHistory,
     isTestingSpeed,
@@ -412,6 +513,7 @@ export const useTelemetryStore = defineStore('telemetry', () => {
     closeStorageModal,
     fetchSummary,
     fetchAnalytics,
+    fetchBentoAnalytics,
     fetchSpeedTest,
     runSpeedTestNow,
     startCountdownTicker,

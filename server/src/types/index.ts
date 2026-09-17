@@ -442,3 +442,88 @@ export interface PolicyFlowItem {
   blockedCount?: number;
 }
 
+export interface IpAppIdMapping {
+  ip: string;
+  systemName: string;
+  department: string;
+  zone: string;
+  primaryAppId: string;
+  secondaryApps: string[];
+  uploadBytes: number;
+  downloadBytes: number;
+  totalBytes: number;
+  activeSessions: number;
+  status: 'active' | 'idle' | 'throttled';
+  lastSeen: string;
+}
+
+export interface AppIdUsageItem {
+  appId: string;
+  displayName: string;
+  category: string;
+  protocol: string;
+  uploadBytes: number;
+  downloadBytes: number;
+  totalBytes: number;
+  sessionCount: number;
+  percentage: number;
+  riskLevel: 'Critical Infrastructure' | 'Productive Research' | 'Collaboration' | 'General Internet' | 'High Risk';
+}
+
+export interface HeavyDataIpItem {
+  rank: number;
+  ip: string;
+  systemName: string;
+  zone: string;
+  uploadBytes: number;
+  downloadBytes: number;
+  totalBytes: number;
+  percentOfTotal: number;
+  primaryAppId: string;
+  flowsCount: number;
+}
+
+export interface TopUploadItem {
+  rank: number;
+  ip: string;
+  systemName: string;
+  department: string;
+  appId: string;
+  uploadBytes: number;
+  uploadRateMbps: number;
+  destEndpoint: string;
+}
+
+export interface TopDownloadItem {
+  rank: number;
+  ip: string;
+  systemName: string;
+  department: string;
+  appId: string;
+  downloadBytes: number;
+  downloadRateMbps: number;
+  sourceEndpoint: string;
+}
+
+export interface BentoTrafficAnalytics {
+  isLive: boolean;
+  activeGateway: string;
+  timestamp: string;
+  totals: {
+    totalUploadBytes: number;
+    totalDownloadBytes: number;
+    totalBytes: number;
+    uploadRatioPercent: number;
+    downloadRatioPercent: number;
+    activeAppIdsCount: number;
+    monitoredHostsCount: number;
+    peakUploadMbps: number;
+    peakDownloadMbps: number;
+  };
+  ipAppIdMappings: IpAppIdMapping[];
+  topApplications: AppIdUsageItem[];
+  heavyDataIps: HeavyDataIpItem[];
+  topUploaders: TopUploadItem[];
+  topDownloaders: TopDownloadItem[];
+}
+

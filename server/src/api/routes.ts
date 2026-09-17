@@ -60,6 +60,11 @@ apiRouter.get('/telemetry/analytics', (req: Request, res: Response) => {
   res.json({ success: true, ...analytics });
 });
 
+apiRouter.get('/telemetry/bento-analytics', (req: Request, res: Response) => {
+  const bento = telemetryStore.getBentoTrafficAnalytics();
+  res.json({ success: true, ...bento });
+});
+
 apiRouter.get('/telemetry/logs', (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string, 10) || 50;
   const firewallId = req.query.firewallId as string | undefined;

@@ -1,56 +1,28 @@
 <template>
   <div class="space-y-6">
-    <!-- Filter Toolbar -->
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center gap-3">
-      <!-- Firewall Filter -->
-      <div class="w-56">
-        <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Primary Gateway</label>
-        <select
-          v-model="selectedFw"
-          class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500 font-medium"
-        >
-          <option value="">All Firewalls (Unified)</option>
-          <option v-for="dev in fwStore.devices" :key="dev.id" :value="dev.id">
-            {{ dev.name }} ({{ dev.ipAddress }})
-          </option>
-        </select>
-      </div>
-
-      <!-- Action Filter -->
-      <div class="w-36">
-        <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Action</label>
-        <select
-          v-model="selectedAction"
-          class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500"
-        >
-          <option value="">All Actions</option>
-          <option value="allow">Allowed (Pass)</option>
-          <option value="drop">Dropped (Blocked)</option>
-        </select>
-      </div>
-
-      <!-- Search Input -->
-      <div class="flex-1 min-w-[220px]">
-        <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Search IP / Rule / User</label>
-        <div class="relative">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="e.g. 10.10.20.15, Oracle SQL, alice.smith..."
-            class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
-          />
-          <Search class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
-        </div>
-      </div>
-
-      <div class="pt-4 flex items-center gap-2">
+    <!-- View Switcher & Live Mode Toolbar -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-slate-900/90 border border-slate-800 backdrop-blur-md shadow-md">
+      <div class="flex items-center gap-2">
         <button
-          @click="resetFilters"
-          class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition"
+          @click="activeViewMode = 'bento'"
+          class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer"
+          :class="activeViewMode === 'bento' ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-800'"
         >
-          Reset
+          <Layers class="w-4 h-4 text-cyan-300" />
+          <span>🍱 Bento Traffic Intelligence</span>
         </button>
 
+        <button
+          @click="activeViewMode = 'flows'"
+          class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer"
+          :class="activeViewMode === 'flows' ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-800'"
+        >
+          <Activity class="w-4 h-4 text-emerald-400" />
+          <span>📋 Live NetFlow Stream</span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2 self-end sm:self-auto">
         <AutoRefreshControl
           storageKey="auto_refresh_traffic"
           :defaultInterval="10"
@@ -59,6 +31,66 @@
         />
       </div>
     </div>
+
+    <!-- Bento View Mode (Default Premier Analytics) -->
+    <div v-if="activeViewMode === 'bento'">
+      <BentoTrafficAnalyzer />
+    </div>
+
+    <!-- Raw Flow Stream View Mode -->
+    <div v-else class="space-y-6">
+      <!-- Filter Toolbar -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center gap-3">
+        <!-- Firewall Filter -->
+        <div class="w-56">
+          <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Primary Gateway</label>
+          <select
+            v-model="selectedFw"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500 font-medium"
+          >
+            <option value="">All Firewalls (Unified)</option>
+            <option v-for="dev in fwStore.devices" :key="dev.id" :value="dev.id">
+              {{ dev.name }} ({{ dev.ipAddress }})
+            </option>
+          </select>
+        </div>
+
+        <!-- Action Filter -->
+        <div class="w-36">
+          <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Action</label>
+          <select
+            v-model="selectedAction"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500"
+          >
+            <option value="">All Actions</option>
+            <option value="allow">Allowed (Pass)</option>
+            <option value="drop">Dropped (Blocked)</option>
+          </select>
+        </div>
+
+        <!-- Search Input -->
+        <div class="flex-1 min-w-[220px]">
+          <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Search IP / Rule / User</label>
+          <div class="relative">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="e.g. 10.10.20.15, Oracle SQL, alice.smith..."
+              class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 font-mono"
+            />
+            <Search class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+          </div>
+        </div>
+
+        <div class="pt-4 flex items-center gap-2">
+          <button
+            @click="resetFilters"
+            class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
 
     <!-- Top Talkers Breakdown Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -225,18 +257,21 @@
       </div>
     </div>
   </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { Search } from 'lucide-vue-next';
+import { Search, Layers, Activity } from 'lucide-vue-next';
 import { useTelemetryStore } from '../stores/telemetry.store.js';
 import { useFirewallStore } from '../stores/firewall.store.js';
 import VendorBadge from '../components/VendorBadge.vue';
 import AutoRefreshControl from '../components/AutoRefreshControl.vue';
+import BentoTrafficAnalyzer from '../components/BentoTrafficAnalyzer.vue';
 
 const telemetry = useTelemetryStore();
 const fwStore = useFirewallStore();
+const activeViewMode = ref<'bento' | 'flows'>('bento');
 const selectedFw = ref('');
 const selectedAction = ref('');
 const searchQuery = ref('');
@@ -244,7 +279,8 @@ const searchQuery = ref('');
 async function handleRefresh() {
   await Promise.all([
     telemetry.fetchSummary(),
-    telemetry.fetchAnalytics()
+    telemetry.fetchAnalytics(),
+    telemetry.fetchBentoAnalytics()
   ]);
 }
 

@@ -8,21 +8,30 @@ export class TelemetrySimulator {
   private lastAlertTime: number = 0;
 
   private apps = [
-    { name: 'HTTPS / SSL', port: 443, proto: 'TCP' as const, baseBytes: 150000 },
-    { name: 'Web-Browsing', port: 80, proto: 'TCP' as const, baseBytes: 45000 },
-    { name: 'DNS Queries', port: 53, proto: 'UDP' as const, baseBytes: 1200 },
-    { name: 'Oracle SQL', port: 1521, proto: 'TCP' as const, baseBytes: 95000 },
-    { name: 'PostgreSQL', port: 5432, proto: 'TCP' as const, baseBytes: 82000 },
-    { name: 'SSH Remote', port: 22, proto: 'TCP' as const, baseBytes: 18000 },
-    { name: 'RDP Admin', port: 3389, proto: 'TCP' as const, baseBytes: 140000 },
-    { name: 'Microsoft 365', port: 443, proto: 'TCP' as const, baseBytes: 320000 },
-    { name: 'Zoom / Teams', port: 8801, proto: 'UDP' as const, baseBytes: 210000 },
-    { name: 'BitTorrent P2P', port: 6881, proto: 'TCP' as const, baseBytes: 450000 },
+    { name: 'Ansys-FEA-HPC', port: 1055, proto: 'TCP' as const, baseBytes: 850000, category: 'High Performance Computing', uploadRatio: 0.72 },
+    { name: 'PostgreSQL-Cluster', port: 5432, proto: 'TCP' as const, baseBytes: 640000, category: 'Database Systems', uploadRatio: 0.52 },
+    { name: 'OpenMPI-Parallel', port: 8200, proto: 'TCP' as const, baseBytes: 920000, category: 'High Performance Computing', uploadRatio: 0.68 },
+    { name: 'Lustre-Storage-Sync', port: 988, proto: 'TCP' as const, baseBytes: 1150000, category: 'Storage Fabric', uploadRatio: 0.81 },
+    { name: 'GitHub-Git-SSH', port: 22, proto: 'TCP' as const, baseBytes: 320000, category: 'Software Engineering', uploadRatio: 0.38 },
+    { name: 'HTTPS-Web-Portal', port: 443, proto: 'TCP' as const, baseBytes: 450000, category: 'Web Traffic', uploadRatio: 0.22 },
+    { name: 'ScienceDirect-Journals', port: 443, proto: 'TCP' as const, baseBytes: 740000, category: 'Research Library', uploadRatio: 0.14 },
+    { name: 'e-Office-CSIR', port: 8443, proto: 'TCP' as const, baseBytes: 290000, category: 'Enterprise Office', uploadRatio: 0.35 },
+    { name: 'Microsoft-365', port: 443, proto: 'TCP' as const, baseBytes: 410000, category: 'Cloud Collaboration', uploadRatio: 0.42 },
+    { name: 'Zoom-Video', port: 8801, proto: 'UDP' as const, baseBytes: 530000, category: 'Collaboration', uploadRatio: 0.48 },
+    { name: 'FortiOS-Admin-HTTPS', port: 443, proto: 'TCP' as const, baseBytes: 120000, category: 'Network Management', uploadRatio: 0.28 },
+    { name: 'DNS-Queries', port: 53, proto: 'UDP' as const, baseBytes: 3800, category: 'Infrastructure', uploadRatio: 0.50 },
+    { name: 'BitTorrent P2P', port: 6881, proto: 'TCP' as const, baseBytes: 650000, category: 'Unapproved Traffic', uploadRatio: 0.60 },
   ];
 
-  private internalIps = [
-    '10.10.20.15', '10.10.20.24', '10.10.40.85', '10.10.12.102',
-    '10.20.10.50', '192.168.100.14', '192.168.40.22', '10.30.0.9'
+  private internalHosts = [
+    { ip: '10.10.40.85', name: 'cad-cae-workstation-lab3.serc.res.in', dept: 'Advanced Structural Health Monitoring Lab', zone: 'ICT_Lan_Access (port3)' },
+    { ip: '10.20.10.50', name: 'serc-db-primary.serc.res.in', dept: 'Central Scientific Database Facility', zone: 'SERC_Srv_access (port2)' },
+    { ip: '10.10.12.102', name: 'ict-netops-admin.serc.res.in', dept: 'Information & Comm. Technology Div (ICTD)', zone: 'ICT_Lan_Access (port3)' },
+    { ip: '10.10.20.15', name: 'hpc-compute-node01.serc.res.in', dept: 'Param-SERC Supercomputing Centre', zone: 'SERC_Srv_access (port2)' },
+    { ip: '10.10.20.24', name: 'hpc-storage-head.serc.res.in', dept: 'Cluster Parallel Lustre Storage', zone: 'SERC_Srv_access (port2)' },
+    { ip: '10.30.0.9', name: 'director-office-terminal.serc.res.in', dept: 'Directorate Executive Office', zone: 'ICT_Lan_Access (port3)' },
+    { ip: '192.168.100.14', name: 'library-digital-kiosk.serc.res.in', dept: 'Knowledge Resource & Library Division', zone: 'ICT_Lan_Access (port3)' },
+    { ip: '192.168.40.22', name: 'acoustic-dynamics-lab.serc.res.in', dept: 'Structural Dynamics & Vibration Testing Lab', zone: 'ICT_Lan_Access (port3)' },
   ];
 
   private externalIps = [
@@ -58,7 +67,8 @@ export class TelemetrySimulator {
     const fw = { id: 'fw-fg-01', vendor: 'fortinet' as const, rule: 'CSIR_SERC_WAN_Allow' };
 
     const app = this.apps[Math.floor(Math.random() * this.apps.length)];
-    const srcIp = this.internalIps[Math.floor(Math.random() * this.internalIps.length)];
+    const host = this.internalHosts[Math.floor(Math.random() * this.internalHosts.length)];
+    const srcIp = host.ip;
     const dstIp = this.externalIps[Math.floor(Math.random() * this.externalIps.length)];
     const user = Math.random() > 0.35 ? this.users[Math.floor(Math.random() * this.users.length)] : undefined;
 
@@ -80,8 +90,9 @@ export class TelemetrySimulator {
     }
 
     const bytesMultiplier = Math.random() * 2 + 0.5;
-    const bytesIn = Math.floor(app.baseBytes * bytesMultiplier);
-    const bytesOut = Math.floor(bytesIn * (Math.random() * 0.5 + 0.2));
+    const totalVolume = Math.floor(app.baseBytes * bytesMultiplier);
+    const bytesOut = Math.floor(totalVolume * (app.uploadRatio + (Math.random() * 0.1 - 0.05)));
+    const bytesIn = Math.max(1024, totalVolume - bytesOut);
 
     const flow: TrafficFlow = {
       id: uuidv4(),
