@@ -476,6 +476,98 @@ export const useFirewallStore = defineStore('firewall', () => {
     }
   }
 
+  const backups = ref<any[]>([]);
+  const backupConfig = ref<any>(null);
+  const isCreatingBackup = ref(false);
+  const isRestoringBackup = ref(false);
+
+  async function fetchBackups(): Promise<void> {
+    try {
+      const res = await fetch('/api/system/backups');
+      const data = await res.json();
+      if (data.success) {
+        backups.value = data.backups || [];
+        backupConfig.value = data.config || null;
+      }
+    } catch (e) {
+      console.error('Failed to fetch backups', e);
+    }
+  }
+
+  async function createInstantBackup(trigger: string = 'manual'): Promise<any> {
+    isCreatingBackup.value = true;
+    try {
+      const res = await fetch('/api/system/backups/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trigger })
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchBackups();
+      }
+      return data;
+    } catch (e: any) {
+      return { success: false, error: e.message };
+    } finally {
+      isCreatingBackup.value = false;
+    }
+  }
+
+  async function restoreBackupArchive(filename: string): Promise<boolean> {
+    isRestoringBackup.value = true;
+    try {
+      const res = await fetch(`/api/system/backups/${encodeURIComponent(filename)}/restore`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if (data.success) {
+        await Promise.all([fetchSettings(), fetchDevices(), fetchBackups()]);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      console.error('Failed to restore backup archive', e);
+      return false;
+    } finally {
+      isRestoringBackup.value = false;
+    }
+  }
+
+  async function deleteBackupArchive(filename: string): Promise<boolean> {
+    try {
+      const res = await fetch(`/api/system/backups/${encodeURIComponent(filename)}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchBackups();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function updateBackupConfig(payload: any): Promise<boolean> {
+    try {
+      const res = await fetch('/api/system/backups/config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        backupConfig.value = data.config;
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   return {
     devices,
     selectedFirewallId,
@@ -492,6 +584,10 @@ export const useFirewallStore = defineStore('firewall', () => {
     branding,
     isTestingSnmp,
     snmpTestResult,
+    backups,
+    backupConfig,
+    isCreatingBackup,
+    isRestoringBackup,
     fetchDevices,
     fetchRules,
     fetchConfig,
@@ -511,5 +607,10 @@ export const useFirewallStore = defineStore('firewall', () => {
     fetchSystemVersion,
     checkOTAUpdates,
     restoreBackup,
+    fetchBackups,
+    createInstantBackup,
+    restoreBackupArchive,
+    deleteBackupArchive,
+    updateBackupConfig,
   };
 });

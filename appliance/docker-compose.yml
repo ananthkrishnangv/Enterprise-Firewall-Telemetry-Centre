@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   firewall-monitoring-db:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     container_name: firewall-appliance-db
     restart: always
     environment:
@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: firewall_secret_2026!
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql
 
   firewall-monitoring-appliance:
     image: firewall-monitoring-appliance:latest
@@ -29,11 +29,13 @@ services:
       - NETFLOW_PORT=2055
       - DATA_DIR=/app/data
       - UPLOADS_DIR=/app/uploads
+      - BACKUP_DIR=/app/backups
       - DATABASE_URL=postgresql://postgres:firewall_secret_2026!@firewall-monitoring-db:5432/firewall_telemetry
       - NODE_ENV=production
     volumes:
       - ./data:/app/data
       - ./uploads:/app/uploads
+      - ./backups:/app/backups
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 30s

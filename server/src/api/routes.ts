@@ -10,6 +10,7 @@ import { speedTestCollector } from '../collectors/speedtest.collector.js';
 import { notificationService } from '../services/notification.service.js';
 import { updateService } from '../services/update.service.js';
 import { postgresService } from '../storage/postgres.service.js';
+import { backupService } from '../services/backup.service.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -760,5 +761,92 @@ apiRouter.post('/alerts/clear', async (req: Request, res: Response) => {
   res.json({ success: true, cleared: count, message: `${count} acknowledged alerts cleared.` });
 });
 
+// ==========================================
+// 16. Automated Settings & Log Backup Engine
+// ==========================================
+apiRouter.get('/system/backups', (req: Request, res: Response) => {
+  try {
+    const backups = backupService.listBackups();
+    const config = backupService.getConfig();
+    res.json({
+      success: true,
+      count: backups.length,
+      config,
+      backups
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
+apiRouter.post('/system/backups/create', async (req: Request, res: Response) => {
+  try {
+    const trigger = (req.body?.trigger as any) || 'manual';
+    const manifest = await backupService.createBackup(trigger);
+    res.json({
+      success: true,
+      message: `Backup archive ${manifest.filename} generated successfully!`,
+      manifest
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
+apiRouter.get('/system/backups/:filename/download', (req: Request, res: Response) => {
+  try {
+    const filename = req.params.filename as string;
+    const filePath = backupService.getBackupPath(filename);
+    if (!filePath) {
+      res.status(404).json({ success: false, error: 'Backup archive not found.' });
+      return;
+    }
+    res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
+    res.setHeader('Content-Type', 'application/json');
+    const stream = fs.createReadStream(filePath);
+    stream.pipe(res);
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+apiRouter.post('/system/backups/:filename/restore', async (req: Request, res: Response) => {
+  try {
+    const filename = req.params.filename as string;
+    const result = await backupService.restoreBackup(filename);
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+apiRouter.delete('/system/backups/:filename', (req: Request, res: Response) => {
+  try {
+    const filename = req.params.filename as string;
+    const ok = backupService.deleteBackup(filename);
+    if (ok) {
+      res.json({ success: true, message: `Backup ${filename} deleted successfully.` });
+    } else {
+      res.status(404).json({ success: false, error: 'Backup archive not found or deletion failed.' });
+    }
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+apiRouter.get('/system/backups/config', (req: Request, res: Response) => {
+  try {
+    res.json({ success: true, config: backupService.getConfig() });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+apiRouter.put('/system/backups/config', (req: Request, res: Response) => {
+  try {
+    const updated = backupService.updateConfig(req.body);
+    res.json({ success: true, config: updated, message: 'Automated backup schedule updated.' });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});

@@ -54,7 +54,7 @@
               class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold"
               :class="stats?.connected ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/50' : 'bg-amber-950 text-amber-300 border border-amber-500/50'"
             >
-              {{ stats?.connected ? 'ONLINE (PostgreSQL 16 Alpine)' : 'OFFLINE (Local File Storage)' }}
+              {{ stats?.connected ? 'ONLINE (PostgreSQL 18 Alpine)' : 'OFFLINE (Local File Storage)' }}
             </span>
           </div>
 
@@ -127,6 +127,20 @@
                 Active Config
               </span>
             </div>
+
+            <!-- Location 4: Automated Backups -->
+            <div class="p-3 rounded-xl bg-violet-950/60 border border-violet-800/50 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <Archive class="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <div class="min-w-0">
+                  <div class="font-bold text-white truncate">Automated Settings &amp; Log Backups</div>
+                  <div class="text-[10px] text-violet-400 truncate"><code>/app/backups/</code> (Scheduled PostgreSQL 18 &amp; Syslog Snapshots)</div>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded bg-cyan-950/80 text-[10px] text-cyan-300 border border-cyan-700/40 flex-shrink-0">
+                Auto Pruning Active
+              </span>
+            </div>
           </div>
         </div>
 
@@ -168,7 +182,8 @@ import {
   Server,
   ShieldCheck,
   X,
-  RefreshCw
+  RefreshCw,
+  Archive
 } from 'lucide-vue-next';
 import { useTelemetryStore } from '../stores/telemetry.store.js';
 

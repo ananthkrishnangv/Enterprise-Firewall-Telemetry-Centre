@@ -1862,6 +1862,7 @@
       </div>
 
       <!-- PostgreSQL Database Engine & Storage Architecture Section -->
+      <!-- PostgreSQL Database Engine & Storage Architecture Section -->
       <div class="p-5 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-violet-800/40 pb-3">
           <div>
@@ -1872,12 +1873,12 @@
               <span class="text-xs text-violet-400">•</span>
               <span class="text-xs text-emerald-400 font-mono flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                PostgreSQL 16 Engine Active
+                PostgreSQL 18 Engine Active
               </span>
             </div>
             <h4 class="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
               <Database class="w-4 h-4 text-cyan-400" />
-              <span>PostgreSQL Database & Log Storage Architecture</span>
+              <span>PostgreSQL Database &amp; Log Storage Architecture</span>
             </h4>
             <p class="text-[11px] text-violet-300/80 mt-1">
               Real-time audit of physical storage locations for syslog events, SNMP interface telemetry, uploaded assets, and CERT-In 180-day compliance logs.
@@ -1898,7 +1899,7 @@
             <div class="text-[10px] uppercase text-violet-400">Database Engine</div>
             <div class="text-sm font-bold text-white flex items-center gap-1.5">
               <Database class="w-4 h-4 text-cyan-400" />
-              <span>PostgreSQL 16</span>
+              <span>PostgreSQL 18</span>
             </div>
             <div class="text-[11px] text-cyan-300 truncate">
               {{ telemetryStore.storageStats?.database?.host || '10.40.0.151' }}:{{ telemetryStore.storageStats?.database?.port || 5432 }}
@@ -1940,47 +1941,293 @@
         </div>
       </div>
 
-      <!-- Disaster Recovery & Configuration Backup Strip -->
-      <div class="p-5 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-violet-800/40 pb-3">
+      <!-- Automated Settings & Log Backup Operations Suite -->
+      <div class="p-6 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-6">
+        <!-- Top Title Strip -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-violet-800/40 pb-4">
           <div>
-            <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono flex items-center gap-2">
-              <FileArchive class="w-4 h-4 text-emerald-400" />
-              <span>Disaster Recovery & Appliance Migration Backup</span>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                DISASTER RECOVERY &amp; CONTINUOUS AUDIT
+              </span>
+              <span class="text-xs text-violet-400">•</span>
+              <span
+                class="text-xs font-mono font-bold flex items-center gap-1.5"
+                :class="autoBackupForm.enabled ? 'text-emerald-400' : 'text-amber-400'"
+              >
+                <span class="w-2 h-2 rounded-full" :class="autoBackupForm.enabled ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'"></span>
+                {{ autoBackupForm.enabled ? 'Automatic Backup Active' : 'Automatic Backup Paused' }}
+              </span>
+            </div>
+            <h4 class="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+              <Archive class="w-4 h-4 text-neon-cyan" />
+              <span>Automated Settings &amp; Log Backup Suite</span>
             </h4>
-            <p class="text-[11px] text-violet-300/80">Export or restore complete appliance state (branding, SNMP targets, user accounts, and alert channels).</p>
+            <p class="text-[11px] text-violet-300/80 mt-1">
+              Continuous background archiving of PostgreSQL 18 database tables, appliance configuration, user accounts, raw syslog streams, and uploaded insignia to persistent storage (<code>/app/backups</code>).
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              @click="handleTriggerInstantBackup"
+              :disabled="fwStore.isCreatingBackup"
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-500 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30 disabled:opacity-50 cursor-pointer"
+            >
+              <RefreshCw v-if="fwStore.isCreatingBackup" class="w-3.5 h-3.5 animate-spin" />
+              <Archive v-else class="w-3.5 h-3.5" />
+              <span>{{ fwStore.isCreatingBackup ? 'Creating Backup...' : 'Backup Now' }}</span>
+            </button>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Backup Export -->
-          <div class="p-4 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-3">
-            <div class="text-xs font-bold text-white">Full Appliance Snapshot (.json)</div>
-            <p class="text-[11px] text-violet-300 leading-relaxed">Download an encrypted state package for offline safekeeping or VM replication.</p>
+        <!-- Two Column Control Grid: Scheduler Config + Live Status -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Left: Automated Schedule Controls (7 cols) -->
+          <div class="lg:col-span-7 p-5 rounded-2xl bg-violet-950/70 border border-violet-800/60 space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-violet-800/40 pb-3">
+              <span class="font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-2">
+                <Clock class="w-4 h-4 text-cyan-400" />
+                <span>Automated Schedule Policy</span>
+              </span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="autoBackupForm.enabled" class="sr-only peer" />
+                <div class="w-9 h-5 bg-violet-900 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-violet-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Frequency -->
+              <div>
+                <label class="text-violet-300 block mb-1.5 font-semibold">Backup Frequency</label>
+                <select
+                  v-model="autoBackupForm.frequency"
+                  class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-white font-mono focus:border-cyan-400 focus:outline-none"
+                >
+                  <option value="hourly">Hourly (Every 60 Minutes)</option>
+                  <option value="every_6_hours">Every 6 Hours</option>
+                  <option value="every_12_hours">Every 12 Hours</option>
+                  <option value="daily">Daily at Scheduled Time</option>
+                  <option value="weekly">Weekly (Every 7 Days)</option>
+                </select>
+              </div>
+
+              <!-- Time of Day (if daily) -->
+              <div>
+                <label class="text-violet-300 block mb-1.5 font-semibold">Execution Time (Daily)</label>
+                <input
+                  type="time"
+                  v-model="autoBackupForm.timeOfDay"
+                  class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-white font-mono focus:border-cyan-400 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- Retention & Pruning -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-violet-300 font-semibold">Retention &amp; Auto-Pruning Limit</label>
+                <span class="text-cyan-300 font-bold">Keep latest {{ autoBackupForm.retentionCount }} backups</span>
+              </div>
+              <input
+                type="range"
+                v-model.number="autoBackupForm.retentionCount"
+                min="3"
+                max="60"
+                step="1"
+                class="w-full accent-cyan-400 cursor-pointer"
+              />
+              <div class="flex justify-between text-[10px] text-violet-400 mt-1">
+                <span>3 archives</span>
+                <span>14 archives (Recommended)</span>
+                <span>60 archives</span>
+              </div>
+            </div>
+
+            <!-- Scope Checklist -->
+            <div class="p-3.5 rounded-xl bg-violet-900/30 border border-violet-800/50 space-y-2">
+              <span class="text-[11px] text-violet-300 font-bold block mb-1">Archived Artifacts &amp; Telemetry Scope:</span>
+              <label class="flex items-center gap-2 cursor-pointer text-violet-200 hover:text-white">
+                <input type="checkbox" v-model="autoBackupForm.includeDatabase" class="accent-cyan-400 rounded" />
+                <span>PostgreSQL 18 Database Tables (Settings, Alerts, Metrics, Syslog)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer text-violet-200 hover:text-white">
+                <input type="checkbox" v-model="autoBackupForm.includeLogs" class="accent-cyan-400 rounded" />
+                <span>Raw UDP Syslog Event Stream Log (<code>/app/data/syslog.log</code>)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer text-violet-200 hover:text-white">
+                <input type="checkbox" v-model="autoBackupForm.includeUploads" class="accent-cyan-400 rounded" />
+                <span>Uploaded Logos, Insignia &amp; Visual Media (<code>/app/uploads/</code>)</span>
+              </label>
+            </div>
+
+            <div class="flex justify-end pt-2">
+              <button
+                @click="handleSaveBackupSchedule"
+                :disabled="isSavingBackupConfig"
+                class="px-4 py-2 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <Save class="w-3.5 h-3.5" />
+                <span>{{ isSavingBackupConfig ? 'Saving...' : 'Save Schedule Settings' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Status Readout & External Restore (5 cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            <!-- Schedule Status Card -->
+            <div class="p-5 rounded-2xl bg-violet-950/70 border border-violet-800/60 space-y-3 font-mono text-xs">
+              <span class="font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-2">
+                <Calendar class="w-4 h-4 text-emerald-400" />
+                <span>Execution Timeline</span>
+              </span>
+
+              <div class="space-y-2">
+                <div class="p-2.5 rounded-xl bg-violet-900/30 border border-violet-800/40 flex items-center justify-between">
+                  <span class="text-violet-400">Next Scheduled Run:</span>
+                  <span class="text-emerald-300 font-bold">
+                    {{ fwStore.backupConfig?.nextRun ? new Date(fwStore.backupConfig.nextRun).toLocaleString() : 'Ready' }}
+                  </span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-violet-900/30 border border-violet-800/40 flex items-center justify-between">
+                  <span class="text-violet-400">Last Execution:</span>
+                  <span class="text-violet-200">
+                    {{ fwStore.backupConfig?.lastRun ? new Date(fwStore.backupConfig.lastRun).toLocaleString() : 'Never' }}
+                  </span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-violet-900/30 border border-violet-800/40 flex items-center justify-between">
+                  <span class="text-violet-400">Status:</span>
+                  <span
+                    class="px-2 py-0.5 rounded text-[10px] font-bold"
+                    :class="fwStore.backupConfig?.lastStatus === 'success' ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40' : 'bg-violet-900/60 text-violet-300'"
+                  >
+                    {{ fwStore.backupConfig?.lastStatus || 'IDLE' }}
+                  </span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-violet-900/30 border border-violet-800/40 flex items-center justify-between">
+                  <span class="text-violet-400">Physical Path:</span>
+                  <span class="text-cyan-300 font-bold"><code>/app/backups/</code></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- External File Restore Box -->
+            <div class="p-5 rounded-2xl bg-violet-950/70 border border-violet-800/60 space-y-3 font-mono text-xs">
+              <span class="font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <UploadCloud class="w-4 h-4 text-fuchsia-400" />
+                <span>Restore External Backup File</span>
+              </span>
+              <p class="text-[11px] text-violet-300/80 font-sans leading-relaxed">
+                Import an existing backup JSON file from your workstation to recover appliance state and PostgreSQL 18 tables.
+              </p>
+              <div>
+                <input type="file" accept=".json" @change="handleRestoreBackupFile" class="hidden" id="restoreBackupInput" />
+                <label
+                  for="restoreBackupInput"
+                  class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-violet-900/50 hover:bg-violet-800 text-cyan-300 border border-violet-700/60 text-xs font-bold transition cursor-pointer"
+                >
+                  <UploadCloud class="w-4 h-4" />
+                  <span>Choose Backup File (.json)</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom: Backup Archives History Table -->
+        <div class="p-5 rounded-2xl bg-violet-950/70 border border-violet-800/60 space-y-4">
+          <div class="flex items-center justify-between border-b border-violet-800/40 pb-3">
+            <div>
+              <h5 class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono flex items-center gap-2">
+                <FileArchive class="w-4 h-4 text-cyan-400" />
+                <span>Available Backup Archives ({{ fwStore.backups.length }})</span>
+              </h5>
+              <p class="text-[10px] text-violet-400 mt-0.5 font-mono">
+                Stored in persistent volume mount <code>/app/backups/</code> with SHA-256 integrity verification.
+              </p>
+            </div>
             <button
-              @click="handleDownloadBackup"
-              :disabled="isDownloadingBackup"
-              class="px-4 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              @click="fwStore.fetchBackups"
+              class="px-2.5 py-1 rounded-lg bg-violet-900/60 hover:bg-violet-800 text-violet-300 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
             >
-              <DownloadCloud class="w-4 h-4" />
-              <span>{{ isDownloadingBackup ? 'Preparing Archive...' : 'Download Appliance Backup' }}</span>
+              <RefreshCw class="w-3 h-3" />
+              <span>Refresh List</span>
             </button>
           </div>
 
-          <!-- Backup Restore -->
-          <div class="p-4 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-3">
-            <div class="text-xs font-bold text-white">Restore Configuration from File</div>
-            <p class="text-[11px] text-violet-300 leading-relaxed">Import a previously saved backup file to restore settings without re-running setup.</p>
-            <div>
-              <input type="file" accept=".json" @change="handleRestoreBackupFile" class="hidden" id="restoreBackupInput" />
-              <label
-                for="restoreBackupInput"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-800 hover:bg-violet-700 text-cyan-300 border border-violet-600/50 text-xs font-bold transition cursor-pointer"
-              >
-                <UploadCloud class="w-4 h-4" />
-                <span>Choose Backup JSON to Restore</span>
-              </label>
-            </div>
+          <!-- Empty State -->
+          <div v-if="fwStore.backups.length === 0" class="p-8 rounded-xl bg-violet-900/20 border border-violet-800/30 text-center space-y-2">
+            <Archive class="w-8 h-8 text-violet-400/60 mx-auto" />
+            <div class="text-xs font-bold text-white font-mono">No Backup Archives Found</div>
+            <p class="text-[11px] text-violet-400 max-w-sm mx-auto font-sans">
+              No backups have been created yet. Click "Backup Now" above to generate your first automated snapshot.
+            </p>
+          </div>
+
+          <!-- Table of Backups -->
+          <div v-else class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-violet-800/60 text-[10px] text-violet-400 uppercase tracking-wider">
+                  <th class="pb-2.5 font-bold">Archive File</th>
+                  <th class="pb-2.5 font-bold">Created At</th>
+                  <th class="pb-2.5 font-bold">Trigger</th>
+                  <th class="pb-2.5 font-bold">Size</th>
+                  <th class="pb-2.5 font-bold">SHA-256 Checksum</th>
+                  <th class="pb-2.5 font-bold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-violet-900/40 text-violet-200">
+                <tr v-for="b in fwStore.backups" :key="b.filename" class="hover:bg-violet-900/20 transition">
+                  <td class="py-3 pr-2 font-bold text-white truncate max-w-xs" :title="b.filename">
+                    {{ b.filename }}
+                  </td>
+                  <td class="py-3 pr-2 whitespace-nowrap text-violet-300">
+                    {{ new Date(b.timestamp).toLocaleString() }}
+                  </td>
+                  <td class="py-3 pr-2 whitespace-nowrap">
+                    <span
+                      class="px-2 py-0.5 rounded text-[10px] font-bold"
+                      :class="b.trigger === 'scheduled' ? 'bg-cyan-950 text-cyan-300 border border-cyan-700/40' : 'bg-purple-950 text-purple-300 border border-purple-700/40'"
+                    >
+                      {{ b.trigger.toUpperCase() }}
+                    </span>
+                  </td>
+                  <td class="py-3 pr-2 whitespace-nowrap text-emerald-400 font-bold">
+                    {{ (b.sizeBytes / 1024).toFixed(1) }} KB
+                  </td>
+                  <td class="py-3 pr-2 text-violet-400 font-mono text-[10px] truncate max-w-[140px]" :title="b.sha256">
+                    {{ b.sha256.slice(0, 16) }}...
+                  </td>
+                  <td class="py-3 text-right whitespace-nowrap space-x-1.5">
+                    <a
+                      :href="`/api/system/backups/${encodeURIComponent(b.filename)}/download`"
+                      class="px-2.5 py-1 rounded-lg bg-violet-800 hover:bg-violet-700 text-cyan-300 text-xs font-semibold inline-flex items-center gap-1 transition"
+                      title="Download Archive to Workstation"
+                    >
+                      <DownloadCloud class="w-3 h-3" />
+                      <span>Download</span>
+                    </a>
+                    <button
+                      @click="handleRestoreSpecificBackup(b.filename)"
+                      :disabled="fwStore.isRestoringBackup"
+                      class="px-2.5 py-1 rounded-lg bg-emerald-950/70 hover:bg-emerald-900 text-emerald-300 border border-emerald-700/50 text-xs font-semibold transition inline-flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                      title="Restore from this backup"
+                    >
+                      <RotateCcw class="w-3 h-3" :class="{ 'animate-spin': fwStore.isRestoringBackup }" />
+                      <span>Restore</span>
+                    </button>
+                    <button
+                      @click="handleDeleteSpecificBackup(b.filename)"
+                      class="px-2 py-1 rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/50 text-xs transition inline-flex items-center gap-1 cursor-pointer"
+                      title="Delete Archive"
+                    >
+                      <Trash2 class="w-3 h-3" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -2278,7 +2525,11 @@ import {
   ExternalLink,
   Trash2,
   Eye,
-  Database
+  Database,
+  Archive,
+  Clock,
+  Calendar,
+  RotateCcw
 } from 'lucide-vue-next';
 import { useFirewallStore, FirewallDevice } from '../stores/firewall.store.js';
 import { useTelemetryStore } from '../stores/telemetry.store.js';
@@ -2872,13 +3123,95 @@ function handleRestoreBackupFile(event: Event) {
   reader.readAsText(file);
 }
 
+// Automated Settings & Log Backup State & Handlers
+const autoBackupForm = ref<any>({
+  enabled: true,
+  frequency: 'daily',
+  timeOfDay: '00:00',
+  retentionCount: 14,
+  includeDatabase: true,
+  includeLogs: true,
+  includeUploads: true
+});
+
+const isSavingBackupConfig = ref(false);
+
+async function handleSaveBackupSchedule() {
+  isSavingBackupConfig.value = true;
+  try {
+    const ok = await fwStore.updateBackupConfig(autoBackupForm.value);
+    if (ok) {
+      showToast('Automated backup schedule policy saved successfully!');
+    } else {
+      showToast('Failed to save automated backup schedule.', 'error');
+    }
+  } catch (e: any) {
+    showToast(`Error saving backup schedule: ${e.message}`, 'error');
+  } finally {
+    isSavingBackupConfig.value = false;
+  }
+}
+
+async function handleTriggerInstantBackup() {
+  try {
+    const res = await fwStore.createInstantBackup('manual');
+    if (res && res.success) {
+      showToast(res.message || 'Instant backup archive generated successfully!');
+    } else {
+      showToast(res?.error || 'Failed to generate instant backup.', 'error');
+    }
+  } catch (e: any) {
+    showToast(`Backup error: ${e.message}`, 'error');
+  }
+}
+
+async function handleRestoreSpecificBackup(filename: string) {
+  if (!confirm(`Are you sure you want to restore appliance state and PostgreSQL 18 tables from "${filename}"? Current data will be replaced by the snapshot.`)) {
+    return;
+  }
+  try {
+    showToast(`Restoring appliance state from ${filename}...`);
+    const ok = await fwStore.restoreBackupArchive(filename);
+    if (ok) {
+      showToast(`Appliance state and database successfully restored from ${filename}!`);
+      if (fwStore.settings?.branding) {
+        settingsForm.value.branding = { ...settingsForm.value.branding, ...fwStore.settings.branding };
+      }
+    } else {
+      showToast(`Failed to restore backup archive: ${filename}`, 'error');
+    }
+  } catch (e: any) {
+    showToast(`Restore error: ${e.message}`, 'error');
+  }
+}
+
+async function handleDeleteSpecificBackup(filename: string) {
+  if (!confirm(`Permanently delete backup archive "${filename}" from /app/backups/?`)) {
+    return;
+  }
+  try {
+    const ok = await fwStore.deleteBackupArchive(filename);
+    if (ok) {
+      showToast(`Backup archive ${filename} deleted.`);
+    } else {
+      showToast(`Failed to delete backup archive.`, 'error');
+    }
+  } catch (e: any) {
+    showToast(`Delete error: ${e.message}`, 'error');
+  }
+}
+
 onMounted(async () => {
   await Promise.all([
     fwStore.fetchSettings(),
     fwStore.fetchDevices(),
     loadSystemVersion(),
-    telemetryStore.fetchStorageInfo()
+    telemetryStore.fetchStorageInfo(),
+    fwStore.fetchBackups()
   ]);
+  if (fwStore.backupConfig) {
+    autoBackupForm.value = { ...autoBackupForm.value, ...fwStore.backupConfig };
+  }
   if (fwStore.settings) {
     if (fwStore.settings.branding) settingsForm.value.branding = { ...settingsForm.value.branding, ...fwStore.settings.branding };
     if (fwStore.settings.notifications) {

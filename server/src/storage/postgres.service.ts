@@ -20,6 +20,7 @@ export interface StorageStats {
     syslogLogPath: string;
     syslogLogBytes: number;
   };
+  engineVersion: string;
   retentionDays: number;
   lastChecked: string;
 }
@@ -300,6 +301,88 @@ export class PostgresService {
     }
   }
 
+  // --- Database Dump & Restore for Automated Backups ---
+  async dumpDatabaseTables(): Promise<any> {
+    if (!this.pool || !this.connected) {
+      return {
+        firewall_settings: [],
+        security_alerts: [],
+        telemetry_metrics: [],
+        syslog_events: []
+      };
+    }
+
+    try {
+      const [settingsRes, alertsRes, telemetryRes, syslogRes] = await Promise.all([
+        this.pool.query(`SELECT section, payload, updated_at FROM firewall_settings`),
+        this.pool.query(`SELECT id, timestamp, severity, title, detail, source_ip, acknowledged, acknowledged_at FROM security_alerts ORDER BY timestamp DESC LIMIT 500`),
+        this.pool.query(`SELECT id, timestamp, device_id, in_bps, out_bps, cpu_pct, mem_pct, active_sessions, threat_score FROM telemetry_metrics ORDER BY timestamp DESC LIMIT 1000`),
+        this.pool.query(`SELECT id, timestamp, host, facility, severity, program, message, raw, threat_level, geo_country, client_ip FROM syslog_events ORDER BY timestamp DESC LIMIT 1000`)
+      ]);
+
+      return {
+        firewall_settings: settingsRes.rows,
+        security_alerts: alertsRes.rows,
+        telemetry_metrics: telemetryRes.rows,
+        syslog_events: syslogRes.rows
+      };
+    } catch (err: any) {
+      console.error(`[PostgreSQL 18] Error dumping tables: ${err.message}`);
+      return null;
+    }
+  }
+
+  async restoreDatabaseTables(dump: any): Promise<void> {
+    if (!this.pool || !this.connected || !dump) return;
+
+    try {
+      if (Array.isArray(dump.firewall_settings)) {
+        for (const row of dump.firewall_settings) {
+          await this.pool.query(
+            `INSERT INTO firewall_settings (section, payload, updated_at)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (section) DO UPDATE SET payload = $2, updated_at = $3`,
+            [row.section, typeof row.payload === 'string' ? row.payload : JSON.stringify(row.payload), row.updated_at || new Date()]
+          );
+        }
+      }
+
+      if (Array.isArray(dump.security_alerts)) {
+        for (const a of dump.security_alerts) {
+          await this.pool.query(
+            `INSERT INTO security_alerts (id, timestamp, severity, title, detail, source_ip, acknowledged, acknowledged_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             ON CONFLICT (id) DO UPDATE SET severity = $3, title = $4, detail = $5, source_ip = $6, acknowledged = $7, acknowledged_at = $8`,
+            [a.id, a.timestamp || new Date(), a.severity, a.title, a.detail || '', a.source_ip || '', a.acknowledged || false, a.acknowledged_at || null]
+          );
+        }
+      }
+
+      if (Array.isArray(dump.telemetry_metrics) && dump.telemetry_metrics.length > 0) {
+        for (const m of dump.telemetry_metrics) {
+          await this.pool.query(
+            `INSERT INTO telemetry_metrics (timestamp, device_id, in_bps, out_bps, cpu_pct, mem_pct, active_sessions, threat_score)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            [m.timestamp || new Date(), m.device_id, m.in_bps, m.out_bps, m.cpu_pct, m.mem_pct, m.active_sessions, m.threat_score]
+          );
+        }
+      }
+
+      if (Array.isArray(dump.syslog_events) && dump.syslog_events.length > 0) {
+        for (const s of dump.syslog_events) {
+          await this.pool.query(
+            `INSERT INTO syslog_events (timestamp, host, facility, severity, program, message, raw, threat_level, geo_country, client_ip)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+            [s.timestamp || new Date(), s.host, s.facility, s.severity, s.program, s.message, s.raw, s.threat_level, s.geo_country, s.client_ip]
+          );
+        }
+      }
+      console.log(`[PostgreSQL 18] Database tables restored successfully from backup.`);
+    } catch (err: any) {
+      console.error(`[PostgreSQL 18] Error restoring database tables: ${err.message}`);
+    }
+  }
+
   // --- Storage Registry & Statistics ---
   async getStorageStats(): Promise<StorageStats> {
     const conn = this.getConnectionDetails();
@@ -348,6 +431,7 @@ export class PostgresService {
         syslogLogPath: logPath,
         syslogLogBytes: logBytes,
       },
+      engineVersion: 'PostgreSQL 18.x (Alpine)',
       retentionDays: 180,
       lastChecked: new Date().toISOString()
     };

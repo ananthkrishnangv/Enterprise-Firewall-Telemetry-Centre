@@ -10,6 +10,7 @@ import { snmpCollector } from './collectors/snmp.collector.js';
 import { telemetrySimulator } from './collectors/telemetry.simulator.js';
 import { speedTestCollector } from './collectors/speedtest.collector.js';
 import { postgresService } from './storage/postgres.service.js';
+import { backupService } from './services/backup.service.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -17,8 +18,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Initialize PostgreSQL Database & Schema
+// Initialize PostgreSQL 18 Database & Schema
 postgresService.init().catch(() => {});
+
+// Initialize Automated Settings & Log Backup Service
+backupService.init();
 
 const uploadsDir = process.env.UPLOADS_DIR || path.resolve(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -82,9 +86,9 @@ server.listen(config.port, () => {
   console.log(`🇮🇳 UX4G Centralized Firewall Operations & Telemetry Platform`);
   console.log(`📡 HTTP & REST API:   http://localhost:${config.port}/api`);
   console.log(`⚡ WebSocket Stream:   ws://localhost:${config.port}/ws`);
-  console.log(`🛡️  Live Gateway:      FortiGate (10.10.3.15 • SNMP Active)`);
-  console.log(`🗄️  PostgreSQL DB:     ${postgresService.getConnectionDetails().host}:${postgresService.getConnectionDetails().port}/${postgresService.getConnectionDetails().database}`);
-  console.log(`📁 File Storage:       Data: /app/data | Uploads: /app/uploads`);
+  console.log(`🗄️  PostgreSQL 18 DB:  ${postgresService.getConnectionDetails().host}:${postgresService.getConnectionDetails().port}/${postgresService.getConnectionDetails().database}`);
+  console.log(`💾 Auto Backup:       Schedule: ${backupService.getConfig().frequency} (Retention: ${backupService.getConfig().retentionCount})`);
+  console.log(`📁 File Storage:       Data: /app/data | Uploads: /app/uploads | Backups: /app/backups`);
   console.log(`⚡ Speed Test Engine:  15-minute automated live internet speed check`);
   console.log(`🎨 Theme:              UX4G Mandated Core Violet & Rainbow Data Flow`);
   console.log(`📜 License:            CSIR-SERC Free Community & Institutional License v1.0`);
