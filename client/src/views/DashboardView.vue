@@ -7,7 +7,7 @@
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           LIVE TRAFFIC INGEST
         </span>
-        <span class="text-white font-bold font-sans">{{ fwStore.activeFirewall?.name || 'FortiGate-CSIR-SERC' }}</span>
+        <span class="text-white font-bold font-sans">{{ fwStore.activeFirewall?.name || 'FortiGate Gateway' }}</span>
         <span class="text-violet-600">•</span>
         <span class="text-cyan-400 font-mono">{{ fwStore.activeFirewall?.ipAddress || '10.10.3.15' }}</span>
       </div>

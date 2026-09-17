@@ -1,11 +1,8 @@
 <template>
   <header class="bg-violet-950/90 backdrop-blur-md border-b border-violet-800/40 flex-shrink-0 z-20">
-    <!-- UX4G Mandated Government of India Top Banner & Tricolor Accent Strip -->
-    <div class="h-1 w-full bg-gradient-to-r from-[#FF9933] via-white to-[#138808]"></div>
-    
-    <!-- Unified Single Header Bar -->
+    <!-- Unified Single Header Bar (Operational & Functional) -->
     <div class="px-6 py-2.5 flex items-center justify-between gap-4">
-      <!-- Left: Active Page Title & Breadcrumb Navigation -->
+      <!-- Left: Active Page Title & Operational Status -->
       <div class="flex items-center gap-3 min-w-0">
         <div class="w-8 h-8 rounded-lg bg-violet-900/60 border border-violet-700/50 flex items-center justify-center flex-shrink-0 text-cyan-300 shadow-md">
           <Shield class="w-4 h-4 text-neon-cyan" />
@@ -17,13 +14,16 @@
             <span class="text-xs text-violet-300/80 font-medium truncate hidden sm:inline">{{ pageSubtitle }}</span>
           </div>
           <div class="text-[10px] font-mono text-violet-400/80 flex items-center gap-2">
-            <span>{{ fwStore.branding.orgName }}</span>
-            <span>•</span>
             <span class="text-emerald-400 flex items-center gap-1">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-              Live Telemetry
+              Live Telemetry Stream
             </span>
-            <span class="hidden md:inline">• {{ fwStore.branding.ntpBadgeText }}</span>
+            <span class="text-violet-600">•</span>
+            <span class="text-cyan-400 font-mono">
+              {{ fwStore.activeFirewall?.ipAddress ? `Gateway ${fwStore.activeFirewall.ipAddress}` : 'SNMP Polling Active' }}
+            </span>
+            <span class="hidden md:inline text-violet-600">•</span>
+            <span class="hidden md:inline text-violet-400">Stratum-1 NTP Synced</span>
           </div>
         </div>
       </div>
@@ -127,16 +127,16 @@ const formattedCountdown = computed(() => {
 
 const pageTitle = computed(() => {
   switch (route.path) {
-    case '/': return fwStore.branding.portalTitle;
-    case '/traffic': return 'Perimeter Traffic & Flow Navigator';
+    case '/': return 'Dashboard';
+    case '/traffic': return 'Traffic & Flow Navigator';
     case '/policies': return 'Policy Rules & Security Profiles';
     case '/devices': return 'Live Gateway & SNMP Telemetry';
     case '/config-diff': return 'Configuration Drift & Audit Trail';
-    case '/logs': return 'Live Firewall Syslog Audit Stream';
-    case '/compliance': return 'CERT-In Security Compliance';
+    case '/logs': return 'Live Syslog Audit Stream';
+    case '/compliance': return 'Security Compliance & Audit';
     case '/users': return 'User Management & Access Control';
     case '/settings': return 'System Settings & Alert Configuration';
-    default: return fwStore.branding.portalTitle;
+    default: return 'Dashboard';
   }
 });
 
@@ -144,7 +144,7 @@ const pageSubtitle = computed(() => {
   const fwName = fwStore.activeFirewall?.name || 'Active Gateway';
   const fwIp = fwStore.activeFirewall?.ipAddress || 'SNMP Gateway';
   switch (route.path) {
-    case '/': return fwStore.branding.portalSubtitle;
+    case '/': return `Live Gateway Ingress/Egress & Security Overview (${fwIp})`;
     case '/traffic': return 'Live Inbound & Outbound Bandwidth Monitoring';
     case '/policies': return `Active ${fwName} Firewall Policies and ACL Rules`;
     case '/devices': return `${fwName} Hardware Health, CPU & RAM Gauges`;
@@ -152,8 +152,8 @@ const pageSubtitle = computed(() => {
     case '/logs': return `Live Hardware Event Stream from ${fwIp}`;
     case '/compliance': return 'Section 70B & Indian Security Baseline Standards';
     case '/users': return 'System Operators, CISO & Auditor Accounts';
-    case '/settings': return 'SNMP Target, Email/Telegram Alerts & Portal Labels';
-    default: return fwStore.branding.portalSubtitle;
+    case '/settings': return 'SNMP Target, Email/Telegram Alerts & System Preferences';
+    default: return 'Real-Time Security & Telemetry Overview';
   }
 });
 </script>
