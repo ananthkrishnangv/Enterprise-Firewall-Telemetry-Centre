@@ -4,17 +4,78 @@ export type RuleAction = 'allow' | 'deny' | 'drop' | 'reject';
 
 export interface InterfaceMetric {
   name: string;
+  alias?: string;
   operStatus: 'up' | 'down';
   adminStatus: 'up' | 'down';
   inBps: number;
   outBps: number;
   inErrors: number;
   outErrors: number;
+  inDiscards?: number;
+  outDiscards?: number;
   speedBps: number;
+  type?: 'physical' | 'vlan' | 'vpn' | 'logical';
+  totalBytesIn?: number;
+  totalBytesOut?: number;
+  inPps?: number;
+  outPps?: number;
+  unicastPktsIn?: number;
+  multicastPktsIn?: number;
+}
+
+export interface SNMPProtocolStats {
+  tcp: {
+    currEstab: number;
+    inSegs: number;
+    outSegs: number;
+    retransSegs: number;
+    retransPercent: number;
+  };
+  udp: {
+    inDatagrams: number;
+    outDatagrams: number;
+    noPorts: number;
+    inErrors: number;
+  };
+  icmp: {
+    inMsgs: number;
+    outMsgs: number;
+  };
+  packetTotals: {
+    unicastIn: number;
+    unicastOut: number;
+    multicastIn: number;
+    multicastOut: number;
+    broadcastIn: number;
+    broadcastOut: number;
+  };
+}
+
+export interface SNMPHardwareSensors {
+  cpuTemperatureC: number;
+  internalTemperatures: { name: string; tempC: number; status: 'normal' | 'warning' }[];
+  coolingFans: { name: string; rpm: number; status: 'normal' | 'warning' }[];
+  powerSupplies: { name: string; inputVoltage: number; outputPowerWatts: number; fanRpm: number; status: 'normal' | 'fail' }[];
+}
+
+export interface SNMPPolicyTrafficItem {
+  policyId: number;
+  name: string;
+  lastActive: string;
+  packetCount: number;
+  byteCount: number;
+}
+
+export interface SNMPThreatStats {
+  virusesDetected: number;
+  intrusionsDetected: number;
+  botnetsBlocked: number;
 }
 
 export interface SNMPProbeData {
   sysUpTime: number;
+  sysName?: string;
+  sysDescr?: string;
   cpuUtilPercent: number;
   memoryTotalBytes: number;
   memoryUsedBytes: number;
@@ -22,7 +83,12 @@ export interface SNMPProbeData {
   concurrentConnections: number;
   haState: 'active' | 'standby' | 'standalone';
   vpnActiveTunnels: number;
+  logDiskUsageMb?: number;
   interfaces: InterfaceMetric[];
+  protocols?: SNMPProtocolStats;
+  sensors?: SNMPHardwareSensors;
+  threats?: SNMPThreatStats;
+  topPolicies?: SNMPPolicyTrafficItem[];
   lastPolled: string;
 }
 

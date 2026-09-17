@@ -32,6 +32,99 @@ apiRouter.get('/devices/:id', (req: Request, res: Response) => {
   res.json({ success: true, device, snmpHistory });
 });
 
+// 1.1 Dedicated Real-Time SNMP Telemetry Endpoints
+apiRouter.get('/snmp/telemetry', (req: Request, res: Response) => {
+  const firewallId = (req.query.firewallId as string) || undefined;
+  const dev = firewallId ? metadataStore.getDeviceById(firewallId) : metadataStore.getActiveLiveDevice();
+  if (!dev) {
+    res.status(404).json({ success: false, error: 'No active firewall device found.' });
+    return;
+  }
+  res.json({
+    success: true,
+    firewall: {
+      id: dev.id,
+      name: dev.name,
+      vendor: dev.vendor,
+      model: dev.model,
+      ipAddress: dev.ipAddress,
+      version: dev.version,
+      status: dev.status,
+      location: dev.location,
+      lastSeen: dev.lastSeen
+    },
+    metrics: dev.snmpMetrics
+  });
+});
+
+apiRouter.get('/snmp/interfaces', (req: Request, res: Response) => {
+  const firewallId = (req.query.firewallId as string) || undefined;
+  const dev = firewallId ? metadataStore.getDeviceById(firewallId) : metadataStore.getActiveLiveDevice();
+  if (!dev || !dev.snmpMetrics) {
+    res.status(404).json({ success: false, error: 'Device SNMP metrics unavailable.' });
+    return;
+  }
+  const typeFilter = req.query.type as string | undefined;
+  let ifaces = dev.snmpMetrics.interfaces || [];
+  if (typeFilter && ['physical', 'vlan', 'vpn', 'logical'].includes(typeFilter)) {
+    ifaces = ifaces.filter((i) => i.type === typeFilter);
+  }
+  res.json({
+    success: true,
+    firewallId: dev.id,
+    firewallName: dev.name,
+    count: ifaces.length,
+    interfaces: ifaces
+  });
+});
+
+apiRouter.get('/snmp/protocols', (req: Request, res: Response) => {
+  const firewallId = (req.query.firewallId as string) || undefined;
+  const dev = firewallId ? metadataStore.getDeviceById(firewallId) : metadataStore.getActiveLiveDevice();
+  if (!dev || !dev.snmpMetrics?.protocols) {
+    res.status(404).json({ success: false, error: 'Device protocol stats unavailable.' });
+    return;
+  }
+  res.json({
+    success: true,
+    firewallId: dev.id,
+    firewallName: dev.name,
+    protocols: dev.snmpMetrics.protocols
+  });
+});
+
+apiRouter.get('/snmp/sensors', (req: Request, res: Response) => {
+  const firewallId = (req.query.firewallId as string) || undefined;
+  const dev = firewallId ? metadataStore.getDeviceById(firewallId) : metadataStore.getActiveLiveDevice();
+  if (!dev || !dev.snmpMetrics?.sensors) {
+    res.status(404).json({ success: false, error: 'Device hardware sensors unavailable.' });
+    return;
+  }
+  res.json({
+    success: true,
+    firewallId: dev.id,
+    firewallName: dev.name,
+    sensors: dev.snmpMetrics.sensors
+  });
+});
+
+apiRouter.get('/snmp/policies', (req: Request, res: Response) => {
+  const firewallId = (req.query.firewallId as string) || undefined;
+  const dev = firewallId ? metadataStore.getDeviceById(firewallId) : metadataStore.getActiveLiveDevice();
+  if (!dev || !dev.snmpMetrics?.topPolicies) {
+    res.status(404).json({ success: false, error: 'Device policy traffic stats unavailable.' });
+    return;
+  }
+  res.json({
+    success: true,
+    firewallId: dev.id,
+    firewallName: dev.name,
+    count: dev.snmpMetrics.topPolicies.length,
+    policies: dev.snmpMetrics.topPolicies
+  });
+});
+
+
 // 2. Telemetry & Flows
 apiRouter.get('/telemetry/summary', (req: Request, res: Response) => {
   const summary = telemetryStore.getTrafficSummary();
