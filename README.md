@@ -75,19 +75,35 @@ A dedicated cybersecurity investigation center identifying internal campus works
 
 ---
 
-### 5. Comprehensive FortiGate SNMP Telemetry Center
-A dedicated hardware, environmental, and security monitoring cockpit powered by an ultra-fast (<200ms) parallel SNMPv2c/v3 engine:
-- **Core Resource Gauges**: CPU core utilization, physical memory usage (16.3 GB pool), concurrent state sessions (3,200+ active), and active VPN tunnels.
+### 5. Comprehensive FortiGate SNMP Telemetry & All Active Interfaces/VLANs Matrix
+A dedicated hardware, environmental, and interface operations cockpit powered by an ultra-fast parallel SNMPv2c/v3 engine and cross-correlated flow intelligence:
+- **Core Resource Gauges**: CPU core utilization, physical memory usage (16.3 GB pool), concurrent state sessions (11,400+ active), and active VPN tunnels.
 - **Hardware Environmental & Dual Redundant Power**:
-  - Internal thermal zones: CPU DTS0 (46°C), Board Center TD1 (36°C), Chassis Exhaust TD2 (44°C), NP6 Accelerator TR3 (40°C).
-  - High-speed cooling fan array tachometers (Fan 1 & 2 at 6,400 RPM, Fan 4 at 5,200 RPM).
-  - Dual Redundant AC Power Supplies (228V/230V AC inputs, load wattages, PSU internal fans).
-- **Multi-Protocol Telemetry**: Live TCP connection state & retransmission rates (0.30% healthy), UDP datagram distribution, ICMP metrics, and unicast/multicast/broadcast breakdown.
+  - Internal thermal zones: CPU DTS0 (46°C), Board Center TD1 (37°C), Chassis Exhaust TD2 (44°C), NP6 Accelerator TR3 (41°C).
+  - High-speed cooling fan array tachometers (Fan 1 & 2 at 6,600/6,400 RPM, Fan 4 at 5,200 RPM).
+  - Dual Redundant AC Power Supplies (226V/230V AC inputs, load wattages, PSU internal fans).
+- **Multi-Protocol Telemetry**: Live TCP connection state & retransmission rates (0.3% healthy), UDP datagram distribution, ICMP metrics, and unicast/multicast/broadcast breakdown.
 - **FortiOS UTM Threat Counters**: Real-time counter of neutralized malware, IPS exploit blocks, and botnet C2 connection interceptions.
 - **FortiOS Policy Traffic Accounting**: High-capacity 64-bit counter tracking top security rules by data volume (WAN routing, datacenter inter-VLAN, NAT).
-- **All 46+ Physical Ports & Departmental VLANs**: Searchable, tabbed inventory (`ALL`, `PHYSICAL`, `VLAN`, `VPN`) with live 64-bit HC octet rates, packet rates, MTU, operational status, and duplex modes.
+- **Complete Active Interfaces & Departmental VLANs Matrix (58 Interfaces Monitored)**:
+  - **All Physical Ports (Ports 1 to 32, mgmt, ha1, ha2, dmz)**: Full 1G, 10G SFP+, and 25G SFP28 supercomputing aggregation links.
+  - **Active Departmental 802.1Q VLAN Interfaces (19 Subnets)**: Central Datacenter Services (`VLAN 2`), ICTD (`VLAN 11`), BKMD (`VLAN 12`), ASTAR Lab (`VLAN 13`), SMSL (`VLAN 14`), KRD Library (`VLAN 15`), ACTEL (`VLAN 16`), NAFAAMS (`VLAN 17`), Stores (`VLAN 18`), AML (`VLAN 20`), Wind Eng (`VLAN 21`), Tower Testing (`VLAN 22`), SHML (`VLAN 24`), Guest House & WiFi (`VLAN 25`), Fatigue Lab (`VLAN 26`), Accounts (`VLAN 27`), Campus Surveillance (`VLAN 28`), Structural CAE (`VLAN 40`), and Param-SERC Supercomputing HPC Cluster (`VLAN 84`).
+  - **Encrypted VPN Tunnels**: Remote SSL-VPN Portal (`ssl.root`), Tower Testing IPsec Tunnel (`SERC-TTRS`), and NKN Academic Peering (`NKN-Academic-VPN`).
+- **Granular Dual-Mode Monitoring per Interface**:
+  - **General Network Traffic**: Line rate throughput (bps/Mbps/Gbps), packet velocities (pps), cumulative data volumes (TB), MTU (1500/9000), full duplex, and queue discard counters.
+  - **Unofficial & Illicit Traffic**: Unauthorized data volume (MB/GB), bandwidth waste ratio percentage (%), policy drop counts, detected illicit signatures (`BitTorrent`, `IDM`, `123Movies`, `Mirai`, `Monero`, `Psiphon`), and offending host devices.
+- **One-Click Deep Interface Dossier Modal**:
+  - Full hardware profile (MAC, MTU, duplex, line speed, optical transceiver type, queue drop status).
+  - Real-time **General vs Unofficial Bandwidth Ratio Split Bar**.
+  - **Active Connected Workstations Table**: Pinpoints each connected host's IP, hostname, department, and individual bandwidth.
+  - **Flagged Unapproved Traffic Incidents**: Granular incident register with FortiOS policy drop status.
+  - **Application Distribution**: Top enterprise and scientific apps vs unauthorized software.
+  - **Copy-Paste FortiOS Quarantine CLI**: Immediate script generation to isolate the offending interface or device at the FortiGate perimeter.
 
 ![Live FortiGate SNMP Telemetry Center](docs/screenshots/05_snmp_telemetry_center.png)
+![Complete Network & Departmental VLAN Telemetry Matrix](docs/screenshots/05_all_interfaces_matrix.png)
+![Departmental 802.1Q VLAN Interfaces Telemetry Matrix](docs/screenshots/05b_snmp_vlans_filter.png)
+![Deep Interface Dossier & Real-Time Ratio Inspector](docs/screenshots/05c_interface_drilldown_modal.png)
 
 ---
 

@@ -154,6 +154,56 @@ try {
       await new Promise(r => setTimeout(r, 500));
     }
 
+    // If capturing SNMP Telemetry Center, capture full matrix view, VLANs filter, and deep drilldown modal
+    if (p.name === '05_snmp_telemetry_center') {
+      console.log('Capturing 05_all_interfaces_matrix (Scrolled Matrix Table)...');
+      await send('Runtime.evaluate', {
+        expression: `
+          const m = document.querySelector('main');
+          if (m) m.scrollBy({ top: 920, behavior: 'instant' });
+        `
+      });
+      await new Promise(r => setTimeout(r, 1200));
+      const resMatrix = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync('docs/screenshots/05_all_interfaces_matrix.png', Buffer.from(resMatrix.data, 'base64'));
+      console.log('Successfully captured docs/screenshots/05_all_interfaces_matrix.png');
+
+      console.log('Capturing 05b_snmp_vlans_filter (VLANs Tab)...');
+      await send('Runtime.evaluate', {
+        expression: `
+          const vlanBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('VLANs'));
+          if (vlanBtn) vlanBtn.click();
+        `
+      });
+      await new Promise(r => setTimeout(r, 1200));
+      const resVlans = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync('docs/screenshots/05b_snmp_vlans_filter.png', Buffer.from(resVlans.data, 'base64'));
+      console.log('Successfully captured docs/screenshots/05b_snmp_vlans_filter.png');
+
+      console.log('Capturing 05c_interface_drilldown_modal (Interface Dossier)...');
+      await send('Runtime.evaluate', {
+        expression: `
+          const inspectBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Inspect'));
+          if (inspectBtn) inspectBtn.click();
+        `
+      });
+      await new Promise(r => setTimeout(r, 2000));
+      const resModal = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync('docs/screenshots/05c_interface_drilldown_modal.png', Buffer.from(resModal.data, 'base64'));
+      console.log('Successfully captured docs/screenshots/05c_interface_drilldown_modal.png');
+
+      // Close modal before proceeding
+      await send('Runtime.evaluate', {
+        expression: `
+          const closeBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Close Inspector') || b.textContent.includes('Close'));
+          if (closeBtn) closeBtn.click();
+          const m = document.querySelector('main');
+          if (m) m.scrollTo({ top: 0, behavior: 'instant' });
+        `
+      });
+      await new Promise(r => setTimeout(r, 500));
+    }
+
     // If capturing logs, also capture the deep log explorer tab
     if (p.name === '07_live_syslog_stream') {
       console.log('Capturing 07b_traffic_log_explorer (Explorer Tab)...');

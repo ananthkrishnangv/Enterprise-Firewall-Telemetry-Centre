@@ -59,25 +59,56 @@ apiRouter.get('/snmp/telemetry', (req: Request, res: Response) => {
 });
 
 apiRouter.get('/snmp/interfaces', (req: Request, res: Response) => {
-  const firewallId = (req.query.firewallId as string) || undefined;
-  const dev = firewallId ? metadataStore.getDeviceById(firewallId) : metadataStore.getActiveLiveDevice();
-  if (!dev || !dev.snmpMetrics) {
-    res.status(404).json({ success: false, error: 'Device SNMP metrics unavailable.' });
-    return;
-  }
+  const detailed = telemetryStore.getDetailedInterfaceAnalytics();
   const typeFilter = req.query.type as string | undefined;
-  let ifaces = dev.snmpMetrics.interfaces || [];
+  let ifaces = detailed.interfaces;
   if (typeFilter && ['physical', 'vlan', 'vpn', 'logical'].includes(typeFilter)) {
     ifaces = ifaces.filter((i) => i.type === typeFilter);
   }
   res.json({
     success: true,
-    firewallId: dev.id,
-    firewallName: dev.name,
+    firewallId: 'fw-fg-01',
+    firewallName: detailed.activeGateway,
     count: ifaces.length,
+    totals: detailed.totals,
     interfaces: ifaces
   });
 });
+
+apiRouter.get('/telemetry/interfaces/detailed', (req: Request, res: Response) => {
+  const detailed = telemetryStore.getDetailedInterfaceAnalytics();
+  res.json({
+    success: true,
+    ...detailed
+  });
+});
+
+apiRouter.get('/telemetry/interfaces/:name/drilldown', (req: Request, res: Response) => {
+  const name = req.params.name as string;
+  const drilldown = telemetryStore.getInterfaceDrilldown(name);
+  if (!drilldown) {
+    res.status(404).json({ success: false, error: `Interface ${name} not found.` });
+    return;
+  }
+  res.json({
+    success: true,
+    ...drilldown
+  });
+});
+
+apiRouter.get('/snmp/interfaces/:name/drilldown', (req: Request, res: Response) => {
+  const name = req.params.name as string;
+  const drilldown = telemetryStore.getInterfaceDrilldown(name);
+  if (!drilldown) {
+    res.status(404).json({ success: false, error: `Interface ${name} not found.` });
+    return;
+  }
+  res.json({
+    success: true,
+    ...drilldown
+  });
+});
+
 
 apiRouter.get('/snmp/protocols', (req: Request, res: Response) => {
   const firewallId = (req.query.firewallId as string) || undefined;

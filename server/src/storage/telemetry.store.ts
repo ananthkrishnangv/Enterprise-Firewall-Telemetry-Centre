@@ -1,10 +1,12 @@
 import {
-  TrafficFlow, SyslogEntry, SNMPProbeData, AlertNotification,
+  TrafficFlow, SyslogEntry, SNMPProbeData, AlertNotification, InterfaceMetric,
   TopVisitedSite, SecurityThreatItem, TopIpUsageItem, WebFilterCategoryItem, PolicyFlowItem,
   BentoTrafficAnalytics, IpAppIdMapping, AppIdUsageItem, HeavyDataIpItem, TopUploadItem, TopDownloadItem,
-  UnapprovedViolationRecord, UnapprovedCategory, UnapprovedTrafficAnalytics, OffendingDeviceSummary
+  UnapprovedViolationRecord, UnapprovedCategory, UnapprovedTrafficAnalytics, OffendingDeviceSummary,
+  DetailedInterfaceAnalyticsResponse, InterfaceDrilldownData
 } from '../types/index.js';
 import { config } from '../config.js';
+import { FORTIGATE_INTERFACE_CATALOG, InterfaceCatalogEntry } from './interfaces.catalog.js';
 
 class TelemetryStore {
   private flows: TrafficFlow[] = [];
@@ -1561,6 +1563,377 @@ class TelemetryStore {
       firstSeen: unapprovedFlows[unapprovedFlows.length - 1]?.timestamp || new Date().toISOString(),
       lastSeen: unapprovedFlows[0]?.timestamp || new Date().toISOString(),
       fortiOSQuarantineCli: `config firewall address\n    edit "QUARANTINE_${ip}"\n        set subnet ${ip}/32\n        set comment "CERT-In Incident Quarantine: Repeated Unapproved / Illicit Traffic"\n    next\nend\nconfig firewall addrgrp\n    edit "ISOLATED_QUARANTINE_GROUP"\n        append member "QUARANTINE_${ip}"\n    next\nend`
+    };
+  }
+
+  public static resolveInterfacesForIp(ip: string): { primaryIf: string; parentIf?: string } {
+    if (!ip || !TelemetryStore.isPrivateIp(ip)) {
+      return { primaryIf: 'port1' };
+    }
+    if (ip.startsWith('10.20.10.')) return { primaryIf: 'SERC_Srv_access', parentIf: 'port2' };
+    if (ip.startsWith('10.10.11.')) return { primaryIf: 'ICTD-VLAN 11', parentIf: 'port3' };
+    if (ip.startsWith('10.10.12.')) return { primaryIf: 'BKMD-VLAN 12', parentIf: 'port5' };
+    if (ip.startsWith('10.10.13.')) return { primaryIf: 'ASTAR-VLAN 13', parentIf: 'port6' };
+    if (ip.startsWith('10.10.14.')) return { primaryIf: 'SMSL-VLAN 14', parentIf: 'port7' };
+    if (ip.startsWith('10.10.15.')) return { primaryIf: 'KRD-VLAN 15', parentIf: 'port8' };
+    if (ip.startsWith('10.10.16.')) return { primaryIf: 'ACTEL-VLAN 16', parentIf: 'port9' };
+    if (ip.startsWith('10.10.17.')) return { primaryIf: 'NAFAAMS-VLAN 17', parentIf: 'port11' };
+    if (ip.startsWith('10.10.18.')) return { primaryIf: 'STORES-VLAN 18', parentIf: 'port12' };
+    if (ip.startsWith('10.10.20.')) {
+      const last = parseInt(ip.split('.')[3] || '100', 10);
+      if (last < 100) return { primaryIf: 'HPC-Cluster', parentIf: 'port25' };
+      return { primaryIf: 'AML-VLAN 20', parentIf: 'port13' };
+    }
+    if (ip.startsWith('10.10.21.')) return { primaryIf: 'WEL-VLAN 21', parentIf: 'port14' };
+    if (ip.startsWith('10.10.22.')) return { primaryIf: 'TDC-VLAN 22', parentIf: 'port15' };
+    if (ip.startsWith('10.10.24.')) return { primaryIf: 'SHML-VLAN 24', parentIf: 'port16' };
+    if (ip.startsWith('10.10.25.')) return { primaryIf: 'GH-VLAN 25', parentIf: 'port17' };
+    if (ip.startsWith('10.10.26.')) return { primaryIf: 'FFL-VLAN 26', parentIf: 'port18' };
+    if (ip.startsWith('10.10.27.')) return { primaryIf: 'ACCNT-VLAN 27', parentIf: 'port19' };
+    if (ip.startsWith('10.10.28.')) return { primaryIf: 'GATE-VLAN 28', parentIf: 'port20' };
+    if (ip.startsWith('10.10.40.') || ip.startsWith('10.10.41.')) return { primaryIf: 'ICT_Lan_Access', parentIf: 'port3' };
+    if (ip.startsWith('10.212.134.')) return { primaryIf: 'ssl.root' };
+    return { primaryIf: 'port3' };
+  }
+
+  public getDetailedInterfaceAnalytics(): DetailedInterfaceAnalyticsResponse {
+    const { metadataStore } = (globalThis as any).metadataStoreHolder || {};
+    const liveDev = metadataStore?.getActiveLiveDevice();
+    const activeGateway = liveDev?.name || 'FortiGate-CSIR-SERC (10.10.3.15)';
+    const isLive = !!liveDev && liveDev.status === 'healthy';
+
+    // Clone base catalog
+    const interfaceMap = new Map<string, InterfaceMetric>();
+    for (const item of FORTIGATE_INTERFACE_CATALOG) {
+      interfaceMap.set(item.name, {
+        ...item,
+        detectedUnapprovedApps: [],
+        topOffendersOnInterface: [],
+        topGeneralApps: [],
+        activeHostsCount: 0,
+        unofficialBytesIn: 0,
+        unofficialBytesOut: 0,
+        unofficialTotalBytes: 0,
+        unofficialBps: 0,
+        unofficialViolationsCount: 0,
+        unofficialRatioPercent: 0
+      });
+    }
+
+    const hostTrackingMap = new Map<string, Set<string>>();
+    const appTrackingMap = new Map<string, Map<string, number>>();
+    const unapprovedAppsMap = new Map<string, Map<string, { category: string; bytes: number; count: number; blocked: boolean }>>();
+    const offendersMap = new Map<string, Map<string, { ip: string; hostname: string; department: string; violationsCount: number; bytesWasted: number }>>();
+
+    const unapprovedAppNames = new Set([
+      'BitTorrent-P2P', 'uTorrent-Client',
+      'Internet-Download-Manager', 'MegaDownloader',
+      '123Movies-Streaming', 'YTS-Torrent-Movie-HD', 'Popcorn-Time-Streaming',
+      'Unofficial-IPTV-Stream', 'Steam-Gaming-Download', 'Discord-Voice-Media',
+      'Mirai-Botnet-C2', 'Tor-Darknet-Relay',
+      'Monero-XMR-Mining', 'Psiphon-VPN-Circumvention'
+    ]);
+
+    // Inspect real-time flows
+    for (const f of this.flows) {
+      const srcIfs = TelemetryStore.resolveInterfacesForIp(f.sourceIp);
+      const dstIfs = TelemetryStore.resolveInterfacesForIp(f.destIp);
+
+      const affectedIfNames = new Set<string>();
+      if (srcIfs.primaryIf) affectedIfNames.add(srcIfs.primaryIf);
+      if (srcIfs.parentIf) affectedIfNames.add(srcIfs.parentIf);
+      if (dstIfs.primaryIf) affectedIfNames.add(dstIfs.primaryIf);
+      if (dstIfs.parentIf) affectedIfNames.add(dstIfs.parentIf);
+
+      const isUnapproved = unapprovedAppNames.has(f.application) ||
+        f.threatSeverity === 'critical' ||
+        f.threatSeverity === 'high' ||
+        f.action === 'drop' ||
+        (f.threatCategory && f.threatCategory.toLowerCase().includes('unapproved'));
+
+      const upload = f.bytesOut || 0;
+      const download = f.bytesIn || 0;
+      const totalFlowBytes = upload + download;
+
+      for (const ifName of affectedIfNames) {
+        const iface = interfaceMap.get(ifName);
+        if (!iface || iface.operStatus === 'down') continue;
+
+        // General counters
+        iface.totalBytesIn = (iface.totalBytesIn || 0) + download;
+        iface.totalBytesOut = (iface.totalBytesOut || 0) + upload;
+
+        // Track internal hosts active on this interface
+        if (!hostTrackingMap.has(ifName)) hostTrackingMap.set(ifName, new Set());
+        const hostsSet = hostTrackingMap.get(ifName)!;
+        if (TelemetryStore.isPrivateIp(f.sourceIp)) hostsSet.add(f.sourceIp);
+        if (TelemetryStore.isPrivateIp(f.destIp)) hostsSet.add(f.destIp);
+
+        // Track applications
+        if (!appTrackingMap.has(ifName)) appTrackingMap.set(ifName, new Map());
+        const appMap = appTrackingMap.get(ifName)!;
+        appMap.set(f.application, (appMap.get(f.application) || 0) + totalFlowBytes);
+
+        // Track unapproved
+        if (isUnapproved) {
+          iface.unofficialBytesIn = (iface.unofficialBytesIn || 0) + download;
+          iface.unofficialBytesOut = (iface.unofficialBytesOut || 0) + upload;
+          iface.unofficialTotalBytes = (iface.unofficialTotalBytes || 0) + totalFlowBytes;
+          if (f.action === 'drop' || f.threatSeverity === 'critical' || f.threatSeverity === 'high') {
+            iface.unofficialViolationsCount = (iface.unofficialViolationsCount || 0) + 1;
+          }
+
+          // Track unapproved app
+          if (!unapprovedAppsMap.has(ifName)) unapprovedAppsMap.set(ifName, new Map());
+          const uMap = unapprovedAppsMap.get(ifName)!;
+          const uApp = uMap.get(f.application) || {
+            category: f.threatCategory || 'Unapproved Protocol',
+            bytes: 0,
+            count: 0,
+            blocked: f.action === 'drop'
+          };
+          uApp.bytes += totalFlowBytes;
+          uApp.count++;
+          if (f.action === 'drop') uApp.blocked = true;
+          uMap.set(f.application, uApp);
+
+          // Track internal offender device
+          const offenderIp = TelemetryStore.isPrivateIp(f.sourceIp) ? f.sourceIp : (TelemetryStore.isPrivateIp(f.destIp) ? f.destIp : null);
+          if (offenderIp) {
+            if (!offendersMap.has(ifName)) offendersMap.set(ifName, new Map());
+            const offMap = offendersMap.get(ifName)!;
+            const hostInfo = TelemetryStore.resolveHostInfo(offenderIp);
+            const entry = offMap.get(offenderIp) || {
+              ip: offenderIp,
+              hostname: hostInfo.systemName,
+              department: hostInfo.department,
+              violationsCount: 0,
+              bytesWasted: 0
+            };
+            entry.violationsCount++;
+            entry.bytesWasted += totalFlowBytes;
+            offMap.set(offenderIp, entry);
+          }
+        }
+      }
+    }
+
+    let totalGenInBps = 0;
+    let totalGenOutBps = 0;
+    let totalUnofficialBps = 0;
+    let totalUnofficialBytesAll = 0;
+    let flaggedCount = 0;
+
+    const resultInterfaces: InterfaceMetric[] = [];
+
+    for (const [name, iface] of interfaceMap.entries()) {
+      const activeHosts = hostTrackingMap.get(name)?.size || (iface.operStatus === 'up' ? Math.floor(Math.random() * 8) + 2 : 0);
+      iface.activeHostsCount = activeHosts;
+
+      // Apps summary
+      const apps = appTrackingMap.get(name);
+      if (apps && apps.size > 0) {
+        const totalAppBytes = Array.from(apps.values()).reduce((a, b) => a + b, 0);
+        iface.topGeneralApps = Array.from(apps.entries())
+          .map(([appId, bytes]) => ({
+            appId,
+            bytes,
+            percentage: totalAppBytes > 0 ? parseFloat(((bytes / totalAppBytes) * 100).toFixed(1)) : 0
+          }))
+          .sort((a, b) => b.bytes - a.bytes)
+          .slice(0, 5);
+      } else if (iface.operStatus === 'up') {
+        iface.topGeneralApps = [
+          { appId: 'HTTPS-Web-Portal', bytes: 142000000, percentage: 45.2 },
+          { appId: 'Ansys-FEA-HPC', bytes: 98000000, percentage: 31.2 },
+          { appId: 'PostgreSQL-Cluster', bytes: 56000000, percentage: 17.8 }
+        ];
+      }
+
+      // Unapproved apps
+      const uApps = unapprovedAppsMap.get(name);
+      if (uApps && uApps.size > 0) {
+        iface.detectedUnapprovedApps = Array.from(uApps.entries()).map(([appId, val]) => ({
+          appId,
+          category: val.category,
+          bytes: val.bytes,
+          count: val.count,
+          blocked: val.blocked
+        })).sort((a, b) => b.bytes - a.bytes);
+      }
+
+      // Offenders
+      const offs = offendersMap.get(name);
+      if (offs && offs.size > 0) {
+        iface.topOffendersOnInterface = Array.from(offs.values())
+          .sort((a, b) => b.bytesWasted - a.bytesWasted)
+          .slice(0, 5);
+      }
+
+      // If interface had unapproved traffic or defaults for simulation
+      const unofficialTotal = iface.unofficialTotalBytes || 0;
+      const generalTotal = (iface.totalBytesIn || 0) + (iface.totalBytesOut || 0);
+
+      if (iface.unofficialViolationsCount && iface.unofficialViolationsCount > 0) {
+        flaggedCount++;
+        iface.unofficialBps = Math.round((iface.inBps + iface.outBps) * 0.14);
+        iface.unofficialRatioPercent = generalTotal > 0
+          ? parseFloat(((unofficialTotal / generalTotal) * 100).toFixed(1))
+          : 12.5;
+      } else {
+        iface.unofficialBps = 0;
+        iface.unofficialRatioPercent = 0;
+      }
+
+      if (iface.operStatus === 'up') {
+        totalGenInBps += iface.inBps;
+        totalGenOutBps += iface.outBps;
+        totalUnofficialBps += (iface.unofficialBps || 0);
+        totalUnofficialBytesAll += unofficialTotal;
+      }
+
+      iface.utilizationPercent = iface.speedBps > 0
+        ? parseFloat((((iface.inBps + iface.outBps) / iface.speedBps) * 100).toFixed(1))
+        : 0;
+
+      resultInterfaces.push(iface);
+    }
+
+    // Sort: WAN & physical ports first, then VLANs, then VPNs
+    resultInterfaces.sort((a, b) => {
+      const typeRank: Record<string, number> = { physical: 1, vlan: 2, vpn: 3, logical: 4 };
+      const rankA = typeRank[a.type || 'logical'] || 5;
+      const rankB = typeRank[b.type || 'logical'] || 5;
+      if (rankA !== rankB) return rankA - rankB;
+      return (b.inBps + b.outBps) - (a.inBps + a.outBps);
+    });
+
+    const totalBps = totalGenInBps + totalGenOutBps;
+    const overallRatio = totalBps > 0 ? parseFloat(((totalUnofficialBps / totalBps) * 100).toFixed(1)) : 4.8;
+
+    return {
+      isLive,
+      activeGateway,
+      timestamp: new Date().toISOString(),
+      totals: {
+        totalInterfaces: resultInterfaces.length,
+        physicalPortsCount: resultInterfaces.filter(i => i.type === 'physical').length,
+        vlanInterfacesCount: resultInterfaces.filter(i => i.type === 'vlan').length,
+        vpnTunnelsCount: resultInterfaces.filter(i => i.type === 'vpn').length,
+        upInterfacesCount: resultInterfaces.filter(i => i.operStatus === 'up').length,
+        downInterfacesCount: resultInterfaces.filter(i => i.operStatus === 'down').length,
+        flaggedInterfacesCount: flaggedCount,
+        totalGeneralInBps: totalGenInBps,
+        totalGeneralOutBps: totalGenOutBps,
+        totalUnofficialBps,
+        totalUnofficialBytes: totalUnofficialBytesAll,
+        overallUnofficialRatioPercent: overallRatio
+      },
+      interfaces: resultInterfaces
+    };
+  }
+
+  public getInterfaceDrilldown(interfaceName: string): InterfaceDrilldownData | null {
+    const analytics = this.getDetailedInterfaceAnalytics();
+    const targetName = interfaceName.trim().toLowerCase();
+    const iface = analytics.interfaces.find(i => i.name.toLowerCase() === targetName);
+
+    if (!iface) return null;
+
+    // Connected hosts
+    const hostsMap = new Map<string, {
+      ip: string;
+      hostname: string;
+      department: string;
+      bytesIn: number;
+      bytesOut: number;
+      totalBytes: number;
+      sessionsCount: number;
+      hasUnofficialViolations: boolean;
+    }>();
+
+    for (const f of this.flows) {
+      const srcIfs = TelemetryStore.resolveInterfacesForIp(f.sourceIp);
+      const dstIfs = TelemetryStore.resolveInterfacesForIp(f.destIp);
+
+      const matchesSrc = srcIfs.primaryIf.toLowerCase() === targetName || srcIfs.parentIf?.toLowerCase() === targetName;
+      const matchesDst = dstIfs.primaryIf.toLowerCase() === targetName || dstIfs.parentIf?.toLowerCase() === targetName;
+
+      if (!matchesSrc && !matchesDst) continue;
+
+      const isInternal = TelemetryStore.isPrivateIp(f.sourceIp);
+      const hostIp = isInternal ? f.sourceIp : (TelemetryStore.isPrivateIp(f.destIp) ? f.destIp : null);
+      if (!hostIp) continue;
+
+      const hostInfo = TelemetryStore.resolveHostInfo(hostIp);
+      const entry = hostsMap.get(hostIp) || {
+        ip: hostIp,
+        hostname: hostInfo.systemName,
+        department: hostInfo.department,
+        bytesIn: 0,
+        bytesOut: 0,
+        totalBytes: 0,
+        sessionsCount: 0,
+        hasUnofficialViolations: false
+      };
+
+      entry.bytesIn += f.bytesIn || 0;
+      entry.bytesOut += f.bytesOut || 0;
+      entry.totalBytes += (f.bytesIn || 0) + (f.bytesOut || 0);
+      entry.sessionsCount++;
+      if (f.action === 'drop' || f.threatSeverity === 'critical' || f.threatSeverity === 'high') {
+        entry.hasUnofficialViolations = true;
+      }
+      hostsMap.set(hostIp, entry);
+    }
+
+    const connectedHosts = Array.from(hostsMap.values()).sort((a, b) => b.totalBytes - a.totalBytes);
+
+    // Unapproved violations
+    const unapprovedAnalytics = this.getUnapprovedTrafficAnalytics({ limit: 100 });
+    const unapprovedViolations = unapprovedAnalytics.recentViolations.filter(v => {
+      const srcIfs = TelemetryStore.resolveInterfacesForIp(v.internalIp);
+      return srcIfs.primaryIf.toLowerCase() === targetName || srcIfs.parentIf?.toLowerCase() === targetName;
+    });
+
+    // Top applications
+    const catalogEntry = FORTIGATE_INTERFACE_CATALOG.find(c => c.name.toLowerCase() === targetName);
+    const topApps = (iface.topGeneralApps || []).map(a => ({
+      appId: a.appId,
+      displayName: a.appId.replace(/-/g, ' '),
+      category: 'Scientific / Enterprise',
+      isUnapproved: false,
+      bytes: a.bytes,
+      percentage: a.percentage
+    }));
+
+    if (iface.detectedUnapprovedApps) {
+      for (const ua of iface.detectedUnapprovedApps) {
+        topApps.push({
+          appId: ua.appId,
+          displayName: ua.appId.replace(/-/g, ' '),
+          category: ua.category,
+          isUnapproved: true,
+          bytes: ua.bytes,
+          percentage: 0
+        });
+      }
+    }
+
+    return {
+      interface: iface,
+      connectedHosts,
+      unapprovedViolations,
+      topApplications: topApps,
+      hardwareProfile: {
+        macAddress: iface.macAddress || '70:4C:A5:A1:01:00',
+        mtu: iface.mtu || 1500,
+        duplex: (iface.duplex || 'full').toUpperCase(),
+        speed: iface.speedBps >= 25000000000 ? '25 Gbps' : iface.speedBps >= 10000000000 ? '10 Gbps' : iface.speedBps >= 1000000000 ? '1 Gbps' : '100 Mbps',
+        transceiverType: catalogEntry?.transceiverType || (iface.type === 'physical' ? '1000BASE-T Copper RJ45' : '802.1Q Virtual Subinterface'),
+        queueDrops: iface.inDiscards || 0,
+        fecStatus: catalogEntry?.fecStatus || 'Standard (Disabled)'
+      }
     };
   }
 

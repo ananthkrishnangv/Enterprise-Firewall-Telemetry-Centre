@@ -20,6 +20,9 @@ const imgUnapproved = getBase64Image('docs/screenshots/04b_unapproved_apps.png')
 const imgUnapprovedTable = getBase64Image('docs/screenshots/04c_unapproved_violations_table.png');
 const imgUnapprovedDossier = getBase64Image('docs/screenshots/04d_device_forensic_dossier.png');
 const imgSnmp = getBase64Image('docs/screenshots/05_snmp_telemetry_center.png');
+const imgAllInterfaces = getBase64Image('docs/screenshots/05_all_interfaces_matrix.png');
+const imgVlans = getBase64Image('docs/screenshots/05b_snmp_vlans_filter.png');
+const imgInterfaceDrilldown = getBase64Image('docs/screenshots/05c_interface_drilldown_modal.png');
 const imgPolicies = getBase64Image('docs/screenshots/06_firewall_policies.png');
 const imgLogs = getBase64Image('docs/screenshots/07_live_syslog_stream.png');
 const imgLogsExplorer = getBase64Image('docs/screenshots/07b_traffic_log_explorer.png');
@@ -469,16 +472,46 @@ const htmlContent = `<!DOCTYPE html>
   <div class="page-break"></div>
 
   <div class="avoid-break">
-    <h2>2.5 Comprehensive FortiGate SNMP Telemetry Center</h2>
+    <h2>2.5 Comprehensive FortiGate SNMP Telemetry & All Active Interfaces/VLANs Matrix</h2>
     <p>
-      Dedicated hardware and environmental telemetry cockpit: monitoring CPU/RAM, session counts, 46+ physical ports and departmental VLANs, thermal zones, cooling fans, dual AC power supplies, and FortiOS UTM threat counters.
+      Dedicated hardware, environmental, and interface operations cockpit: monitoring CPU/RAM, active sessions, dual AC power supplies, cooling tachometers, thermal zones, FortiOS UTM threat counters, and complete monitoring across <strong>all active physical network interfaces (ports 1-32, mgmt, ha1/ha2, dmz) and active departmental VLAN subinterfaces</strong>. Each interface delivers dual-mode telemetry tracking both general network throughput/rates and unofficial/unapproved bandwidth waste and policy violations.
     </p>
 
     <div class="screenshot-card">
       <img src="${imgSnmp}" alt="SNMP Telemetry Center">
       <div class="screenshot-caption">
-        <span>Figure 8: High-Performance FortiGate SNMP Hardware & Environmental Center</span>
+        <span>Figure 8: High-Performance FortiGate SNMP Hardware & Environmental Sensor Cockpit</span>
         <span class="badge badge-primary">SNMP Hardware</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="avoid-break">
+    <div class="screenshot-card">
+      <img src="${imgAllInterfaces}" alt="All Active Interfaces Matrix">
+      <div class="screenshot-caption">
+        <span>Figure 9: Complete Network & Departmental VLAN Telemetry Matrix (All 58 Interfaces & VLANs Monitored)</span>
+        <span class="badge badge-success">Dual-Mode Telemetry</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="avoid-break">
+    <div class="screenshot-card">
+      <img src="${imgVlans}" alt="Departmental VLANs Subinterfaces">
+      <div class="screenshot-caption">
+        <span>Figure 10: Departmental 802.1Q VLAN Interfaces Telemetry Matrix (HPC-Cluster, ICT_Lan_Access, SERC_Srv_access)</span>
+        <span class="badge badge-primary">VLAN Subinterfaces</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="avoid-break">
+    <div class="screenshot-card">
+      <img src="${imgInterfaceDrilldown}" alt="Deep Interface Dossier">
+      <div class="screenshot-caption">
+        <span>Figure 11: Deep Interface Dossier & Real-Time General vs Unofficial Ratio Inspector with Connected Hosts</span>
+        <span class="badge badge-warning">Interface Dossier</span>
       </div>
     </div>
   </div>
@@ -492,7 +525,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgPolicies}" alt="Policy Rules & Governance">
       <div class="screenshot-caption">
-        <span>Figure 9: Canonical Policy Governance & Shadow Conflict Detection</span>
+        <span>Figure 12: Canonical Policy Governance & Shadow Conflict Detection</span>
         <span class="badge badge-warning">Security Audit</span>
       </div>
     </div>
@@ -509,7 +542,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgLogs}" alt="Firewall Traffic & Threat Analytics">
       <div class="screenshot-caption">
-        <span>Figure 10: InfluxDB Traffic & Threat Ingestion Velocity Analytics (Allowed vs Blocked)</span>
+        <span>Figure 13: InfluxDB Traffic & Threat Ingestion Velocity Analytics (Allowed vs Blocked)</span>
         <span class="badge badge-primary">TSDB Analytics</span>
       </div>
     </div>
@@ -517,7 +550,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgLogsExplorer}" alt="Deep Log Explorer & Live Stream">
       <div class="screenshot-caption">
-        <span>Figure 11: Deep Multi-Parameter Log Explorer & Live Stream Table (All Subnets & Blocked Threats)</span>
+        <span>Figure 14: Deep Multi-Parameter Log Explorer & Live Stream Table (All Subnets & Blocked Threats)</span>
         <span class="badge badge-success">Log Explorer</span>
       </div>
     </div>
@@ -534,7 +567,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgCompliance}" alt="CERT-In Compliance">
       <div class="screenshot-caption">
-        <span>Figure 12: CERT-In National Cyber Security Baseline Compliance Dashboard</span>
+        <span>Figure 15: CERT-In National Cyber Security Baseline Compliance Dashboard</span>
         <span class="badge badge-success">Compliance</span>
       </div>
     </div>
@@ -549,7 +582,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgUsers}" alt="User Management">
       <div class="screenshot-caption">
-        <span>Figure 13: User Management & Telegram Alert Configuration</span>
+        <span>Figure 16: User Management & Telegram Alert Configuration</span>
         <span class="badge badge-primary">RBAC</span>
       </div>
     </div>
@@ -557,7 +590,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgSettings}" alt="Settings & Branding">
       <div class="screenshot-caption">
-        <span>Figure 14: Institutional Branding, Custom Logo & PostgreSQL 18 / InfluxDB 2.7 Engines</span>
+        <span>Figure 17: Institutional Branding, Custom Logo & PostgreSQL 18 / InfluxDB 2.7 Engines</span>
         <span class="badge badge-primary">Administration</span>
       </div>
     </div>

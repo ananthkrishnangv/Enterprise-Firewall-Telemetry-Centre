@@ -3,6 +3,7 @@ import { metadataStore } from '../storage/metadata.store.js';
 import { telemetryStore } from '../storage/telemetry.store.js';
 import { settingsStore } from '../storage/settings.store.js';
 import { notificationService } from '../services/notification.service.js';
+import { FORTIGATE_INTERFACE_CATALOG } from '../storage/interfaces.catalog.js';
 import {
   SNMPProbeData,
   InterfaceMetric,
@@ -726,19 +727,39 @@ export class SNMPCollector {
     const connJitter = Math.floor((Math.random() - 0.5) * 50);
     const conns = Math.max(100, baseConn + connJitter);
 
-    const simulatedInterfaces: InterfaceMetric[] = [
-      { name: 'port1', alias: 'WAN Primary NKN', operStatus: 'up', adminStatus: 'up', inBps: 84500000 + Math.floor((Math.random() - 0.5) * 5000000), outBps: 76200000 + Math.floor((Math.random() - 0.5) * 4000000), inErrors: 0, outErrors: 0, speedBps: 1000000000, type: 'physical', totalBytesIn: 26340000000000, totalBytesOut: 29800000000000, inPps: 13200, outPps: 11900 },
-      { name: 'port2', alias: 'SERC_Srv_access', operStatus: 'up', adminStatus: 'up', inBps: 52100000 + Math.floor((Math.random() - 0.5) * 3000000), outBps: 39800000, inErrors: 0, outErrors: 0, speedBps: 1000000000, type: 'physical', totalBytesIn: 18900000000000, totalBytesOut: 14200000000000, inPps: 8140, outPps: 6200 },
-      { name: 'port3', alias: 'ICT_Lan_Access', operStatus: 'up', adminStatus: 'up', inBps: 68400000, outBps: 94100000, inErrors: 0, outErrors: 0, speedBps: 1000000000, type: 'physical', totalBytesIn: 34100000000000, totalBytesOut: 48900000000000, inPps: 10600, outPps: 14700 },
-      { name: 'port10', alias: 'SERC_LAN_QTMNET_2024', operStatus: 'up', adminStatus: 'up', inBps: 42000000, outBps: 38000000, inErrors: 0, outErrors: 0, speedBps: 10000000000, type: 'physical', totalBytesIn: 29800000000000, totalBytesOut: 27100000000000, inPps: 6500, outPps: 5900 },
-      { name: 'ICTD-VLAN 11', alias: 'Information Communication Technology', operStatus: 'up', adminStatus: 'up', inBps: 24500000, outBps: 31200000, inErrors: 0, outErrors: 0, speedBps: 10000000000, type: 'vlan', totalBytesIn: 9800000000000, totalBytesOut: 12400000000000, inPps: 3800, outPps: 4900 },
-      { name: 'SHML-VLAN 24', alias: 'Structural Health Monitoring Lab', operStatus: 'up', adminStatus: 'up', inBps: 18900000, outBps: 15400000, inErrors: 0, outErrors: 0, speedBps: 10000000000, type: 'vlan', totalBytesIn: 7200000000000, totalBytesOut: 5800000000000, inPps: 2950, outPps: 2400 },
-      { name: 'ACCNT-VLAN 27', alias: 'Accounts & Finance Division', operStatus: 'up', adminStatus: 'up', inBps: 8400000, outBps: 9200000, inErrors: 0, outErrors: 0, speedBps: 10000000000, type: 'vlan', totalBytesIn: 3400000000000, totalBytesOut: 3900000000000, inPps: 1300, outPps: 1450 },
-      { name: 'CC-VLAN 14', alias: 'Central Computing Facility', operStatus: 'up', adminStatus: 'up', inBps: 31200000, outBps: 42100000, inErrors: 0, outErrors: 0, speedBps: 10000000000, type: 'vlan', totalBytesIn: 14500000000000, totalBytesOut: 19800000000000, inPps: 4800, outPps: 6500 },
-      { name: 'SERC-TTRS', alias: 'CSIR Tower Testing Research Station VPN', operStatus: 'up', adminStatus: 'up', inBps: 14200000, outBps: 18500000, inErrors: 0, outErrors: 0, speedBps: 1000000000, type: 'vpn', totalBytesIn: 3990000000, totalBytesOut: 171000000000, inPps: 2200, outPps: 2900 },
-      { name: 'ssl.root', alias: 'Enterprise SSL VPN Portal', operStatus: 'up', adminStatus: 'up', inBps: 4800000, outBps: 5200000, inErrors: 0, outErrors: 0, speedBps: 1000000000, type: 'vpn', totalBytesIn: 1200000000, totalBytesOut: 1800000000, inPps: 750, outPps: 810 },
-      { name: 'mgmt', alias: 'Out-of-Band Management', operStatus: 'up', adminStatus: 'up', inBps: 1240000, outBps: 890000, inErrors: 0, outErrors: 0, speedBps: 1000000000, type: 'physical', totalBytesIn: 890000000, totalBytesOut: 640000000, inPps: 190, outPps: 140 }
-    ];
+    let detailedAnalytics: any;
+    try {
+      detailedAnalytics = telemetryStore.getDetailedInterfaceAnalytics();
+    } catch {
+      // fallback if telemetryStore not yet initialized
+    }
+
+    const liveInterfaceMap = new Map<string, InterfaceMetric>();
+    if (detailedAnalytics?.interfaces) {
+      for (const iface of detailedAnalytics.interfaces) {
+        liveInterfaceMap.set(iface.name, iface);
+      }
+    }
+
+    const simulatedInterfaces: InterfaceMetric[] = FORTIGATE_INTERFACE_CATALOG.map((base) => {
+      const live = liveInterfaceMap.get(base.name);
+      if (live) {
+        return live;
+      }
+      const jitterIn = base.operStatus === 'up' ? Math.floor((Math.random() - 0.5) * (base.inBps * 0.1)) : 0;
+      const jitterOut = base.operStatus === 'up' ? Math.floor((Math.random() - 0.5) * (base.outBps * 0.1)) : 0;
+      const inBps = Math.max(0, base.inBps + jitterIn);
+      const outBps = Math.max(0, base.outBps + jitterOut);
+      return {
+        ...base,
+        inBps,
+        outBps,
+        inPps: Math.round(inBps / 6400),
+        outPps: Math.round(outBps / 6400),
+        utilizationPercent: base.speedBps > 0 ? parseFloat((((inBps + outBps) / base.speedBps) * 100).toFixed(1)) : 0
+      };
+    });
+
 
     const topPolicies: SNMPPolicyTrafficItem[] = [
       { policyId: 166, name: 'WAN Core Internet Routing & Academic Transit', lastActive: 'Active (1s ago)', packetCount: 172872498408, byteCount: 161585884348104 },

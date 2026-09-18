@@ -21,6 +21,26 @@ export interface InterfaceMetric {
   outPps?: number;
   unicastPktsIn?: number;
   multicastPktsIn?: number;
+  broadcastPktsIn?: number;
+  // Extended General Telemetry
+  vlanId?: number;
+  parentInterface?: string;
+  ipSubnet?: string;
+  mtu?: number;
+  duplex?: 'full' | 'half' | 'auto';
+  macAddress?: string;
+  utilizationPercent?: number;
+  activeHostsCount?: number;
+  topGeneralApps?: { appId: string; bytes: number; percentage: number }[];
+  // Extended Unofficial & Illicit Traffic Telemetry
+  unofficialBytesIn?: number;
+  unofficialBytesOut?: number;
+  unofficialTotalBytes?: number;
+  unofficialBps?: number;
+  unofficialViolationsCount?: number;
+  unofficialRatioPercent?: number;
+  detectedUnapprovedApps?: { appId: string; category: string; bytes: number; count: number; blocked: boolean }[];
+  topOffendersOnInterface?: { ip: string; hostname: string; department: string; violationsCount: number; bytesWasted: number }[];
 }
 
 export interface SNMPProtocolStats {
@@ -699,5 +719,58 @@ export interface UnapprovedTrafficAnalytics {
   }[];
   topOffendingDevices: OffendingDeviceSummary[];
   recentViolations: UnapprovedViolationRecord[];
+}
+
+export interface DetailedInterfaceAnalyticsResponse {
+  isLive: boolean;
+  activeGateway: string;
+  timestamp: string;
+  totals: {
+    totalInterfaces: number;
+    physicalPortsCount: number;
+    vlanInterfacesCount: number;
+    vpnTunnelsCount: number;
+    upInterfacesCount: number;
+    downInterfacesCount: number;
+    flaggedInterfacesCount: number;
+    totalGeneralInBps: number;
+    totalGeneralOutBps: number;
+    totalUnofficialBps: number;
+    totalUnofficialBytes: number;
+    overallUnofficialRatioPercent: number;
+  };
+  interfaces: InterfaceMetric[];
+}
+
+export interface InterfaceDrilldownData {
+  interface: InterfaceMetric;
+  connectedHosts: {
+    ip: string;
+    hostname: string;
+    department: string;
+    bytesIn: number;
+    bytesOut: number;
+    totalBytes: number;
+    sessionsCount: number;
+    hasUnofficialViolations: boolean;
+  }[];
+  unapprovedViolations: UnapprovedViolationRecord[];
+  topApplications: {
+    appId: string;
+    displayName: string;
+    category: string;
+    isUnapproved: boolean;
+    bytes: number;
+    percentage: number;
+  }[];
+  hardwareProfile: {
+    macAddress: string;
+    mtu: number;
+    duplex: string;
+    speed: string;
+    transceiverType: string;
+    queueDrops: number;
+    fecStatus: string;
+  };
 }
 

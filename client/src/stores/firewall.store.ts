@@ -20,7 +20,60 @@ export interface InterfaceMetric {
   outPps?: number;
   unicastPktsIn?: number;
   multicastPktsIn?: number;
+  broadcastPktsIn?: number;
+  // Extended General Telemetry
+  vlanId?: number;
+  parentInterface?: string;
+  ipSubnet?: string;
+  mtu?: number;
+  duplex?: 'full' | 'half' | 'auto';
+  macAddress?: string;
+  utilizationPercent?: number;
+  activeHostsCount?: number;
+  topGeneralApps?: { appId: string; bytes: number; percentage: number }[];
+  // Extended Unofficial & Illicit Traffic Telemetry
+  unofficialBytesIn?: number;
+  unofficialBytesOut?: number;
+  unofficialTotalBytes?: number;
+  unofficialBps?: number;
+  unofficialViolationsCount?: number;
+  unofficialRatioPercent?: number;
+  detectedUnapprovedApps?: { appId: string; category: string; bytes: number; count: number; blocked: boolean }[];
+  topOffendersOnInterface?: { ip: string; hostname: string; department: string; violationsCount: number; bytesWasted: number }[];
 }
+
+export interface InterfaceDrilldownData {
+  interface: InterfaceMetric;
+  connectedHosts: {
+    ip: string;
+    hostname: string;
+    department: string;
+    bytesIn: number;
+    bytesOut: number;
+    totalBytes: number;
+    sessionsCount: number;
+    hasUnofficialViolations: boolean;
+  }[];
+  unapprovedViolations: any[];
+  topApplications: {
+    appId: string;
+    displayName: string;
+    category: string;
+    isUnapproved: boolean;
+    bytes: number;
+    percentage: number;
+  }[];
+  hardwareProfile: {
+    macAddress: string;
+    mtu: number;
+    duplex: string;
+    speed: string;
+    transceiverType: string;
+    queueDrops: number;
+    fecStatus: string;
+  };
+}
+
 
 export interface SNMPProtocolStats {
   tcp: {
@@ -203,6 +256,10 @@ export const useFirewallStore = defineStore('firewall', () => {
   const complianceControls = ref<ComplianceItem[]>([]);
   const complianceScore = ref<number>(85);
   const loading = ref<boolean>(false);
+  const detailedInterfaces = ref<InterfaceMetric[]>([]);
+  const interfaceTotals = ref<any>(null);
+  const drilldownData = ref<InterfaceDrilldownData | null>(null);
+  const isLoadingDrilldown = ref<boolean>(false);
 
   async function fetchDevices() {
     try {
@@ -635,6 +692,37 @@ export const useFirewallStore = defineStore('firewall', () => {
     }
   }
 
+  async function fetchDetailedInterfaces() {
+    try {
+      const res = await fetch('/api/telemetry/interfaces/detailed');
+      const data = await res.json();
+      if (data.success) {
+        detailedInterfaces.value = data.interfaces || [];
+        interfaceTotals.value = data.totals || null;
+      }
+    } catch (e) {
+      console.error('Failed to fetch detailed interfaces', e);
+    }
+  }
+
+  async function fetchInterfaceDrilldown(name: string) {
+    isLoadingDrilldown.value = true;
+    try {
+      const res = await fetch(`/api/telemetry/interfaces/${encodeURIComponent(name)}/drilldown`);
+      const data = await res.json();
+      if (data.success) {
+        drilldownData.value = data;
+        return data;
+      }
+      return null;
+    } catch (e) {
+      console.error(`Failed to fetch interface drilldown for ${name}`, e);
+      return null;
+    } finally {
+      isLoadingDrilldown.value = false;
+    }
+  }
+
   return {
     devices,
     selectedFirewallId,
@@ -651,6 +739,10 @@ export const useFirewallStore = defineStore('firewall', () => {
     branding,
     isTestingSnmp,
     snmpTestResult,
+    detailedInterfaces,
+    interfaceTotals,
+    drilldownData,
+    isLoadingDrilldown,
     backups,
     backupConfig,
     isCreatingBackup,
@@ -679,5 +771,8 @@ export const useFirewallStore = defineStore('firewall', () => {
     restoreBackupArchive,
     deleteBackupArchive,
     updateBackupConfig,
+    fetchDetailedInterfaces,
+    fetchInterfaceDrilldown,
   };
 });
+
