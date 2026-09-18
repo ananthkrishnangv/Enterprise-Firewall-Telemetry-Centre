@@ -52,9 +52,21 @@ export class TelemetrySimulator {
     { name: 'Zoom-Video', port: 8801, proto: 'UDP', baseBytes: 680000, category: 'Collaboration', uploadRatio: 0.48 },
     { name: 'FortiOS-Admin-HTTPS', port: 443, proto: 'TCP', baseBytes: 120000, category: 'Network Management', uploadRatio: 0.28 },
     { name: 'DNS-Queries', port: 53, proto: 'UDP', baseBytes: 4200, category: 'Infrastructure', uploadRatio: 0.50 },
-    { name: 'BitTorrent P2P', port: 6881, proto: 'TCP', baseBytes: 850000, category: 'Unapproved Traffic', uploadRatio: 0.60 },
-    { name: 'SSH-Terminal-Access', port: 22, proto: 'TCP', baseBytes: 180000, category: 'Infrastructure Management', uploadRatio: 0.45 },
-    { name: 'NTP-Time-Sync', port: 123, proto: 'UDP', baseBytes: 1200, category: 'Time Synchronization', uploadRatio: 0.50 }
+    // Unapproved & Illicit Categories
+    { name: 'BitTorrent-P2P', port: 6881, proto: 'TCP', baseBytes: 2400000, category: 'Unapproved Traffic', uploadRatio: 0.65 },
+    { name: 'uTorrent-Client', port: 6889, proto: 'TCP', baseBytes: 1950000, category: 'Unapproved Traffic', uploadRatio: 0.70 },
+    { name: 'Internet-Download-Manager', port: 443, proto: 'TCP', baseBytes: 3800000, category: 'Download Manager', uploadRatio: 0.12 },
+    { name: 'MegaDownloader', port: 443, proto: 'TCP', baseBytes: 3100000, category: 'Download Manager', uploadRatio: 0.15 },
+    { name: '123Movies-Streaming', port: 443, proto: 'TCP', baseBytes: 2800000, category: 'Movie Sites', uploadRatio: 0.08 },
+    { name: 'YTS-Torrent-Movie-HD', port: 443, proto: 'TCP', baseBytes: 4200000, category: 'Movie Downloads', uploadRatio: 0.45 },
+    { name: 'Popcorn-Time-Streaming', port: 8008, proto: 'TCP', baseBytes: 3400000, category: 'Movie Sites', uploadRatio: 0.30 },
+    { name: 'Unofficial-IPTV-Stream', port: 8000, proto: 'UDP', baseBytes: 2600000, category: 'Unofficial Media', uploadRatio: 0.10 },
+    { name: 'Steam-Gaming-Download', port: 27015, proto: 'UDP', baseBytes: 3900000, category: 'Unofficial Media', uploadRatio: 0.18 },
+    { name: 'Discord-Voice-Media', port: 50001, proto: 'UDP', baseBytes: 850000, category: 'Unofficial Media', uploadRatio: 0.50 },
+    { name: 'Mirai-Botnet-C2', port: 45137, proto: 'UDP', baseBytes: 4200, category: 'Botnets & Malware', uploadRatio: 0.90 },
+    { name: 'Tor-Darknet-Relay', port: 9001, proto: 'TCP', baseBytes: 150000, category: 'Darknet & Circumvention', uploadRatio: 0.55 },
+    { name: 'Monero-XMR-Mining', port: 3333, proto: 'TCP', baseBytes: 12000, category: 'Crypto Mining', uploadRatio: 0.85 },
+    { name: 'Psiphon-VPN-Circumvention', port: 443, proto: 'TCP', baseBytes: 650000, category: 'Proxy Bypass', uploadRatio: 0.45 }
   ];
 
   private externalTargets = [
@@ -69,11 +81,18 @@ export class TelemetrySimulator {
     { ip: '164.100.158.12', name: 'nic-eoffice.gov.in', country: 'IN' },
     { ip: '198.51.100.45', name: 'sciencedirect.elsevier.com', country: 'NL' },
     { ip: '203.0.113.88', name: 'ieeexplore.ieee.org', country: 'US' },
+    // Threat / Illicit Targets
     { ip: '185.220.101.5', name: 'tor-exit-relay.zwiebelfreunde.de', country: 'DE' },
     { ip: '194.26.29.112', name: 'p2p-swarm-tracker.ru', country: 'RU' },
     { ip: '193.32.162.155', name: 'scanner-host.censys-inspect.org', country: 'US' },
     { ip: '45.155.205.233', name: 'mirai-botnet-c2-beacon.su', country: 'RU' },
-    { ip: '176.9.54.21', name: 'stratum-xmr-pool.de', country: 'DE' }
+    { ip: '176.9.54.21', name: 'stratum-xmr-pool.de', country: 'DE' },
+    { ip: '198.144.121.93', name: '123movies-hub.stream', country: 'IS' },
+    { ip: '104.21.32.11', name: 'yts-movies.mx', country: 'US' },
+    { ip: '185.193.125.44', name: 'rapidgator-mirror.net', country: 'CY' },
+    { ip: '146.70.157.12', name: 'free-iptv-live.su', country: 'RU' },
+    { ip: '162.254.197.36', name: 'valve-steam-content.net', country: 'US' },
+    { ip: '185.220.102.8', name: 'psiphon-hop-node.me', country: 'CH' }
   ];
 
   private users = [
@@ -85,8 +104,8 @@ export class TelemetrySimulator {
   public start() {
     console.log('[TelemetrySimulator] Full-Spectrum Institutional Traffic Generator active across all 46+ FortiGate interfaces & VLANs.');
 
-    // Seed 120 initial events to populate InfluxDB time-series immediately
-    for (let i = 0; i < 120; i++) {
+    // Seed 140 initial events to populate InfluxDB time-series immediately
+    for (let i = 0; i < 140; i++) {
       this.generateTick();
     }
 
@@ -148,28 +167,47 @@ export class TelemetrySimulator {
     let threatCategory: string | undefined;
     let threatSeverity: TrafficFlow['threatSeverity'] = 'none';
 
-    if (external.ip === '185.220.101.5') {
+    if (app.name === 'BitTorrent-P2P' || app.name === 'uTorrent-Client') {
       isBlocked = true;
-      threatCategory = 'Known Tor Exit Node / C2 Beacon Intercepted';
+      threatCategory = 'Unapproved BitTorrent P2P File Sharing Blocked';
+      threatSeverity = 'high';
+    } else if (app.name === 'Internet-Download-Manager' || app.name === 'MegaDownloader') {
+      isBlocked = true;
+      threatCategory = 'Unapproved Multi-Part Bulk Download Manager Intercepted';
+      threatSeverity = 'high';
+    } else if (app.name === '123Movies-Streaming' || app.name === 'YTS-Torrent-Movie-HD' || app.name === 'Popcorn-Time-Streaming') {
+      isBlocked = true;
+      threatCategory = 'Pirated Movie Torrent & Streaming Service Blocked';
       threatSeverity = 'critical';
-    } else if (external.ip === '45.155.205.233') {
+    } else if (app.name === 'Unofficial-IPTV-Stream' || app.name === 'Steam-Gaming-Download') {
+      isBlocked = true;
+      threatCategory = 'Unofficial High-Bandwidth Media Stream Blocked';
+      threatSeverity = 'high';
+    } else if (app.name === 'Monero-XMR-Mining') {
+      isBlocked = true;
+      threatCategory = 'Unapproved Cryptocurrency Mining Pool Blocked';
+      threatSeverity = 'critical';
+    } else if (app.name === 'Psiphon-VPN-Circumvention' || app.name === 'Tor-Darknet-Relay') {
+      isBlocked = true;
+      threatCategory = 'Circumvention Proxy / Darknet Gateway Attempt Dropped';
+      threatSeverity = 'critical';
+    } else if (app.name === 'Mirai-Botnet-C2' || external.ip === '45.155.205.233') {
       isBlocked = true;
       threatCategory = 'Mirai/Botnet Command-and-Control Probe Dropped';
+      threatSeverity = 'critical';
+    } else if (external.ip === '185.220.101.5') {
+      isBlocked = true;
+      threatCategory = 'Known Tor Exit Node / C2 Beacon Intercepted';
       threatSeverity = 'critical';
     } else if (external.ip === '176.9.54.21') {
       isBlocked = true;
       threatCategory = 'Unapproved Cryptocurrency Mining Pool Blocked';
-      threatSeverity = 'high';
-    } else if (app.name === 'BitTorrent P2P') {
-      isBlocked = true;
-      threatCategory = 'Unapproved P2P File Sharing Blocked';
-      threatSeverity = 'medium';
+      threatSeverity = 'critical';
     } else if (direction === 'internal' && internalHost.vlan === 28 && Math.random() < 0.4) {
-      // CCTV VLAN attempting to access scientific server
       isBlocked = true;
       threatCategory = 'Inter-VLAN Security Boundary Violation';
       threatSeverity = 'medium';
-    } else if (Math.random() < 0.08) {
+    } else if (Math.random() < 0.06) {
       isBlocked = true;
       threatCategory = 'Perimeter Port Scan / SYN Flood Mitigated';
       threatSeverity = 'low';

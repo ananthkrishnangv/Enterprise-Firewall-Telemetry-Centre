@@ -98,6 +98,7 @@ try {
   const authenticatedPages = [
     { name: '03_dashboard', url: 'http://10.40.0.150/', waitMs: 4000 },
     { name: '04_bento_traffic', url: 'http://10.40.0.150/traffic', waitMs: 4000 },
+    { name: '04b_unapproved_apps', url: 'http://10.40.0.150/unapproved-apps', waitMs: 4000 },
     { name: '05_snmp_telemetry_center', url: 'http://10.40.0.150/devices', waitMs: 4000 },
     { name: '06_firewall_policies', url: 'http://10.40.0.150/policies', waitMs: 3000 },
     { name: '07_live_syslog_stream', url: 'http://10.40.0.150/logs', waitMs: 3000 },
@@ -114,6 +115,44 @@ try {
     const targetFile = `docs/screenshots/${p.name}.png`;
     fs.writeFileSync(targetFile, Buffer.from(data, 'base64'));
     console.log(`Successfully captured ${targetFile}`);
+
+    // If capturing unapproved apps, also capture scrolled table and modal dossier
+    if (p.name === '04b_unapproved_apps') {
+      console.log('Capturing 04c_unapproved_violations_table (Table View)...');
+      await send('Runtime.evaluate', {
+        expression: `
+          const m = document.querySelector('main');
+          if (m) m.scrollBy({ top: 620, behavior: 'instant' });
+        `
+      });
+      await new Promise(r => setTimeout(r, 1200));
+      const resTable = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync('docs/screenshots/04c_unapproved_violations_table.png', Buffer.from(resTable.data, 'base64'));
+      console.log('Successfully captured docs/screenshots/04c_unapproved_violations_table.png');
+
+      console.log('Capturing 04d_device_forensic_dossier (Forensic Modal)...');
+      await send('Runtime.evaluate', {
+        expression: `
+          const m = document.querySelector('main');
+          if (m) m.scrollTo({ top: 0, behavior: 'instant' });
+          const dossierBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Dossier'));
+          if (dossierBtn) dossierBtn.click();
+        `
+      });
+      await new Promise(r => setTimeout(r, 1500));
+      const resModal = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync('docs/screenshots/04d_device_forensic_dossier.png', Buffer.from(resModal.data, 'base64'));
+      console.log('Successfully captured docs/screenshots/04d_device_forensic_dossier.png');
+
+      // Close modal before proceeding
+      await send('Runtime.evaluate', {
+        expression: `
+          const closeBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Close'));
+          if (closeBtn) closeBtn.click();
+        `
+      });
+      await new Promise(r => setTimeout(r, 500));
+    }
 
     // If capturing logs, also capture the deep log explorer tab
     if (p.name === '07_live_syslog_stream') {

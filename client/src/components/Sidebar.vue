@@ -208,6 +208,7 @@ import {
   Settings,
   LogOut,
   Shield,
+  ShieldAlert,
   Cpu,
   Globe
 } from 'lucide-vue-next';
@@ -231,6 +232,12 @@ interface NavItem {
 const navItems = computed<NavItem[]>(() => [
   { name: 'Dashboard Overview', path: '/', icon: LayoutDashboard },
   { name: 'Traffic & Flow Navigator', path: '/traffic', icon: Activity },
+  {
+    name: 'Unapproved & Illicit Apps',
+    path: '/unapproved-apps',
+    icon: ShieldAlert,
+    badge: telemetry.unapprovedAnalytics?.totals.totalViolations
+  },
   { name: 'Policy & Shadow Analysis', path: '/policies', icon: Layers },
   { name: 'Firewalls & SNMP Probes', path: '/devices', icon: Server },
   { name: 'Config Drift & Diffs', path: '/config-diff', icon: GitCompare },

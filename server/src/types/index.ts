@@ -551,23 +551,53 @@ export interface HeavyDataIpItem {
 
 export interface TopUploadItem {
   rank: number;
+  // Exact Internal Source Device
+  sourceIp: string;
+  sourceHost: string;
+  sourceDept: string;
+  sourceZone: string;
+  // Exact Remote Destination Target
+  destIp: string;
+  destHost: string;
+  destCountry: string;
+  destPort: number;
+
+  appId: string;
+  protocol: string;
+  uploadBytes: number;
+  uploadRateMbps: number;
+  sessionsCount: number;
+
+  // Backwards compatibility fields
   ip: string;
   systemName: string;
   department: string;
-  appId: string;
-  uploadBytes: number;
-  uploadRateMbps: number;
   destEndpoint: string;
 }
 
 export interface TopDownloadItem {
   rank: number;
+  // Exact Remote Source Origin
+  sourceIp: string;
+  sourceHost: string;
+  sourceCountry: string;
+  sourcePort: number;
+  // Exact Internal Destination Device
+  destIp: string;
+  destHost: string;
+  destDept: string;
+  destZone: string;
+
+  appId: string;
+  protocol: string;
+  downloadBytes: number;
+  downloadRateMbps: number;
+  sessionsCount: number;
+
+  // Backwards compatibility fields
   ip: string;
   systemName: string;
   department: string;
-  appId: string;
-  downloadBytes: number;
-  downloadRateMbps: number;
   sourceEndpoint: string;
 }
 
@@ -591,5 +621,83 @@ export interface BentoTrafficAnalytics {
   heavyDataIps: HeavyDataIpItem[];
   topUploaders: TopUploadItem[];
   topDownloaders: TopDownloadItem[];
+}
+
+export type UnapprovedCategory =
+  | 'bittorrent'
+  | 'download_manager'
+  | 'movies'
+  | 'unofficial_media'
+  | 'botnet_spam'
+  | 'crypto_mining'
+  | 'illegal_website';
+
+export interface UnapprovedViolationRecord {
+  id: string;
+  timestamp: string;
+  category: UnapprovedCategory;
+  categoryLabel: string;
+  appId: string;
+  protocol: string;
+  // Offending Internal Device
+  internalIp: string;
+  internalHost: string;
+  department: string;
+  vlan: string;
+  macAddress?: string;
+  switchPort?: string;
+  // Remote Target
+  remoteIp: string;
+  remoteHost: string;
+  remoteCountry: string;
+  remotePort: number;
+  // Traffic Details
+  direction: 'outbound' | 'inbound';
+  action: 'blocked' | 'dropped' | 'flagged';
+  policyName: string;
+  bytesIn: number;
+  bytesOut: number;
+  totalBytes: number;
+  packets: number;
+  severity: 'warning' | 'critical';
+  details: string;
+}
+
+export interface OffendingDeviceSummary {
+  rank: number;
+  ip: string;
+  hostname: string;
+  department: string;
+  vlan: string;
+  violationsCount: number;
+  totalBytesWasted: number;
+  primaryCategory: string;
+  detectedApps: string[];
+  lastSeen: string;
+  blockedRatePercent: number;
+}
+
+export interface UnapprovedTrafficAnalytics {
+  isLive: boolean;
+  activeGateway: string;
+  timestamp: string;
+  totals: {
+    totalViolations: number;
+    totalBytesWasted: number;
+    blockedCount: number;
+    flaggedCount: number;
+    dropRatePercent: number;
+    uniqueOffendingDevices: number;
+  };
+  categoryBreakdown: {
+    category: UnapprovedCategory;
+    label: string;
+    icon: string;
+    violationsCount: number;
+    bytesWasted: number;
+    percentOfViolations: number;
+  }[];
+  topOffendingDevices: OffendingDeviceSummary[];
+  recentViolations: UnapprovedViolationRecord[];
 }
 

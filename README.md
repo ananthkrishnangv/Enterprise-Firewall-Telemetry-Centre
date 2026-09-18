@@ -42,17 +42,40 @@ Continuous real-time visualization of perimeter throughput, live incoming and ou
 
 ---
 
-### 3. Bento-Style Traffic & Flow Analyzer
-A Bento-grid traffic analytics dashboard providing deep contextual packet insights:
-- **Application Identification (App-ID)**: Real-time mapping of network protocols and software applications (HTTPS, SSH, DNS, BitTorrent, Telegram, Zoom, Microsoft Teams).
-- **Top Uploaders & Downloaders**: Granular tracking of highest volume source endpoints, IP addresses, resolved machine hostnames, transferred bytes, and throughput rates.
-- **Bi-Directional Velocity Dials**: Interactive circular gauges displaying real-time ingest and egress bandwidth.
+### 3. Bento-Style Traffic & Flow Analyzer (Exact Source & Destination IP Intelligence)
+A Bento-grid traffic analytics dashboard providing bidirectional packet intelligence with exact firewall source and destination details:
+- **Exact Source & Destination IP Attribution**:
+  - **Top Outbound Uploads (Egress)**: Granular tracking of internal campus workstations (`10.x.x.x`, resolved institutional hostname, department, and VLAN) connecting to exact remote internet targets (public IP, external domain, country flag, and destination port).
+  - **Top Inbound Downloads (Ingress)**: Tracking external remote source origins (public IP, remote host/domain, country flag) delivering data into exact internal recipient workstations (internal IP, system hostname, department, and VLAN).
+- **Application Identification (App-ID)**: Real-time Layer-7 mapping of network protocols and software applications (HTTPS, SSH, DNS, Git Replication, HPC Modeling, Postgre-DB, Microsoft 365).
+- **Bidirectional Ingress vs. Egress Ratio**: Segmented proportional bar gauge comparing total downloaded vs. uploaded volume.
 
 ![Bento Traffic Analyzer](docs/screenshots/04_bento_traffic.png)
 
 ---
 
-### 4. Comprehensive FortiGate SNMP Telemetry Center
+### 4. Unapproved Applications & Illicit Network Activity Monitor
+A dedicated cybersecurity investigation center identifying internal campus workstations generating or accessing unauthorized, peer-to-peer, or illegal network services:
+- **Comprehensive Threat Categories**:
+  - **BitTorrent & P2P Swarms**: `BitTorrent-P2P`, `uTorrent-Client`, DHT swarms, tracker announces on ports 6881–6889.
+  - **Download Managers & Leechers**: `Internet-Download-Manager [IDM]`, `MegaDownloader`, multi-stream leechers pulling high volumes from cyberlockers.
+  - **Movie Streaming & Downloads**: Pirated streaming portals (`123Movies-Streaming`, `Popcorn-Time-Streaming`, `Fmovies`) and HD torrent release sources (`YTS-Torrent-Movie-HD`).
+  - **Unofficial Media & Gaming**: Unauthorized IPTV live feeds (`Unofficial-IPTV-Stream`), game client downloads (`Steam-Gaming-Download`), and unapproved media bots (`Discord-Voice-Media`).
+  - **Spam, Botnets & C2 Beacons**: Botnet command-and-control beacons (`Mirai-Botnet-C2`), anonymous relays (`Tor-Darknet-Relay`), trojan C2s (`DarkComet-Trojan-C2`), and bulk spam SMTP engines.
+  - **Cryptocurrency Mining Pools**: Monero XMR miners (`Monero-XMR-Mining`), Stratum mining protocol connections (`Stratum-Pool`), and Nanopool connections.
+  - **Illegal Web & Proxy Bypass**: Circumvention VPNs (`Psiphon-VPN-Circumvention`) and darknet gateway proxies.
+- **Top Offending Workstations Bento Cards**: High-visibility ranking cards pinpointing the top internal offender IPs, hostnames, assigned departments, violation counts, and wasted bandwidth.
+- **Live Forensic Incident Register**: Structured table matching offending internal devices to unapproved external endpoints, showing applied FortiGate security policies (`SERC_IPS_Threat_Mitigation`, `SERC_P2P_Drop`), dropped status, and data volume.
+- **Device Forensic Dossier & FortiOS Quarantine CLI**: Click any internal device to open a complete forensic history and copy ready-to-run FortiOS CLI commands to quarantine or isolate the workstation on FortiGate.
+- **CERT-In Incident CSV Export**: One-click export of filtered incident logs for audit and compliance reporting.
+
+![Unapproved Applications Monitor](docs/screenshots/04b_unapproved_apps.png)
+![Live Forensic Incident Register](docs/screenshots/04c_unapproved_violations_table.png)
+![Device Forensic Dossier & Quarantine](docs/screenshots/04d_device_forensic_dossier.png)
+
+---
+
+### 5. Comprehensive FortiGate SNMP Telemetry Center
 A dedicated hardware, environmental, and security monitoring cockpit powered by an ultra-fast (<200ms) parallel SNMPv2c/v3 engine:
 - **Core Resource Gauges**: CPU core utilization, physical memory usage (16.3 GB pool), concurrent state sessions (3,200+ active), and active VPN tunnels.
 - **Hardware Environmental & Dual Redundant Power**:
@@ -68,14 +91,14 @@ A dedicated hardware, environmental, and security monitoring cockpit powered by 
 
 ---
 
-### 5. Policy Rules & Shadow Conflict Engine
+### 6. Policy Rules & Shadow Conflict Engine
 Canonical Rule Abstract Syntax Tree (AST) engine that parses and models multi-vendor firewall policies. Includes a multi-dimensional interval tree conflict engine that detects **Shadowed Rules**, **Redundant Rules**, **Over-Permissive Any/Any Rules**, and **Stale Rules**.
 
 ![Policy Rules & Security Profiles](docs/screenshots/06_firewall_policies.png)
 
 ---
 
-### 6. Full-Spectrum Firewall Traffic & Log Analyzer (InfluxDB 2.7 TSDB Engine)
+### 7. Full-Spectrum Firewall Traffic & Log Analyzer (InfluxDB 2.7 TSDB Engine)
 A high-velocity time-series traffic intelligence and log analyzer monitoring all traffic passing through the institutional firewall across all 46+ interfaces, departmental VLANs, HPC clusters, and external WAN:
 - **InfluxDB 2.7 Time-Series Ingestion**: High-throughput non-blocking line-protocol batch pipeline with CERT-In mandated 180-day retention bucket and microsecond query latency.
 - **Multi-Parameter Filtering**: Instantly isolate traffic by Time Range (15m, 1h, 6h, 24h, 7d), Traffic Direction (`Inbound`, `Outbound`, `Internal`), Enforcement Action (`All`, `Allowed`, `Blocked`), Protocol (`TCP`, `UDP`, `ICMP`), and free-text search (IP/CIDR, hostname, subnet, or App-ID).
@@ -87,7 +110,7 @@ A high-velocity time-series traffic intelligence and log analyzer monitoring all
 
 ---
 
-### 7. CERT-In Cyber Security Baseline Compliance
+### 8. CERT-In Cyber Security Baseline Compliance
 Continuous audit engine verifying alignment with Indian National Cyber Security Guidelines (MeitY / CERT-In Section 70B directives), including:
 - Mandatory 180-day log retention validation
 - Primary Stratum-1 Indian Standard Time (IST) NTP clock synchronization
@@ -98,7 +121,7 @@ Continuous audit engine verifying alignment with Indian National Cyber Security 
 
 ---
 
-### 8. User Management & Role-Based Access Control (RBAC)
+### 9. User Management & Role-Based Access Control (RBAC)
 Comprehensive user management dashboard featuring:
 - Protected default `superadmin` account
 - Granular operational roles: `Super Administrator`, `Administrator`, `Auditor`, and `Operator`
@@ -109,7 +132,7 @@ Comprehensive user management dashboard featuring:
 
 ---
 
-### 9. Organization Branding & PostgreSQL 18 Storage Operations
+### 10. Organization Branding & PostgreSQL 18 Storage Operations
 Centralized settings console enabling custom institutional identity:
 - Upload custom enterprise logo (Base64 raster PNG/SVG up to 5MB) or select UX4G vector emblems
 - Dynamic portal naming, organization labels, and division subtitles

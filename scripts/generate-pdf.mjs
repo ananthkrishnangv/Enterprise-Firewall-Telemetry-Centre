@@ -16,6 +16,9 @@ const imgLogin = getBase64Image('docs/screenshots/01_login.png');
 const imgWizard = getBase64Image('docs/screenshots/02_wizard.png');
 const imgDashboard = getBase64Image('docs/screenshots/03_dashboard.png');
 const imgBento = getBase64Image('docs/screenshots/04_bento_traffic.png');
+const imgUnapproved = getBase64Image('docs/screenshots/04b_unapproved_apps.png');
+const imgUnapprovedTable = getBase64Image('docs/screenshots/04c_unapproved_violations_table.png');
+const imgUnapprovedDossier = getBase64Image('docs/screenshots/04d_device_forensic_dossier.png');
 const imgSnmp = getBase64Image('docs/screenshots/05_snmp_telemetry_center.png');
 const imgPolicies = getBase64Image('docs/screenshots/06_firewall_policies.png');
 const imgLogs = getBase64Image('docs/screenshots/07_live_syslog_stream.png');
@@ -414,15 +417,15 @@ const htmlContent = `<!DOCTYPE html>
   </div>
 
   <div class="avoid-break">
-    <h2>2.3 Bento-Style Traffic & Flow Analyzer</h2>
+    <h2>2.3 Bento-Style Traffic & Flow Analyzer (Exact Source & Destination IP Intelligence)</h2>
     <p>
-      The Bento layout provides actionable network intelligence: mapping IP addresses to applications (App-ID), pinpointing top uploaders and downloaders, and resolving machine hostnames.
+      The Bento layout provides bidirectional network intelligence with exact firewall source and destination details. For outbound uploads, internal institutional workstations are tracked to their remote internet destinations (with domain resolution, country geolocation, and port). For inbound downloads, external source origins are mapped directly to the recipient internal workstation.
     </p>
 
     <div class="screenshot-card">
       <img src="${imgBento}" alt="Bento Traffic Analyzer">
       <div class="screenshot-caption">
-        <span>Figure 4: Bento-Grid Traffic Analyzer (App-ID, Top Uploaders & Downloaders)</span>
+        <span>Figure 4: Bento-Grid Traffic Analyzer (Exact Source/Destination IP Mapping & App-ID Identification)</span>
         <span class="badge badge-success">Flow Analytics</span>
       </div>
     </div>
@@ -431,7 +434,42 @@ const htmlContent = `<!DOCTYPE html>
   <div class="page-break"></div>
 
   <div class="avoid-break">
-    <h2>2.4 Comprehensive FortiGate SNMP Telemetry Center</h2>
+    <h2>2.4 Unapproved Applications & Illicit Network Activity Monitor</h2>
+    <p>
+      Dedicated forensic investigation center identifying internal campus devices accessing BitTorrent/P2P swarms, download managers (IDM/Leechers), pirated movie streaming and download sites, unofficial media, botnet C2 beacons, cryptocurrency mining pools, and proxy circumvention tools. Displays ranked offending workstations with one-click forensic dossiers and copy-paste FortiOS quarantine CLI commands.
+    </p>
+
+    <div class="screenshot-card">
+      <img src="${imgUnapproved}" alt="Unapproved Applications Monitor">
+      <div class="screenshot-caption">
+        <span>Figure 5: Unapproved & Illicit Applications Dashboard (Top Offending Workstations & Categories)</span>
+        <span class="badge badge-warning">Threat Watch</span>
+      </div>
+    </div>
+
+    <div class="screenshot-card">
+      <img src="${imgUnapprovedTable}" alt="Forensic Violations Table">
+      <div class="screenshot-caption">
+        <span>Figure 6: Live Forensic Incident Register (Matching Offending Internal Devices to Remote Endpoints)</span>
+        <span class="badge badge-primary">Incident Register</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="avoid-break">
+    <div class="screenshot-card">
+      <img src="${imgUnapprovedDossier}" alt="Device Forensic Dossier">
+      <div class="screenshot-caption">
+        <span>Figure 7: Workstation Forensic Dossier & Instant FortiOS Quarantine CLI Generator</span>
+        <span class="badge badge-success">Forensic Dossier</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <div class="avoid-break">
+    <h2>2.5 Comprehensive FortiGate SNMP Telemetry Center</h2>
     <p>
       Dedicated hardware and environmental telemetry cockpit: monitoring CPU/RAM, session counts, 46+ physical ports and departmental VLANs, thermal zones, cooling fans, dual AC power supplies, and FortiOS UTM threat counters.
     </p>
@@ -439,14 +477,14 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgSnmp}" alt="SNMP Telemetry Center">
       <div class="screenshot-caption">
-        <span>Figure 5: High-Performance FortiGate SNMP Hardware & Environmental Center</span>
+        <span>Figure 8: High-Performance FortiGate SNMP Hardware & Environmental Center</span>
         <span class="badge badge-primary">SNMP Hardware</span>
       </div>
     </div>
   </div>
 
   <div class="avoid-break">
-    <h2>2.5 Security Policies & Conflict Engine</h2>
+    <h2>2.6 Security Policies & Conflict Engine</h2>
     <p>
       Parses native firewall access control lists into a canonical rule tree, highlighting shadowed, redundant, or overly permissive rules.
     </p>
@@ -454,7 +492,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgPolicies}" alt="Policy Rules & Governance">
       <div class="screenshot-caption">
-        <span>Figure 6: Canonical Policy Governance & Shadow Conflict Detection</span>
+        <span>Figure 9: Canonical Policy Governance & Shadow Conflict Detection</span>
         <span class="badge badge-warning">Security Audit</span>
       </div>
     </div>
@@ -463,7 +501,7 @@ const htmlContent = `<!DOCTYPE html>
   <div class="page-break"></div>
 
   <div class="avoid-break">
-    <h2>2.6 Full-Spectrum Firewall Traffic & Log Analyzer (InfluxDB 2.7 TSDB Engine)</h2>
+    <h2>2.7 Full-Spectrum Firewall Traffic & Log Analyzer (InfluxDB 2.7 TSDB Engine)</h2>
     <p>
       High-velocity time-series traffic ingestion and multi-parameter log analyzer capturing all traffic passing through the perimeter gateway across all 46+ interfaces, departmental VLANs, HPC clusters, and external WAN. Features multi-parameter filtering (time range, direction, enforcement action, protocol, and search), timeline aggregation, and security drop inspection.
     </p>
@@ -471,7 +509,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgLogs}" alt="Firewall Traffic & Threat Analytics">
       <div class="screenshot-caption">
-        <span>Figure 7: InfluxDB Traffic & Threat Ingestion Velocity Analytics (Allowed vs Blocked)</span>
+        <span>Figure 10: InfluxDB Traffic & Threat Ingestion Velocity Analytics (Allowed vs Blocked)</span>
         <span class="badge badge-primary">TSDB Analytics</span>
       </div>
     </div>
@@ -479,7 +517,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgLogsExplorer}" alt="Deep Log Explorer & Live Stream">
       <div class="screenshot-caption">
-        <span>Figure 8: Deep Multi-Parameter Log Explorer & Live Stream Table (All Subnets & Blocked Threats)</span>
+        <span>Figure 11: Deep Multi-Parameter Log Explorer & Live Stream Table (All Subnets & Blocked Threats)</span>
         <span class="badge badge-success">Log Explorer</span>
       </div>
     </div>
@@ -488,7 +526,7 @@ const htmlContent = `<!DOCTYPE html>
   <div class="page-break"></div>
 
   <div class="avoid-break">
-    <h2>2.7 CERT-In Section 70B Compliance & Cybersecurity Baseline</h2>
+    <h2>2.8 CERT-In Section 70B Compliance & Cybersecurity Baseline</h2>
     <p>
       Dedicated compliance dashboard validating firewall operational controls against the Indian Computer Emergency Response Team (CERT-In) Section 70B directives, including 180-day secure time-series log retention and Stratum-1 IST NTP clock synchronization.
     </p>
@@ -496,14 +534,14 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgCompliance}" alt="CERT-In Compliance">
       <div class="screenshot-caption">
-        <span>Figure 9: CERT-In National Cyber Security Baseline Compliance Dashboard</span>
+        <span>Figure 12: CERT-In National Cyber Security Baseline Compliance Dashboard</span>
         <span class="badge badge-success">Compliance</span>
       </div>
     </div>
   </div>
 
   <div class="avoid-break">
-    <h2>2.8 User Management & System Configuration</h2>
+    <h2>2.9 User Management & System Configuration</h2>
     <p>
       Multi-tenant user management console with protected superadmin account, role-based permissions, Telegram alert integration, organization branding, custom logo upload, InfluxDB time-series retention, and PostgreSQL 18 automated backup operations.
     </p>
@@ -511,7 +549,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgUsers}" alt="User Management">
       <div class="screenshot-caption">
-        <span>Figure 10: User Management & Telegram Alert Configuration</span>
+        <span>Figure 13: User Management & Telegram Alert Configuration</span>
         <span class="badge badge-primary">RBAC</span>
       </div>
     </div>
@@ -519,7 +557,7 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgSettings}" alt="Settings & Branding">
       <div class="screenshot-caption">
-        <span>Figure 11: Institutional Branding, Custom Logo & PostgreSQL 18 / InfluxDB 2.7 Engines</span>
+        <span>Figure 14: Institutional Branding, Custom Logo & PostgreSQL 18 / InfluxDB 2.7 Engines</span>
         <span class="badge badge-primary">Administration</span>
       </div>
     </div>

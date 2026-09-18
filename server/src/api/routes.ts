@@ -235,6 +235,74 @@ apiRouter.get('/logs/analyzer/export', (req: Request, res: Response) => {
   res.send(csv);
 });
 
+// =======================================================
+// 2.2 Unapproved Apps & Shadow IT Investigation Endpoints
+// =======================================================
+apiRouter.get('/traffic/bento', (req: Request, res: Response) => {
+  const bento = telemetryStore.getBentoTrafficAnalytics();
+  res.json({ success: true, ...bento });
+});
+
+apiRouter.get('/traffic/unapproved/stats', (req: Request, res: Response) => {
+  const data = telemetryStore.getUnapprovedTrafficAnalytics();
+  res.json({
+    success: true,
+    totals: data.totals,
+    categoryBreakdown: data.categoryBreakdown,
+    topOffendingDevices: data.topOffendingDevices
+  });
+});
+
+apiRouter.get('/traffic/unapproved/query', (req: Request, res: Response) => {
+  const category = req.query.category as string || 'all';
+  const search = req.query.search as string || '';
+  const action = req.query.action as string || 'all';
+  const limit = parseInt(req.query.limit as string, 10) || 50;
+  const offset = parseInt(req.query.offset as string, 10) || 0;
+
+  const data = telemetryStore.getUnapprovedTrafficAnalytics({ category, search, action, limit, offset });
+  res.json({
+    success: true,
+    totals: data.totals,
+    categoryBreakdown: data.categoryBreakdown,
+    topOffendingDevices: data.topOffendingDevices,
+    violations: data.recentViolations
+  });
+});
+
+apiRouter.get('/traffic/unapproved/device/:ip', (req: Request, res: Response) => {
+  const ip = String(req.params.ip);
+  const dossier = telemetryStore.getDeviceForensicDossier(ip);
+  res.json({ success: true, dossier });
+});
+
+apiRouter.get('/traffic/unapproved/export', (req: Request, res: Response) => {
+  const data = telemetryStore.getUnapprovedTrafficAnalytics({ limit: 2000 });
+  const headers = ['Timestamp', 'Offending Device IP', 'Hostname', 'Department', 'VLAN', 'Threat Category', 'App-ID', 'Remote Target IP', 'Remote Host', 'Country', 'Port', 'Direction', 'Action', 'Policy', 'Transferred Bytes'];
+  const rows = data.recentViolations.map(v => [
+    `"${v.timestamp}"`,
+    `"${v.internalIp}"`,
+    `"${v.internalHost}"`,
+    `"${v.department}"`,
+    `"${v.vlan}"`,
+    `"${v.categoryLabel}"`,
+    `"${v.appId}"`,
+    `"${v.remoteIp}"`,
+    `"${v.remoteHost}"`,
+    `"${v.remoteCountry}"`,
+    v.remotePort,
+    `"${v.direction}"`,
+    `"${v.action.toUpperCase()}"`,
+    `"${v.policyName}"`,
+    v.totalBytes
+  ].join(','));
+
+  const csv = [headers.join(','), ...rows].join('\n');
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename="CERT-In_Unapproved_Traffic_Audit_${Date.now()}.csv"`);
+  res.send(csv);
+});
+
 // 3. Internet Speed Test & 15-Minute Automated Monitor
 apiRouter.get('/speedtest', (req: Request, res: Response) => {
   const latest = speedTestCollector.getLatest();

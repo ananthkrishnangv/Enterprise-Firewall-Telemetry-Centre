@@ -5,6 +5,7 @@ import PolicyView from '../views/PolicyView.vue';
 import DevicesView from '../views/DevicesView.vue';
 import ConfigDiffView from '../views/ConfigDiffView.vue';
 import LiveLogsView from '../views/LiveLogsView.vue';
+import UnapprovedTrafficView from '../views/UnapprovedTrafficView.vue';
 import ComplianceView from '../views/ComplianceView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import UserManagementView from '../views/UserManagementView.vue';
@@ -18,6 +19,7 @@ const routes = [
   { path: '/wizard', name: 'Wizard', component: WizardView, meta: { public: true } },
   { path: '/', name: 'Dashboard', component: DashboardView },
   { path: '/traffic', name: 'Traffic', component: TrafficView },
+  { path: '/unapproved-apps', name: 'UnapprovedApps', component: UnapprovedTrafficView },
   { path: '/policies', name: 'Policies', component: PolicyView },
   { path: '/devices', name: 'Devices', component: DevicesView },
   { path: '/config-diff', name: 'ConfigDiff', component: ConfigDiffView },

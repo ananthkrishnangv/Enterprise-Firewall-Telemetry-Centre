@@ -168,23 +168,45 @@ export interface HeavyDataIpItem {
 
 export interface TopUploadItem {
   rank: number;
+  sourceIp: string;
+  sourceHost: string;
+  sourceDept: string;
+  sourceZone?: string;
+  destIp: string;
+  destHost: string;
+  destCountry?: string;
+  destPort?: number;
+  appId: string;
+  protocol?: string;
+  uploadBytes: number;
+  uploadRateMbps: number;
+  sessionsCount?: number;
+  // Legacy compatibility
   ip: string;
   systemName: string;
   department: string;
-  appId: string;
-  uploadBytes: number;
-  uploadRateMbps: number;
   destEndpoint: string;
 }
 
 export interface TopDownloadItem {
   rank: number;
+  sourceIp: string;
+  sourceHost: string;
+  sourceCountry?: string;
+  sourcePort?: number;
+  destIp: string;
+  destHost: string;
+  destDept: string;
+  destZone?: string;
+  appId: string;
+  protocol?: string;
+  downloadBytes: number;
+  downloadRateMbps: number;
+  sessionsCount?: number;
+  // Legacy compatibility
   ip: string;
   systemName: string;
   department: string;
-  appId: string;
-  downloadBytes: number;
-  downloadRateMbps: number;
   sourceEndpoint: string;
 }
 
@@ -208,6 +230,84 @@ export interface BentoTrafficAnalytics {
   heavyDataIps: HeavyDataIpItem[];
   topUploaders: TopUploadItem[];
   topDownloaders: TopDownloadItem[];
+}
+
+export type UnapprovedCategory =
+  | 'bittorrent'
+  | 'download_manager'
+  | 'movies'
+  | 'unofficial_media'
+  | 'botnet_spam'
+  | 'crypto_mining'
+  | 'illegal_website';
+
+export interface UnapprovedViolationRecord {
+  id: string;
+  timestamp: string;
+  category: UnapprovedCategory;
+  categoryLabel: string;
+  appId: string;
+  protocol: string;
+  // Offending Internal Device
+  internalIp: string;
+  internalHost: string;
+  department: string;
+  vlan: string;
+  macAddress?: string;
+  switchPort?: string;
+  // Remote Target
+  remoteIp: string;
+  remoteHost: string;
+  remoteCountry: string;
+  remotePort: number;
+  // Traffic Details
+  direction: 'outbound' | 'inbound';
+  action: 'blocked' | 'dropped' | 'flagged';
+  policyName: string;
+  bytesIn: number;
+  bytesOut: number;
+  totalBytes: number;
+  packets: number;
+  severity: 'warning' | 'critical';
+  details: string;
+}
+
+export interface OffendingDeviceSummary {
+  rank: number;
+  ip: string;
+  hostname: string;
+  department: string;
+  vlan: string;
+  violationsCount: number;
+  totalBytesWasted: number;
+  primaryCategory: string;
+  detectedApps: string[];
+  lastSeen: string;
+  blockedRatePercent: number;
+}
+
+export interface UnapprovedTrafficAnalytics {
+  isLive: boolean;
+  activeGateway: string;
+  timestamp: string;
+  totals: {
+    totalViolations: number;
+    totalBytesWasted: number;
+    blockedCount: number;
+    flaggedCount: number;
+    dropRatePercent: number;
+    uniqueOffendingDevices: number;
+  };
+  categoryBreakdown: {
+    category: UnapprovedCategory;
+    label: string;
+    icon: string;
+    violationsCount: number;
+    bytesWasted: number;
+    percentOfViolations: number;
+  }[];
+  topOffendingDevices: OffendingDeviceSummary[];
+  recentViolations: UnapprovedViolationRecord[];
 }
 
 export const useTelemetryStore = defineStore('telemetry', () => {
@@ -293,6 +393,7 @@ export const useTelemetryStore = defineStore('telemetry', () => {
       if (speedData.success && speedData.speedtest) speedtest.value = speedData.speedtest;
       await fetchAnalytics();
       await fetchBentoAnalytics();
+      await fetchUnapprovedAnalytics();
     } catch (e) {
       console.error('Failed to fetch initial telemetry', e);
     }
@@ -478,6 +579,76 @@ export const useTelemetryStore = defineStore('telemetry', () => {
     }
   }
 
+  const unapprovedAnalytics = ref<UnapprovedTrafficAnalytics | null>(null);
+  const unapprovedViolations = ref<UnapprovedViolationRecord[]>([]);
+  const isUnapprovedLoading = ref<boolean>(false);
+
+  async function fetchUnapprovedAnalytics() {
+    try {
+      isUnapprovedLoading.value = true;
+      const res = await fetch('/api/traffic/unapproved/query?limit=100');
+      const data = await res.json();
+      if (data.success) {
+        unapprovedAnalytics.value = {
+          isLive: true,
+          activeGateway: 'FortiGate-600E-Edge',
+          timestamp: new Date().toISOString(),
+          totals: data.totals,
+          categoryBreakdown: data.categoryBreakdown,
+          topOffendingDevices: data.topOffendingDevices,
+          recentViolations: data.violations || []
+        };
+        unapprovedViolations.value = data.violations || [];
+      }
+    } catch (e) {
+      console.error('Failed to fetch unapproved analytics', e);
+    } finally {
+      isUnapprovedLoading.value = false;
+    }
+  }
+
+  async function queryUnapprovedViolations(params: { category?: string; search?: string; action?: string; limit?: number; offset?: number }) {
+    try {
+      isUnapprovedLoading.value = true;
+      const q = new URLSearchParams();
+      if (params.category) q.set('category', params.category);
+      if (params.search) q.set('search', params.search);
+      if (params.action) q.set('action', params.action);
+      if (params.limit) q.set('limit', String(params.limit));
+      if (params.offset) q.set('offset', String(params.offset));
+
+      const res = await fetch(`/api/traffic/unapproved/query?${q.toString()}`);
+      const data = await res.json();
+      if (data.success) {
+        if (data.totals && unapprovedAnalytics.value) {
+          unapprovedAnalytics.value.totals = data.totals;
+          unapprovedAnalytics.value.categoryBreakdown = data.categoryBreakdown;
+          unapprovedAnalytics.value.topOffendingDevices = data.topOffendingDevices;
+        }
+        unapprovedViolations.value = data.violations || [];
+        return data;
+      }
+    } catch (e) {
+      console.error('Failed to query unapproved violations', e);
+    } finally {
+      isUnapprovedLoading.value = false;
+    }
+    return null;
+  }
+
+  async function fetchDeviceDossier(ip: string) {
+    try {
+      const res = await fetch(`/api/traffic/unapproved/device/${encodeURIComponent(ip)}`);
+      const data = await res.json();
+      if (data.success) {
+        return data.dossier;
+      }
+    } catch (e) {
+      console.error('Failed to fetch device dossier', e);
+    }
+    return null;
+  }
+
   const activeAlertsCount = computed(() => alerts.value.filter(a => !a.acknowledged).length);
 
   function openStorageModal() {
@@ -522,5 +693,11 @@ export const useTelemetryStore = defineStore('telemetry', () => {
     acknowledgeAlert,
     clearAcknowledgedAlerts,
     fetchStorageInfo,
+    unapprovedAnalytics,
+    unapprovedViolations,
+    isUnapprovedLoading,
+    fetchUnapprovedAnalytics,
+    queryUnapprovedViolations,
+    fetchDeviceDossier,
   };
 });

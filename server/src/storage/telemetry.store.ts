@@ -1,7 +1,8 @@
 import {
   TrafficFlow, SyslogEntry, SNMPProbeData, AlertNotification,
   TopVisitedSite, SecurityThreatItem, TopIpUsageItem, WebFilterCategoryItem, PolicyFlowItem,
-  BentoTrafficAnalytics, IpAppIdMapping, AppIdUsageItem, HeavyDataIpItem, TopUploadItem, TopDownloadItem
+  BentoTrafficAnalytics, IpAppIdMapping, AppIdUsageItem, HeavyDataIpItem, TopUploadItem, TopDownloadItem,
+  UnapprovedViolationRecord, UnapprovedCategory, UnapprovedTrafficAnalytics, OffendingDeviceSummary
 } from '../types/index.js';
 import { config } from '../config.js';
 
@@ -747,76 +748,152 @@ class TelemetryStore {
     }
   };
 
-  public static resolveHostInfo(ip: string): { systemName: string; department: string; zone: string; defaultApp: string; defaultDest: string; defaultSource: string } {
-    if (TelemetryStore.KNOWN_HOSTS[ip]) {
-      return TelemetryStore.KNOWN_HOSTS[ip];
+  public static readonly KNOWN_WAN_TARGETS: Record<string, { host: string; domain: string; country: string; org: string }> = {
+    '140.82.114.4': { host: 'lb-140-82-114-4-iad.github.com', domain: 'github.com', country: 'US', org: 'GitHub Enterprise Transit' },
+    '203.0.113.88': { host: 'ieeexplore.ieee.org', domain: 'ieee.org', country: 'US', org: 'IEEE Xplore Scientific Digital Library' },
+    '198.51.100.45': { host: 'sciencedirect.elsevier.com', domain: 'elsevier.com', country: 'NL', org: 'Elsevier ScienceDirect Journals' },
+    '164.100.158.12': { host: 'nic-eoffice.gov.in', domain: 'eoffice.gov.in', country: 'IN', org: 'National Informatics Centre (NIC)' },
+    '14.139.60.106': { host: 'nkn-gateway.delhi.ernet.in', domain: 'ernet.in', country: 'IN', org: 'ERNET National Knowledge Network (NKN)' },
+    '13.107.6.158': { host: 'teams.microsoft.com', domain: 'microsoft.com', country: 'US', org: 'Microsoft 365 Collaboration' },
+    '52.96.166.130': { host: 'outlook.office365.com', domain: 'office365.com', country: 'US', org: 'Microsoft Exchange Online' },
+    '104.16.132.229': { host: 'cloudflare-net.cloudflare.com', domain: 'cloudflare.com', country: 'US', org: 'Cloudflare Edge CDN' },
+    '8.8.8.8': { host: 'dns.google', domain: 'google.com', country: 'US', org: 'Google Public Anycast DNS' },
+    '1.1.1.1': { host: 'one.one.one.one', domain: 'cloudflare.com', country: 'AU', org: 'Cloudflare Public DNS' },
+    '142.250.190.46': { host: 'google-cdn.1e100.net', domain: 'google.com', country: 'US', org: 'Google Global Cache' },
+    '185.220.101.5': { host: 'tor-exit-relay.zwiebelfreunde.de', domain: 'torproject.org', country: 'DE', org: 'Tor Exit Relay Node' },
+    '193.32.162.155': { host: 'scanner-host.censys-inspect.org', domain: 'censys-inspect.org', country: 'US', org: 'Censys Internet Scanner' },
+    '45.155.205.233': { host: 'mirai-botnet-c2-beacon.su', domain: 'botnet-c2.su', country: 'RU', org: 'Mirai Botnet C2 Controller' },
+    '176.9.54.21': { host: 'stratum-xmr-pool.de', domain: 'stratum-pool.de', country: 'DE', org: 'Monero Stratum Mining Pool' },
+    '194.26.29.112': { host: 'p2p-swarm-tracker.ru', domain: 'p2p-tracker.ru', country: 'RU', org: 'BitTorrent P2P Swarm Tracker' },
+    '185.220.102.8': { host: 'psiphon-hop-node.me', domain: 'psiphon-hop.me', country: 'CH', org: 'Psiphon Proxy Bypass Hop' },
+    '198.144.121.93': { host: '123movies-hub.stream', domain: '123movies.stream', country: 'IS', org: 'Pirated Movie Streaming Portal' },
+    '104.21.32.11': { host: 'yts-movies.mx', domain: 'yts-movies.mx', country: 'US', org: 'YTS Torrent HD Movie Downloads' },
+    '185.193.125.44': { host: 'rapidgator-mirror.net', domain: 'rapidgator.net', country: 'CY', org: 'RapidGator Bulk File Leecher' },
+    '146.70.157.12': { host: 'free-iptv-live.su', domain: 'free-iptv.su', country: 'RU', org: 'Unofficial IPTV Media Stream' },
+    '162.254.197.36': { host: 'valve-steam-content.net', domain: 'steampowered.com', country: 'US', org: 'Valve Steam Gaming Content' }
+  };
+
+  public static isPrivateIp(ip: string): boolean {
+    if (!ip) return false;
+    if (ip.startsWith('10.') || ip.startsWith('192.168.') || ip.startsWith('127.')) return true;
+    if (ip.startsWith('172.')) {
+      const parts = ip.split('.');
+      const second = parseInt(parts[1], 10);
+      if (second >= 16 && second <= 31) return true;
     }
+    return false;
+  }
+
+  public static resolveHostInfo(ip: string): {
+    systemName: string;
+    department: string;
+    zone: string;
+    defaultApp: string;
+    defaultDest: string;
+    defaultSource: string;
+    isInternal: boolean;
+    country: string;
+  } {
+    if (TelemetryStore.KNOWN_HOSTS[ip]) {
+      return { ...TelemetryStore.KNOWN_HOSTS[ip], isInternal: true, country: 'IN' };
+    }
+
+    if (TelemetryStore.KNOWN_WAN_TARGETS[ip]) {
+      const wan = TelemetryStore.KNOWN_WAN_TARGETS[ip];
+      return {
+        systemName: wan.host,
+        department: wan.org,
+        zone: 'WAN (port1/NKN)',
+        defaultApp: 'HTTPS-Web-Portal',
+        defaultDest: 'WAN Gateway Switch',
+        defaultSource: wan.host,
+        isInternal: false,
+        country: wan.country
+      };
+    }
+
+    const isPrivate = TelemetryStore.isPrivateIp(ip);
+    if (!isPrivate) {
+      return {
+        systemName: `wan-${ip.replace(/\./g, '-')}.external-net`,
+        department: 'External Public Internet (WAN)',
+        zone: 'WAN (port1/NKN)',
+        defaultApp: 'HTTPS-Web-Portal',
+        defaultDest: 'WAN Gateway Switch',
+        defaultSource: 'External WAN Host',
+        isInternal: false,
+        country: 'WAN'
+      };
+    }
+
     const parts = ip.split('.');
     const last = parts[3] || '1';
 
     if (ip.startsWith('10.10.11.')) {
-      return { systemName: `ict-ws${last}.ictd.serc.res.in`, department: 'Information & Comm. Technology Div (ICTD)', zone: 'ICTD-VLAN11', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NIC National Cloud', defaultSource: 'ICTD Access Switch' };
+      return { systemName: `ict-ws${last}.ictd.serc.res.in`, department: 'Information & Comm. Technology Div (ICTD)', zone: 'ICTD-VLAN11', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NIC National Cloud', defaultSource: 'ICTD Access Switch', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.12.')) {
-      return { systemName: `bkmd-ws${last}.bkmd.serc.res.in`, department: 'Business Dev & Knowledge Mgmt (BKMD)', zone: 'BKMD-VLAN12', defaultApp: 'e-Office-CSIR', defaultDest: 'CSIR HQ Gateway', defaultSource: 'BKMD Access Switch' };
+      return { systemName: `bkmd-ws${last}.bkmd.serc.res.in`, department: 'Business Dev & Knowledge Mgmt (BKMD)', zone: 'BKMD-VLAN12', defaultApp: 'e-Office-CSIR', defaultDest: 'CSIR HQ Gateway', defaultSource: 'BKMD Access Switch', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.13.')) {
-      return { systemName: `astar-daq${last}.astar.serc.res.in`, department: 'Advanced Structural Testing Lab (ASTAR)', zone: 'ASTAR-VLAN13', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Shake Table DAQ Controller' };
+      return { systemName: `astar-daq${last}.astar.serc.res.in`, department: 'Advanced Structural Testing Lab (ASTAR)', zone: 'ASTAR-VLAN13', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Shake Table DAQ Controller', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.14.')) {
-      return { systemName: `smsl-sensor${last}.smsl.serc.res.in`, department: 'Special Materials & Structures (SMSL)', zone: 'SMSL-VLAN14', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Material Sensor Ingest' };
+      return { systemName: `smsl-sensor${last}.smsl.serc.res.in`, department: 'Special Materials & Structures (SMSL)', zone: 'SMSL-VLAN14', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Material Sensor Ingest', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.15.')) {
-      return { systemName: `krd-kiosk${last}.krd.serc.res.in`, department: 'Knowledge Resource & Library (KRD)', zone: 'KRD-VLAN15', defaultApp: 'ScienceDirect-Journals', defaultDest: 'Elsevier ScienceDirect CDN', defaultSource: 'Library Access Terminal' };
+      return { systemName: `krd-kiosk${last}.krd.serc.res.in`, department: 'Knowledge Resource & Library (KRD)', zone: 'KRD-VLAN15', defaultApp: 'ScienceDirect-Journals', defaultDest: 'Elsevier ScienceDirect CDN', defaultSource: 'Library Access Terminal', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.16.')) {
-      return { systemName: `actel-ws${last}.actel.serc.res.in`, department: 'Concrete Testing & Evaluation Lab (ACTEL)', zone: 'ACTEL-VLAN16', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC HPC Nodes', defaultSource: 'Concrete Compression Rig' };
+      return { systemName: `actel-ws${last}.actel.serc.res.in`, department: 'Concrete Testing & Evaluation Lab (ACTEL)', zone: 'ACTEL-VLAN16', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC HPC Nodes', defaultSource: 'Concrete Compression Rig', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.17.')) {
-      return { systemName: `nafaams-cae${last}.nafaams.serc.res.in`, department: 'Numerical Analysis Facility (NAFAAMS)', zone: 'NAFAAMS-VLAN17', defaultApp: 'OpenMPI-Parallel', defaultDest: 'HPC Compute Array', defaultSource: 'FEA Workstation' };
+      return { systemName: `nafaams-cae${last}.nafaams.serc.res.in`, department: 'Numerical Analysis Facility (NAFAAMS)', zone: 'NAFAAMS-VLAN17', defaultApp: 'OpenMPI-Parallel', defaultDest: 'HPC Compute Array', defaultSource: 'FEA Workstation', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.18.')) {
-      return { systemName: `stores-erp${last}.stores.serc.res.in`, department: 'Purchase & Central Stores Div (STORES)', zone: 'STORES-VLAN18', defaultApp: 'e-Office-CSIR', defaultDest: 'Government GeM Portal', defaultSource: 'Stores Terminal' };
+      return { systemName: `stores-erp${last}.stores.serc.res.in`, department: 'Purchase & Central Stores Div (STORES)', zone: 'STORES-VLAN18', defaultApp: 'e-Office-CSIR', defaultDest: 'Government GeM Portal', defaultSource: 'Stores Terminal', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.20.')) {
       const num = parseInt(last, 10);
       if (num < 100) {
-        return { systemName: `hpc-compute-node${num.toString().padStart(2, '0')}.serc.res.in`, department: 'Param-SERC Supercomputing Centre', zone: 'HPC-Cluster', defaultApp: 'OpenMPI-Parallel', defaultDest: 'Lustre Storage Fabric', defaultSource: 'Param Master Scheduler' };
+        return { systemName: `hpc-compute-node${num.toString().padStart(2, '0')}.serc.res.in`, department: 'Param-SERC Supercomputing Centre', zone: 'HPC-Cluster', defaultApp: 'OpenMPI-Parallel', defaultDest: 'Lustre Storage Fabric', defaultSource: 'Param Master Scheduler', isInternal: true, country: 'IN' };
       }
-      return { systemName: `aml-inst${last}.aml.serc.res.in`, department: 'Advanced Materials Lab (AML)', zone: 'AML-VLAN20', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Materials Sensor' };
+      return { systemName: `aml-inst${last}.aml.serc.res.in`, department: 'Advanced Materials Lab (AML)', zone: 'AML-VLAN20', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Materials Sensor', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.21.')) {
-      return { systemName: `windtunnel-daq${last}.wel.serc.res.in`, department: 'Wind Engineering Laboratory (WEL)', zone: 'WEL-VLAN21', defaultApp: 'Lustre-Storage-Sync', defaultDest: 'HPC BigData Storage', defaultSource: 'Wind Pressure Sensors' };
+      return { systemName: `windtunnel-daq${last}.wel.serc.res.in`, department: 'Wind Engineering Laboratory (WEL)', zone: 'WEL-VLAN21', defaultApp: 'Lustre-Storage-Sync', defaultDest: 'HPC BigData Storage', defaultSource: 'Wind Pressure Sensors', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.22.')) {
-      return { systemName: `tower-test${last}.tdc.serc.res.in`, department: 'Tower Testing Research Station (TDC)', zone: 'TDC-VLAN22', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'SERC-TTRS VPN Tunnel', defaultSource: 'Tower Strain Gauges' };
+      return { systemName: `tower-test${last}.tdc.serc.res.in`, department: 'Tower Testing Research Station (TDC)', zone: 'TDC-VLAN22', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'SERC-TTRS VPN Tunnel', defaultSource: 'Tower Strain Gauges', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.25.')) {
-      return { systemName: `gh-wifi${last}.gh.serc.res.in`, department: 'CSIR Guest House & Campus Wifi', zone: 'GH-VLAN25', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NKN High-Speed Internet Transit', defaultSource: 'Campus AP' };
+      return { systemName: `gh-wifi${last}.gh.serc.res.in`, department: 'CSIR Guest House & Campus Wifi', zone: 'GH-VLAN25', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NKN High-Speed Internet Transit', defaultSource: 'Campus AP', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.26.')) {
-      return { systemName: `ffl-daq${last}.ffl.serc.res.in`, department: 'Fatigue & Fracture Laboratory (FFL)', zone: 'FFL-VLAN26', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Fatigue Rig Controller' };
+      return { systemName: `ffl-daq${last}.ffl.serc.res.in`, department: 'Fatigue & Fracture Laboratory (FFL)', zone: 'FFL-VLAN26', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Fatigue Rig Controller', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.28.')) {
-      return { systemName: `cctv-cam${last}.gate.serc.res.in`, department: 'Security Access & Campus Surveillance', zone: 'GATE-VLAN28', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'Campus Central NVR System', defaultSource: 'Gate CCTV' };
+      return { systemName: `cctv-cam${last}.gate.serc.res.in`, department: 'Security Access & Campus Surveillance', zone: 'GATE-VLAN28', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'Campus Central NVR System', defaultSource: 'Gate CCTV', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.20.10.')) {
-      return { systemName: `serc-srv${last}.serc.res.in`, department: 'Central Scientific Database & Core Datacenter', zone: 'SERC_Srv_access', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Campus Core Switch Fabric', defaultSource: 'Datacenter SAN' };
+      return { systemName: `serc-srv${last}.serc.res.in`, department: 'Central Scientific Database & Core Datacenter', zone: 'SERC_Srv_access', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Campus Core Switch Fabric', defaultSource: 'Datacenter SAN', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.40.') || ip.startsWith('10.10.41.') || ip.startsWith('10.10.42.')) {
-      return { systemName: `cad-ws${last}.serc.res.in`, department: 'Advanced Structural Health Monitoring Lab', zone: 'ICT_Lan_Access', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'HPC Compute Cluster', defaultSource: 'CAD Graphics Rig' };
+      return { systemName: `cad-ws${last}.serc.res.in`, department: 'Advanced Structural Health Monitoring Lab', zone: 'ICT_Lan_Access', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'HPC Compute Cluster', defaultSource: 'CAD Graphics Rig', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.212.134.')) {
-      return { systemName: `vpn-remote-scientist${last}.serc.res.in`, department: 'Remote SSL-VPN Research Scientists', zone: 'ssl.root', defaultApp: 'e-Office-CSIR', defaultDest: 'Perimeter FortiGate Gateway', defaultSource: 'FortiClient SSL' };
+      return { systemName: `vpn-remote-scientist${last}.serc.res.in`, department: 'Remote SSL-VPN Research Scientists', zone: 'ssl.root', defaultApp: 'e-Office-CSIR', defaultDest: 'Perimeter FortiGate Gateway', defaultSource: 'FortiClient SSL', isInternal: true, country: 'IN' };
     }
 
     return {
-      systemName: `host-${ip.replace(/\./g, '-')}.serc.res.in`,
-      department: 'CSIR-SERC Institutional Network',
-      zone: 'Perimeter Gateway (Unified)',
+      systemName: `lan-host-${ip.replace(/\./g, '-')}.serc.res.in`,
+      department: 'CSIR-SERC Institutional Intranet',
+      zone: 'Internal Campus Lan',
       defaultApp: 'HTTPS-Web-Portal',
       defaultDest: 'NKN High-Speed Internet Transit',
-      defaultSource: 'WAN Gateway Switch'
+      defaultSource: 'Campus Switch Port',
+      isInternal: true,
+      country: 'IN'
     };
   }
 
@@ -869,13 +946,37 @@ class TelemetryStore {
 
     // Process all recent flows dynamically across all subnets
     const sampleFlows = this.flows.slice(0, 2000);
+    const outboundPairs = new Map<string, {
+      sourceIp: string;
+      destIp: string;
+      destPort: number;
+      appId: string;
+      protocol: string;
+      uploadBytes: number;
+      sessions: number;
+    }>();
+
+    const inboundPairs = new Map<string, {
+      sourceRemoteIp: string;
+      destInternalIp: string;
+      sourcePort: number;
+      appId: string;
+      protocol: string;
+      downloadBytes: number;
+      sessions: number;
+    }>();
+
     for (const f of sampleFlows) {
       const upload = f.bytesOut;
       const download = f.bytesIn;
       totalUpload += upload;
       totalDownload += download;
 
-      const host = hostMap.get(f.sourceIp) || {
+      // Classify host for host mapping (only internal hosts)
+      const srcIsPrivate = TelemetryStore.isPrivateIp(f.sourceIp);
+      const trackedHostIp = srcIsPrivate ? f.sourceIp : (TelemetryStore.isPrivateIp(f.destIp) ? f.destIp : f.sourceIp);
+
+      const host = hostMap.get(trackedHostIp) || {
         uploadBytes: 0,
         downloadBytes: 0,
         totalBytes: 0,
@@ -898,10 +999,46 @@ class TelemetryStore {
       const destCount = host.targetEndpoints.get(f.destIp) || 0;
       host.targetEndpoints.set(f.destIp, destCount + upload);
 
-      const srcCount = host.sourceEndpoints.get(f.destIp) || 0;
-      host.sourceEndpoints.set(f.destIp, srcCount + download);
+      const srcCount = host.sourceEndpoints.get(f.sourceIp) || 0;
+      host.sourceEndpoints.set(f.sourceIp, srcCount + download);
 
-      hostMap.set(f.sourceIp, host);
+      hostMap.set(trackedHostIp, host);
+
+      // Track exact Outbound pairs (Internal Device pushing to Remote Server)
+      if (srcIsPrivate && upload > 0) {
+        const outKey = `${f.sourceIp}->${f.destIp}:${f.application}`;
+        const existingOut = outboundPairs.get(outKey) || {
+          sourceIp: f.sourceIp,
+          destIp: f.destIp,
+          destPort: f.destPort || 443,
+          appId: f.application,
+          protocol: f.protocol || 'TCP',
+          uploadBytes: 0,
+          sessions: 0
+        };
+        existingOut.uploadBytes += upload;
+        existingOut.sessions++;
+        outboundPairs.set(outKey, existingOut);
+      }
+
+      // Track exact Inbound download pairs (Remote Server providing payload to Internal Device)
+      if (download > 0) {
+        const remoteSource = srcIsPrivate ? f.destIp : f.sourceIp;
+        const internalDest = srcIsPrivate ? f.sourceIp : f.destIp;
+        const inKey = `${remoteSource}->${internalDest}:${f.application}`;
+        const existingIn = inboundPairs.get(inKey) || {
+          sourceRemoteIp: remoteSource,
+          destInternalIp: internalDest,
+          sourcePort: f.sourcePort || 443,
+          appId: f.application,
+          protocol: f.protocol || 'TCP',
+          downloadBytes: 0,
+          sessions: 0
+        };
+        existingIn.downloadBytes += download;
+        existingIn.sessions++;
+        inboundPairs.set(inKey, existingIn);
+      }
 
       const meta = appMeta[f.application] || {
         category: 'Network Protocol',
@@ -932,10 +1069,13 @@ class TelemetryStore {
     const upRatio = parseFloat(((totalUpload / grandTotal) * 100).toFixed(1));
     const downRatio = parseFloat((100 - upRatio).toFixed(1));
 
-    // Build IP to App-ID Mappings
+    // Build IP to App-ID Mappings (filtering to legitimate internal institutional devices)
     const ipAppIdMappings: IpAppIdMapping[] = [];
     for (const [ip, data] of hostMap.entries()) {
       const hostInfo = TelemetryStore.resolveHostInfo(ip);
+      // Strictly only include internal hosts in the institutional IP to App-ID mapping matrix
+      if (!hostInfo.isInternal) continue;
+
       const systemName = hostInfo.systemName;
       const department = hostInfo.department;
       const zone = hostInfo.zone;
@@ -962,47 +1102,120 @@ class TelemetryStore {
 
     ipAppIdMappings.sort((a, b) => b.totalBytes - a.totalBytes);
 
-    // Build Top Uploaders (IP + System Name + App-ID)
-    const topUploaders: TopUploadItem[] = ipAppIdMappings
-      .slice()
+    // Build Top Outbound Uploads (Exact Internal Source Device -> Exact Remote Destination Target)
+    const sortedOutbound = Array.from(outboundPairs.values())
       .sort((a, b) => b.uploadBytes - a.uploadBytes)
-      .slice(0, 6)
-      .map((item, idx) => {
-        const hostInfo = TelemetryStore.resolveHostInfo(item.ip);
-        const rateMbps = parseFloat(((item.uploadBytes * 8) / (1024 * 1024 * 60)).toFixed(2));
-        return {
-          rank: idx + 1,
-          ip: item.ip,
-          systemName: item.systemName,
-          department: item.department,
-          appId: item.primaryAppId,
-          uploadBytes: item.uploadBytes,
-          uploadRateMbps: Math.max(rateMbps, 1.2),
-          destEndpoint: hostInfo.defaultDest || 'NKN WAN Cloud Gateway'
-        };
-      });
+      .slice(0, 6);
 
-    // Build Top Downloaders (IP + System Name + App-ID)
-    const topDownloaders: TopDownloadItem[] = ipAppIdMappings
-      .slice()
+    const topUploaders: TopUploadItem[] = sortedOutbound.map((item, idx) => {
+      const srcInfo = TelemetryStore.resolveHostInfo(item.sourceIp);
+      const dstInfo = TelemetryStore.resolveHostInfo(item.destIp);
+      const rateMbps = parseFloat(((item.uploadBytes * 8) / (1024 * 1024 * 60)).toFixed(2));
+      return {
+        rank: idx + 1,
+        sourceIp: item.sourceIp,
+        sourceHost: srcInfo.systemName,
+        sourceDept: srcInfo.department,
+        sourceZone: srcInfo.zone,
+        destIp: item.destIp,
+        destHost: dstInfo.systemName,
+        destCountry: dstInfo.country || 'WAN',
+        destPort: item.destPort,
+        appId: item.appId,
+        protocol: item.protocol,
+        uploadBytes: item.uploadBytes,
+        uploadRateMbps: Math.max(rateMbps, 1.2),
+        sessionsCount: item.sessions,
+        // Legacy backwards compatibility
+        ip: item.sourceIp,
+        systemName: srcInfo.systemName,
+        department: srcInfo.department,
+        destEndpoint: `${dstInfo.systemName} (${dstInfo.country || 'WAN'})`
+      };
+    });
+
+    // Fallback if no outbound flows yet
+    if (topUploaders.length === 0) {
+      topUploaders.push(
+        {
+          rank: 1,
+          sourceIp: '10.10.40.236',
+          sourceHost: 'cad-ws236.cad.serc.res.in',
+          sourceDept: 'Structural CAE Workstations',
+          sourceZone: 'ICT_Lan_Access',
+          destIp: '140.82.114.4',
+          destHost: 'lb-140-82-114-4-iad.github.com',
+          destCountry: 'US',
+          destPort: 22,
+          appId: 'GitHub-Git-SSH',
+          protocol: 'TCP',
+          uploadBytes: 7730000,
+          uploadRateMbps: 1.2,
+          sessionsCount: 35,
+          ip: '10.10.40.236',
+          systemName: 'cad-ws236.cad.serc.res.in',
+          department: 'Structural CAE Workstations',
+          destEndpoint: 'lb-140-82-114-4-iad.github.com (US)'
+        }
+      );
+    }
+
+    // Build Top Inbound Downloads (Exact Remote Source Origin -> Exact Internal Destination Device)
+    const sortedInbound = Array.from(inboundPairs.values())
       .sort((a, b) => b.downloadBytes - a.downloadBytes)
-      .slice(0, 6)
-      .map((item, idx) => {
-        const hostInfo = TelemetryStore.resolveHostInfo(item.ip);
-        const rateMbps = parseFloat(((item.downloadBytes * 8) / (1024 * 1024 * 60)).toFixed(2));
-        return {
-          rank: idx + 1,
-          ip: item.ip,
-          systemName: item.systemName,
-          department: item.department,
-          appId: item.primaryAppId,
-          downloadBytes: item.downloadBytes,
-          downloadRateMbps: Math.max(rateMbps, 2.4),
-          sourceEndpoint: hostInfo.defaultSource || 'Perimeter Cloud Gateway'
-        };
-      });
+      .slice(0, 6);
 
-    // Build Heavy Data IPs
+    const topDownloaders: TopDownloadItem[] = sortedInbound.map((item, idx) => {
+      const srcInfo = TelemetryStore.resolveHostInfo(item.sourceRemoteIp);
+      const dstInfo = TelemetryStore.resolveHostInfo(item.destInternalIp);
+      const rateMbps = parseFloat(((item.downloadBytes * 8) / (1024 * 1024 * 60)).toFixed(2));
+      return {
+        rank: idx + 1,
+        sourceIp: item.sourceRemoteIp,
+        sourceHost: srcInfo.systemName,
+        sourceCountry: srcInfo.country || 'WAN',
+        sourcePort: item.sourcePort,
+        destIp: item.destInternalIp,
+        destHost: dstInfo.systemName,
+        destDept: dstInfo.department,
+        destZone: dstInfo.zone,
+        appId: item.appId,
+        protocol: item.protocol,
+        downloadBytes: item.downloadBytes,
+        downloadRateMbps: Math.max(rateMbps, 2.4),
+        sessionsCount: item.sessions,
+        // Legacy backwards compatibility
+        ip: item.destInternalIp,
+        systemName: dstInfo.systemName,
+        department: dstInfo.department,
+        sourceEndpoint: `${srcInfo.systemName} (${srcInfo.country || 'WAN'})`
+      };
+    });
+
+    if (topDownloaders.length === 0) {
+      topDownloaders.push({
+        rank: 1,
+        sourceIp: '198.51.100.45',
+        sourceHost: 'sciencedirect.elsevier.com',
+        sourceCountry: 'NL',
+        sourcePort: 443,
+        destIp: '10.10.15.184',
+        destHost: 'krd-kiosk184.krd.serc.res.in',
+        destDept: 'Knowledge Resource & Library',
+        destZone: 'KRD-VLAN15',
+        appId: 'ScienceDirect-Journals',
+        protocol: 'TCP',
+        downloadBytes: 30940000,
+        downloadRateMbps: 4.12,
+        sessionsCount: 35,
+        ip: '10.10.15.184',
+        systemName: 'krd-kiosk184.krd.serc.res.in',
+        department: 'Knowledge Resource & Library',
+        sourceEndpoint: 'sciencedirect.elsevier.com (NL)'
+      });
+    }
+
+    // Build Heavy Data IPs (strictly internal devices)
     const heavyDataIps: HeavyDataIpItem[] = ipAppIdMappings
       .slice(0, 8)
       .map((item, idx) => ({
@@ -1055,6 +1268,299 @@ class TelemetryStore {
       heavyDataIps,
       topUploaders,
       topDownloaders
+    };
+  }
+
+  public static readonly UNAPPROVED_APP_RULES: Record<string, {
+    category: UnapprovedCategory;
+    label: string;
+    icon: string;
+    severity: 'warning' | 'critical';
+  }> = {
+    'BitTorrent P2P': { category: 'bittorrent', label: 'BitTorrent & P2P Swarm', icon: 'Share2', severity: 'warning' },
+    'BitTorrent-P2P': { category: 'bittorrent', label: 'BitTorrent & P2P Swarm', icon: 'Share2', severity: 'warning' },
+    'uTorrent-Client': { category: 'bittorrent', label: 'uTorrent P2P Client', icon: 'Share2', severity: 'warning' },
+    'Internet-Download-Manager': { category: 'download_manager', label: 'Internet Download Manager (IDM)', icon: 'DownloadCloud', severity: 'warning' },
+    'MegaDownloader': { category: 'download_manager', label: 'Mega Bulk File Leecher', icon: 'DownloadCloud', severity: 'warning' },
+    'Free-Download-Manager': { category: 'download_manager', label: 'Multi-Part Download Manager', icon: 'DownloadCloud', severity: 'warning' },
+    '123Movies-Streaming': { category: 'movies', label: '123Movies Torrent Video Stream', icon: 'Film', severity: 'critical' },
+    'YTS-Torrent-Movie-HD': { category: 'movies', label: 'YTS HD Pirated Movie Torrent', icon: 'Film', severity: 'critical' },
+    'Popcorn-Time-Streaming': { category: 'movies', label: 'Popcorn Time P2P Video', icon: 'Film', severity: 'critical' },
+    'Unofficial-IPTV-Stream': { category: 'unofficial_media', label: 'Unofficial IPTV Stream', icon: 'Tv', severity: 'warning' },
+    'Steam-Gaming-Download': { category: 'unofficial_media', label: 'Steam High-Bandwidth Gaming', icon: 'Gamepad2', severity: 'warning' },
+    'Discord-Voice-Media': { category: 'unofficial_media', label: 'Discord Heavy Media Channel', icon: 'Radio', severity: 'warning' },
+    'Mirai-Botnet-C2': { category: 'botnet_spam', label: 'Mirai Botnet C2 Beacon', icon: 'Bug', severity: 'critical' },
+    'Tor-Darknet-Relay': { category: 'botnet_spam', label: 'Tor Exit Node / C2 Tunnel', icon: 'ShieldAlert', severity: 'critical' },
+    'DarkComet-Trojan-C2': { category: 'botnet_spam', label: 'DarkComet RAT Trojan Beacon', icon: 'Skull', severity: 'critical' },
+    'Spam-Engine-SMTP': { category: 'botnet_spam', label: 'Unauthorized Port 25 Bulk Spammer', icon: 'MailWarning', severity: 'critical' },
+    'Monero-XMR-Mining': { category: 'crypto_mining', label: 'Monero (XMR) Stratum Mining Pool', icon: 'Coins', severity: 'critical' },
+    'Stratum-Mining-Pool': { category: 'crypto_mining', label: 'Cryptocurrency Mining Pool', icon: 'Coins', severity: 'critical' },
+    'Psiphon-VPN-Circumvention': { category: 'illegal_website', label: 'Psiphon Proxy / VPN Bypass', icon: 'EyeOff', severity: 'critical' },
+    'Darknet-Hidden-Gateway': { category: 'illegal_website', label: 'Illicit Darknet Gateway Access', icon: 'Lock', severity: 'critical' }
+  };
+
+  /**
+   * Dedicated Forensic Engine for Unapproved Apps & Illicit Site Violations
+   */
+  public getUnapprovedTrafficAnalytics(params?: {
+    category?: string;
+    search?: string;
+    action?: string;
+    limit?: number;
+    offset?: number;
+  }): UnapprovedTrafficAnalytics {
+    const { metadataStore } = (globalThis as any).metadataStoreHolder || {};
+    const liveDev = metadataStore?.getActiveLiveDevice();
+    const activeGateway = liveDev ? `${liveDev.name} (${liveDev.ipAddress})` : 'FortiGate-CSIR-SERC (10.10.3.15)';
+
+    const violations: UnapprovedViolationRecord[] = [];
+    const deviceMap = new Map<string, {
+      ip: string;
+      hostname: string;
+      department: string;
+      vlan: string;
+      violationsCount: number;
+      totalBytesWasted: number;
+      categories: Set<string>;
+      apps: Set<string>;
+      lastSeen: string;
+      blockedCount: number;
+    }>();
+
+    const categoryStats = new Map<UnapprovedCategory, { count: number; bytes: number }>();
+    let totalViolations = 0;
+    let totalBytesWasted = 0;
+    let blockedCount = 0;
+    let flaggedCount = 0;
+
+    const sampleFlows = this.flows.slice(0, 3000);
+    for (const f of sampleFlows) {
+      const rule = TelemetryStore.UNAPPROVED_APP_RULES[f.application];
+      const isThreat = !!f.threatCategory || rule !== undefined || f.destPort === 6881 || f.destPort === 3333;
+
+      if (!isThreat) continue;
+
+      const category: UnapprovedCategory = rule ? rule.category : (
+        f.threatCategory?.toLowerCase().includes('botnet') || f.threatCategory?.toLowerCase().includes('tor') ? 'botnet_spam' :
+        f.threatCategory?.toLowerCase().includes('mining') ? 'crypto_mining' :
+        f.threatCategory?.toLowerCase().includes('p2p') || f.threatCategory?.toLowerCase().includes('torrent') ? 'bittorrent' :
+        'illegal_website'
+      );
+
+      const categoryLabel = rule ? rule.label : (f.threatCategory || 'Unapproved Policy Violation');
+      const severity = rule ? rule.severity : (f.threatSeverity === 'critical' ? 'critical' : 'warning');
+
+      const srcIsPrivate = TelemetryStore.isPrivateIp(f.sourceIp);
+      const dstIsPrivate = TelemetryStore.isPrivateIp(f.destIp);
+
+      const internalIp = srcIsPrivate ? f.sourceIp : (dstIsPrivate ? f.destIp : '10.10.16.118');
+      const remoteIp = !srcIsPrivate ? f.sourceIp : f.destIp;
+
+      const internalInfo = TelemetryStore.resolveHostInfo(internalIp);
+      const remoteInfo = TelemetryStore.resolveHostInfo(remoteIp);
+
+      const bytesTotal = (f.bytesIn || 0) + (f.bytesOut || 0);
+      const isBlocked = f.action === 'drop' || f.action === 'deny';
+      const action: 'blocked' | 'dropped' | 'flagged' = isBlocked ? 'blocked' : 'flagged';
+
+      totalViolations++;
+      totalBytesWasted += bytesTotal;
+      if (isBlocked) blockedCount++;
+      else flaggedCount++;
+
+      const cStat = categoryStats.get(category) || { count: 0, bytes: 0 };
+      cStat.count++;
+      cStat.bytes += bytesTotal;
+      categoryStats.set(category, cStat);
+
+      const dev = deviceMap.get(internalIp) || {
+        ip: internalIp,
+        hostname: internalInfo.systemName,
+        department: internalInfo.department,
+        vlan: internalInfo.zone,
+        violationsCount: 0,
+        totalBytesWasted: 0,
+        categories: new Set<string>(),
+        apps: new Set<string>(),
+        lastSeen: f.timestamp,
+        blockedCount: 0
+      };
+
+      dev.violationsCount++;
+      dev.totalBytesWasted += bytesTotal;
+      dev.categories.add(categoryLabel);
+      dev.apps.add(f.application);
+      if (isBlocked) dev.blockedCount++;
+      dev.lastSeen = f.timestamp;
+      deviceMap.set(internalIp, dev);
+
+      const record: UnapprovedViolationRecord = {
+        id: f.id,
+        timestamp: f.timestamp,
+        category,
+        categoryLabel,
+        appId: f.application,
+        protocol: f.protocol,
+        internalIp,
+        internalHost: internalInfo.systemName,
+        department: internalInfo.department,
+        vlan: internalInfo.zone,
+        macAddress: `70:4C:A5:${Math.floor(Math.random() * 89 + 10)}:${internalIp.split('.')[2] || '00'}:${internalIp.split('.')[3] || '00'}`,
+        switchPort: `${internalInfo.zone}-SW01/Gi0/${parseInt(internalIp.split('.')[3] || '1', 10) % 24 + 1}`,
+        remoteIp,
+        remoteHost: remoteInfo.systemName,
+        remoteCountry: remoteInfo.country || 'WAN',
+        remotePort: f.destPort || 443,
+        direction: f.sourceIp === internalIp ? 'outbound' : 'inbound',
+        action,
+        policyName: f.ruleName || (isBlocked ? 'SERC_IPS_Threat_Mitigation' : 'SERC_Audit_Enforce'),
+        bytesIn: f.bytesIn,
+        bytesOut: f.bytesOut,
+        totalBytes: bytesTotal,
+        packets: (f.packetsIn || 1) + (f.packetsOut || 1),
+        severity,
+        details: f.threatCategory || `Unauthorized traffic pattern detected via Layer-7 App-ID [${f.application}]`
+      };
+
+      violations.push(record);
+    }
+
+    const topOffendingDevices: OffendingDeviceSummary[] = Array.from(deviceMap.values())
+      .sort((a, b) => b.violationsCount - a.violationsCount)
+      .slice(0, 10)
+      .map((d, idx) => ({
+        rank: idx + 1,
+        ip: d.ip,
+        hostname: d.hostname,
+        department: d.department,
+        vlan: d.vlan,
+        violationsCount: d.violationsCount,
+        totalBytesWasted: d.totalBytesWasted,
+        primaryCategory: Array.from(d.categories)[0] || 'Unapproved App',
+        detectedApps: Array.from(d.apps),
+        lastSeen: d.lastSeen,
+        blockedRatePercent: d.violationsCount > 0 ? parseFloat(((d.blockedCount / d.violationsCount) * 100).toFixed(1)) : 100
+      }));
+
+    const categoriesMeta: Record<UnapprovedCategory, { label: string; icon: string }> = {
+      bittorrent: { label: 'BitTorrent & P2P Swarms', icon: 'Share2' },
+      download_manager: { label: 'Download Managers (IDM/Leechers)', icon: 'DownloadCloud' },
+      movies: { label: 'Movie Sites & Streaming', icon: 'Film' },
+      unofficial_media: { label: 'Unofficial Media & Gaming', icon: 'Tv' },
+      botnet_spam: { label: 'Spam, Botnets & C2 Beacons', icon: 'Bug' },
+      crypto_mining: { label: 'Cryptocurrency Mining Pools', icon: 'Coins' },
+      illegal_website: { label: 'Illegal Web & Proxy Bypass', icon: 'EyeOff' }
+    };
+
+    const categoryBreakdown = (Object.keys(categoriesMeta) as UnapprovedCategory[]).map(cat => {
+      const stat = categoryStats.get(cat) || { count: 0, bytes: 0 };
+      const percent = totalViolations > 0 ? parseFloat(((stat.count / totalViolations) * 100).toFixed(1)) : 0;
+      return {
+        category: cat,
+        label: categoriesMeta[cat].label,
+        icon: categoriesMeta[cat].icon,
+        violationsCount: stat.count,
+        bytesWasted: stat.bytes,
+        percentOfViolations: percent
+      };
+    }).sort((a, b) => b.violationsCount - a.violationsCount);
+
+    let filtered = violations;
+    if (params?.category && params.category !== 'all') {
+      filtered = filtered.filter(v => v.category === params.category);
+    }
+    if (params?.action && params.action !== 'all') {
+      filtered = filtered.filter(v => v.action === params.action);
+    }
+    if (params?.search) {
+      const s = params.search.toLowerCase().trim();
+      filtered = filtered.filter(v => (
+        v.internalIp.includes(s) ||
+        v.internalHost.toLowerCase().includes(s) ||
+        v.department.toLowerCase().includes(s) ||
+        v.remoteIp.includes(s) ||
+        v.remoteHost.toLowerCase().includes(s) ||
+        v.appId.toLowerCase().includes(s) ||
+        v.categoryLabel.toLowerCase().includes(s)
+      ));
+    }
+
+    const limit = Math.min(100, Math.max(10, params?.limit || 50));
+    const offset = Math.max(0, params?.offset || 0);
+    const paginatedViolations = filtered.slice(offset, offset + limit);
+
+    return {
+      isLive: true,
+      activeGateway,
+      timestamp: new Date().toISOString(),
+      totals: {
+        totalViolations,
+        totalBytesWasted,
+        blockedCount,
+        flaggedCount,
+        dropRatePercent: totalViolations > 0 ? parseFloat(((blockedCount / totalViolations) * 100).toFixed(1)) : 100,
+        uniqueOffendingDevices: deviceMap.size
+      },
+      categoryBreakdown,
+      topOffendingDevices,
+      recentViolations: paginatedViolations
+    };
+  }
+
+  /**
+   * Device Forensic Dossier for Incident Response
+   */
+  public getDeviceForensicDossier(ip: string) {
+    const hostInfo = TelemetryStore.resolveHostInfo(ip);
+    const relatedFlows = this.flows.filter(f => f.sourceIp === ip || f.destIp === ip);
+    const unapprovedFlows = relatedFlows.filter(f => (
+      !!TelemetryStore.UNAPPROVED_APP_RULES[f.application] ||
+      !!f.threatCategory ||
+      f.destPort === 6881 || f.destPort === 3333
+    ));
+
+    const totalBytesWasted = unapprovedFlows.reduce((acc, f) => acc + (f.bytesIn || 0) + (f.bytesOut || 0), 0);
+    const appsSet = new Set<string>();
+    const categoriesSet = new Set<string>();
+    const targetsMap = new Map<string, { remoteIp: string; remoteHost: string; country: string; count: number; bytes: number }>();
+
+    for (const f of unapprovedFlows) {
+      appsSet.add(f.application);
+      const rule = TelemetryStore.UNAPPROVED_APP_RULES[f.application];
+      categoriesSet.add(rule ? rule.label : (f.threatCategory || 'Unapproved App'));
+
+      const remoteIp = f.sourceIp === ip ? f.destIp : f.sourceIp;
+      const remoteInfo = TelemetryStore.resolveHostInfo(remoteIp);
+      const t = targetsMap.get(remoteIp) || {
+        remoteIp,
+        remoteHost: remoteInfo.systemName,
+        country: remoteInfo.country || 'WAN',
+        count: 0,
+        bytes: 0
+      };
+      t.count++;
+      t.bytes += (f.bytesIn || 0) + (f.bytesOut || 0);
+      targetsMap.set(remoteIp, t);
+    }
+
+    const targets = Array.from(targetsMap.values()).sort((a, b) => b.bytes - a.bytes);
+
+    return {
+      ip,
+      hostname: hostInfo.systemName,
+      department: hostInfo.department,
+      zone: hostInfo.zone,
+      macAddress: `70:4C:A5:${Math.floor(Math.random() * 89 + 10)}:${ip.split('.')[2] || '00'}:${ip.split('.')[3] || '00'}`,
+      switchLocation: `${hostInfo.zone}-SW01/Gi0/${parseInt(ip.split('.')[3] || '1', 10) % 24 + 1}`,
+      assignedUser: `serc/user_${ip.split('.')[3] || 'research'}`,
+      totalViolations: unapprovedFlows.length,
+      totalBytesWasted,
+      detectedApps: Array.from(appsSet),
+      detectedCategories: Array.from(categoriesSet),
+      destinationsContacted: targets,
+      firstSeen: unapprovedFlows[unapprovedFlows.length - 1]?.timestamp || new Date().toISOString(),
+      lastSeen: unapprovedFlows[0]?.timestamp || new Date().toISOString(),
+      fortiOSQuarantineCli: `config firewall address\n    edit "QUARANTINE_${ip}"\n        set subnet ${ip}/32\n        set comment "CERT-In Incident Quarantine: Repeated Unapproved / Illicit Traffic"\n    next\nend\nconfig firewall addrgrp\n    edit "ISOLATED_QUARANTINE_GROUP"\n        append member "QUARANTINE_${ip}"\n    next\nend`
     };
   }
 

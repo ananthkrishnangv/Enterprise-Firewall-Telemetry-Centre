@@ -195,7 +195,7 @@
       </div>
 
       <!-- ==================================================================== -->
-      <!-- BENTO CARD 4: TOP UPLOADS (IP • System Name • App-ID) (6 cols)     -->
+      <!-- BENTO CARD 4: TOP UPLOADS (Exact Internal Src -> External Dst Target) -->
       <!-- ==================================================================== -->
       <div class="lg:col-span-6 rounded-2xl p-5 bg-gradient-to-br from-slate-900/95 to-slate-950/95 border border-slate-800 backdrop-blur-md shadow-xl flex flex-col justify-between relative overflow-hidden group hover:border-violet-500/40 transition">
         <div>
@@ -205,12 +205,12 @@
                 <ArrowUpRight class="w-4 h-4" />
               </div>
               <div>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-white">Top Outbound Uploads</h3>
-                <p class="text-[10px] text-slate-400">Ranked by outbound data pushed with IP, System Name &amp; App-ID</p>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-white">Top Outbound Uploads (Egress)</h3>
+                <p class="text-[10px] text-slate-400">Exact Source Internal Device &rarr; Remote Internet Destination Target</p>
               </div>
             </div>
             <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
-              EGRESS TALKERS
+              EGRESS SESSIONS
             </span>
           </div>
 
@@ -219,45 +219,60 @@
             <table class="w-full text-left border-collapse text-xs">
               <thead>
                 <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
-                  <th class="py-2 px-2.5">#</th>
-                  <th class="py-2 px-2.5">Host IP &amp; System Name</th>
-                  <th class="py-2 px-2.5">Primary App-ID</th>
-                  <th class="py-2 px-2.5 text-right">Upload Vol</th>
-                  <th class="py-2 px-2.5 text-right">Speed</th>
+                  <th class="py-2 px-2">#</th>
+                  <th class="py-2 px-2.5">Source Internal Device</th>
+                  <th class="py-2 px-2.5">Destination Remote Target</th>
+                  <th class="py-2 px-2">App &amp; Protocol</th>
+                  <th class="py-2 px-2 text-right">Upload / Rate</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-800/60 font-mono">
                 <tr
                   v-for="item in filteredUploaders"
-                  :key="item.ip"
+                  :key="(item.sourceIp || item.ip) + '-' + (item.destIp || item.destEndpoint)"
                   class="hover:bg-slate-800/40 transition group/row"
                 >
-                  <td class="py-2.5 px-2.5 text-slate-500 text-[10px] font-bold">
+                  <td class="py-2.5 px-2 text-slate-500 text-[10px] font-bold">
                     {{ item.rank }}
                   </td>
                   <td class="py-2.5 px-2.5">
-                    <div class="text-slate-200 font-bold text-xs flex items-center gap-1.5">
-                      <span>{{ item.ip }}</span>
+                    <div class="text-slate-100 font-bold text-xs flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                      <span>{{ item.sourceIp || item.ip }}</span>
                     </div>
-                    <div class="text-[10px] text-slate-400 font-sans truncate max-w-[210px]" :title="item.systemName">
-                      {{ item.systemName }}
+                    <div class="text-[10px] text-slate-400 font-sans truncate max-w-[170px]" :title="item.sourceHost || item.systemName">
+                      {{ item.sourceHost || item.systemName }}
                     </div>
-                    <div class="text-[9px] text-violet-400 font-sans truncate max-w-[210px]">
-                      {{ item.department }}
+                    <div class="text-[9px] text-violet-400 font-sans truncate max-w-[170px]">
+                      {{ item.sourceDept || item.department }}
                     </div>
                   </td>
-                  <td class="py-2.5 px-2.5 font-sans">
+                  <td class="py-2.5 px-2.5">
+                    <div class="text-amber-300 font-bold text-xs flex items-center gap-1">
+                      <span class="truncate max-w-[140px]">{{ item.destIp || item.destEndpoint }}</span>
+                      <span v-if="item.destPort" class="text-[9px] text-slate-500">:{{ item.destPort }}</span>
+                    </div>
+                    <div class="text-[10px] text-slate-300 font-sans truncate max-w-[170px]" :title="item.destHost">
+                      {{ item.destHost || 'Internet Gateway' }}
+                    </div>
+                    <div class="text-[9px] text-cyan-400 font-sans flex items-center gap-1">
+                      <span class="px-1 py-0.2 rounded bg-slate-800 text-[8px] font-mono text-slate-300 border border-slate-700">
+                        {{ item.destCountry || 'WAN' }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="py-2.5 px-2 font-sans">
                     <span
                       class="px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider inline-block"
                       :class="getAppBadgeClass(item.appId)"
                     >
                       {{ item.appId }}
                     </span>
-                    <div class="text-[9px] text-slate-500 font-mono truncate max-w-[130px] mt-0.5">
-                      &rarr; {{ item.destEndpoint }}
+                    <div class="text-[9px] text-slate-500 font-mono truncate max-w-[110px] mt-0.5">
+                      {{ item.protocol || 'TCP/443' }}
                     </div>
                   </td>
-                  <td class="py-2.5 px-2.5 text-right">
+                  <td class="py-2.5 px-2 text-right">
                     <div class="text-neon-magenta font-extrabold text-xs">{{ formatBytes(item.uploadBytes) }}</div>
                     <div class="w-16 h-1 rounded-full bg-slate-800 ml-auto mt-1 overflow-hidden">
                       <div
@@ -265,9 +280,9 @@
                         :style="{ width: `${Math.min(100, Math.max(15, (item.uploadBytes / (maxUploadBytes || 1)) * 100))}%` }"
                       ></div>
                     </div>
-                  </td>
-                  <td class="py-2.5 px-2.5 text-right text-slate-300 text-xs font-medium">
-                    {{ item.uploadRateMbps }} <span class="text-[9px] text-slate-500 font-normal">Mbps</span>
+                    <div class="text-[10px] text-slate-400 mt-0.5 font-medium">
+                      {{ item.uploadRateMbps }} <span class="text-[8px] text-slate-500">Mbps</span>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -277,7 +292,7 @@
       </div>
 
       <!-- ==================================================================== -->
-      <!-- BENTO CARD 5: TOP DOWNLOADS (IP • System Name • App-ID) (6 cols)   -->
+      <!-- BENTO CARD 5: TOP DOWNLOADS (Exact External Src -> Internal Dst Rcv) -->
       <!-- ==================================================================== -->
       <div class="lg:col-span-6 rounded-2xl p-5 bg-gradient-to-br from-slate-900/95 to-slate-950/95 border border-slate-800 backdrop-blur-md shadow-xl flex flex-col justify-between relative overflow-hidden group hover:border-violet-500/40 transition">
         <div>
@@ -287,12 +302,12 @@
                 <ArrowDownLeft class="w-4 h-4" />
               </div>
               <div>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-white">Top Inbound Downloads</h3>
-                <p class="text-[10px] text-slate-400">Ranked by inbound data pulled with IP, System Name &amp; App-ID</p>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-white">Top Inbound Downloads (Ingress)</h3>
+                <p class="text-[10px] text-slate-400">Exact Remote Internet Source &rarr; Destination Internal Recipient Device</p>
               </div>
             </div>
             <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-              INGRESS TALKERS
+              INGRESS SESSIONS
             </span>
           </div>
 
@@ -301,45 +316,60 @@
             <table class="w-full text-left border-collapse text-xs">
               <thead>
                 <tr class="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
-                  <th class="py-2 px-2.5">#</th>
-                  <th class="py-2 px-2.5">Host IP &amp; System Name</th>
-                  <th class="py-2 px-2.5">Primary App-ID</th>
-                  <th class="py-2 px-2.5 text-right">Download Vol</th>
-                  <th class="py-2 px-2.5 text-right">Speed</th>
+                  <th class="py-2 px-2">#</th>
+                  <th class="py-2 px-2.5">Source Remote Origin</th>
+                  <th class="py-2 px-2.5">Destination Internal Device</th>
+                  <th class="py-2 px-2">App &amp; Protocol</th>
+                  <th class="py-2 px-2 text-right">Download / Rate</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-800/60 font-mono">
                 <tr
                   v-for="item in filteredDownloaders"
-                  :key="item.ip"
+                  :key="(item.sourceIp || item.sourceEndpoint) + '-' + (item.destIp || item.ip)"
                   class="hover:bg-slate-800/40 transition group/row"
                 >
-                  <td class="py-2.5 px-2.5 text-slate-500 text-[10px] font-bold">
+                  <td class="py-2.5 px-2 text-slate-500 text-[10px] font-bold">
                     {{ item.rank }}
                   </td>
                   <td class="py-2.5 px-2.5">
-                    <div class="text-slate-200 font-bold text-xs flex items-center gap-1.5">
-                      <span>{{ item.ip }}</span>
+                    <div class="text-cyan-300 font-bold text-xs flex items-center gap-1">
+                      <span class="truncate max-w-[140px]">{{ item.sourceIp || item.sourceEndpoint }}</span>
+                      <span v-if="item.sourcePort" class="text-[9px] text-slate-500">:{{ item.sourcePort }}</span>
                     </div>
-                    <div class="text-[10px] text-slate-400 font-sans truncate max-w-[210px]" :title="item.systemName">
-                      {{ item.systemName }}
+                    <div class="text-[10px] text-slate-300 font-sans truncate max-w-[170px]" :title="item.sourceHost">
+                      {{ item.sourceHost || 'Public CDN / Host' }}
                     </div>
-                    <div class="text-[9px] text-cyan-400 font-sans truncate max-w-[210px]">
-                      {{ item.department }}
+                    <div class="text-[9px] text-slate-400 font-sans flex items-center gap-1">
+                      <span class="px-1 py-0.2 rounded bg-slate-800 text-[8px] font-mono text-slate-300 border border-slate-700">
+                        {{ item.sourceCountry || 'WAN' }}
+                      </span>
                     </div>
                   </td>
-                  <td class="py-2.5 px-2.5 font-sans">
+                  <td class="py-2.5 px-2.5">
+                    <div class="text-slate-100 font-bold text-xs flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                      <span>{{ item.destIp || item.ip }}</span>
+                    </div>
+                    <div class="text-[10px] text-slate-400 font-sans truncate max-w-[170px]" :title="item.destHost || item.systemName">
+                      {{ item.destHost || item.systemName }}
+                    </div>
+                    <div class="text-[9px] text-cyan-400 font-sans truncate max-w-[170px]">
+                      {{ item.destDept || item.department }}
+                    </div>
+                  </td>
+                  <td class="py-2.5 px-2 font-sans">
                     <span
                       class="px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider inline-block"
                       :class="getAppBadgeClass(item.appId)"
                     >
                       {{ item.appId }}
                     </span>
-                    <div class="text-[9px] text-slate-500 font-mono truncate max-w-[130px] mt-0.5">
-                      &larr; {{ item.sourceEndpoint }}
+                    <div class="text-[9px] text-slate-500 font-mono truncate max-w-[110px] mt-0.5">
+                      {{ item.protocol || 'TCP/443' }}
                     </div>
                   </td>
-                  <td class="py-2.5 px-2.5 text-right">
+                  <td class="py-2.5 px-2 text-right">
                     <div class="text-neon-cyan font-extrabold text-xs">{{ formatBytes(item.downloadBytes) }}</div>
                     <div class="w-16 h-1 rounded-full bg-slate-800 ml-auto mt-1 overflow-hidden">
                       <div
@@ -347,9 +377,9 @@
                         :style="{ width: `${Math.min(100, Math.max(15, (item.downloadBytes / (maxDownloadBytes || 1)) * 100))}%` }"
                       ></div>
                     </div>
-                  </td>
-                  <td class="py-2.5 px-2.5 text-right text-slate-300 text-xs font-medium">
-                    {{ item.downloadRateMbps }} <span class="text-[9px] text-slate-500 font-normal">Mbps</span>
+                    <div class="text-[10px] text-slate-400 mt-0.5 font-medium">
+                      {{ item.downloadRateMbps }} <span class="text-[8px] text-slate-500">Mbps</span>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -608,10 +638,16 @@ const filteredUploaders = computed(() => {
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase();
     list = list.filter(u =>
-      u.ip.toLowerCase().includes(q) ||
-      u.systemName.toLowerCase().includes(q) ||
-      u.appId.toLowerCase().includes(q) ||
-      u.department.toLowerCase().includes(q)
+      (u.sourceIp && u.sourceIp.toLowerCase().includes(q)) ||
+      (u.sourceHost && u.sourceHost.toLowerCase().includes(q)) ||
+      (u.sourceDept && u.sourceDept.toLowerCase().includes(q)) ||
+      (u.destIp && u.destIp.toLowerCase().includes(q)) ||
+      (u.destHost && u.destHost.toLowerCase().includes(q)) ||
+      (u.destCountry && u.destCountry.toLowerCase().includes(q)) ||
+      (u.ip && u.ip.toLowerCase().includes(q)) ||
+      (u.systemName && u.systemName.toLowerCase().includes(q)) ||
+      (u.appId && u.appId.toLowerCase().includes(q)) ||
+      (u.department && u.department.toLowerCase().includes(q))
     );
   }
   return list;
@@ -623,10 +659,16 @@ const filteredDownloaders = computed(() => {
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase();
     list = list.filter(d =>
-      d.ip.toLowerCase().includes(q) ||
-      d.systemName.toLowerCase().includes(q) ||
-      d.appId.toLowerCase().includes(q) ||
-      d.department.toLowerCase().includes(q)
+      (d.sourceIp && d.sourceIp.toLowerCase().includes(q)) ||
+      (d.sourceHost && d.sourceHost.toLowerCase().includes(q)) ||
+      (d.sourceCountry && d.sourceCountry.toLowerCase().includes(q)) ||
+      (d.destIp && d.destIp.toLowerCase().includes(q)) ||
+      (d.destHost && d.destHost.toLowerCase().includes(q)) ||
+      (d.destDept && d.destDept.toLowerCase().includes(q)) ||
+      (d.ip && d.ip.toLowerCase().includes(q)) ||
+      (d.systemName && d.systemName.toLowerCase().includes(q)) ||
+      (d.appId && d.appId.toLowerCase().includes(q)) ||
+      (d.department && d.department.toLowerCase().includes(q))
     );
   }
   return list;
