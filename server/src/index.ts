@@ -7,6 +7,7 @@ import { setupWebSocketServer } from './api/websocket.js';
 import { SyslogCollector } from './collectors/syslog.collector.js';
 import { FlowCollector } from './collectors/flow.collector.js';
 import { snmpCollector } from './collectors/snmp.collector.js';
+import { snmpTrapReceiver } from './collectors/snmp-trap.receiver.js';
 import { telemetrySimulator } from './collectors/telemetry.simulator.js';
 import { speedTestCollector } from './collectors/speedtest.collector.js';
 import { postgresService } from './storage/postgres.service.js';
@@ -103,8 +104,9 @@ syslogCollector.start();
 const flowCollector = new FlowCollector(config.netflowPort);
 flowCollector.start();
 
-// Start SNMP Poller
+// Start SNMP Poller & Trap Receiver
 snmpCollector.start();
+snmpTrapReceiver.start();
 
 // Start 15-minute Internet Speed Test Engine
 speedTestCollector.start();
@@ -120,6 +122,7 @@ process.on('SIGINT', () => {
   syslogCollector.stop();
   flowCollector.stop();
   snmpCollector.stop();
+  snmpTrapReceiver.stop();
   speedTestCollector.stop();
   telemetrySimulator.stop();
   server.close(() => {

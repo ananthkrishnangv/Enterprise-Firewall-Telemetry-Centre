@@ -8,9 +8,11 @@ interface DepartmentSubnet {
   code: string;
   name: string;
   vlan: number;
-  subnet: string; // e.g. "10.10.11"
+  subnet: string; // e.g. "172.17.11"
   zone: string;
   hostPrefix: string;
+  segment: string;
+  iface: string;
 }
 
 export class TelemetrySimulator {
@@ -19,24 +21,39 @@ export class TelemetrySimulator {
 
   // Institutional Subnets across all FortiGate Interfaces & Departmental VLANs
   private departments: DepartmentSubnet[] = [
-    { code: 'ICTD', name: 'Information & Comm. Technology Div', vlan: 11, subnet: '10.10.11', zone: 'ICTD-VLAN11', hostPrefix: 'ict-ws' },
-    { code: 'BKMD', name: 'Business Dev & Knowledge Mgmt', vlan: 12, subnet: '10.10.12', zone: 'BKMD-VLAN12', hostPrefix: 'bkmd-term' },
-    { code: 'ASTAR', name: 'Advanced Structural Testing Lab', vlan: 13, subnet: '10.10.13', zone: 'ASTAR-VLAN13', hostPrefix: 'astar-daq' },
-    { code: 'SMSL', name: 'Special Materials & Structures', vlan: 14, subnet: '10.10.14', zone: 'SMSL-VLAN14', hostPrefix: 'smsl-sensor' },
-    { code: 'KRD', name: 'Knowledge Resource & Library', vlan: 15, subnet: '10.10.15', zone: 'KRD-VLAN15', hostPrefix: 'krd-kiosk' },
-    { code: 'ACTEL', name: 'Concrete Testing & Evaluation Lab', vlan: 16, subnet: '10.10.16', zone: 'ACTEL-VLAN16', hostPrefix: 'actel-test' },
-    { code: 'NAFAAMS', name: 'Numerical Analysis Facility', vlan: 17, subnet: '10.10.17', zone: 'NAFAAMS-VLAN17', hostPrefix: 'nafaams-cae' },
-    { code: 'STORES', name: 'Purchase & Central Stores Div', vlan: 18, subnet: '10.10.18', zone: 'STORES-VLAN18', hostPrefix: 'stores-erp' },
-    { code: 'AML', name: 'Advanced Materials Lab', vlan: 20, subnet: '10.10.20', zone: 'AML-VLAN20', hostPrefix: 'aml-inst' },
-    { code: 'WEL', name: 'Wind Engineering Laboratory', vlan: 21, subnet: '10.10.21', zone: 'WEL-VLAN21', hostPrefix: 'windtunnel-daq' },
-    { code: 'TDC', name: 'Tower Testing Research Station', vlan: 22, subnet: '10.10.22', zone: 'TDC-VLAN22', hostPrefix: 'tower-daq' },
-    { code: 'GH', name: 'CSIR Guest House & Campus', vlan: 25, subnet: '10.10.25', zone: 'GH-VLAN25', hostPrefix: 'gh-wifi' },
-    { code: 'FFL', name: 'Fatigue & Fracture Laboratory', vlan: 26, subnet: '10.10.26', zone: 'FFL-VLAN26', hostPrefix: 'ffl-daq' },
-    { code: 'GATE', name: 'Security & Campus Surveillance', vlan: 28, subnet: '10.10.28', zone: 'GATE-VLAN28', hostPrefix: 'cctv-cam' },
-    { code: 'DATACENTER', name: 'Central Datacenter Services', vlan: 2, subnet: '10.20.10', zone: 'SERC_Srv_access', hostPrefix: 'serc-srv' },
-    { code: 'HPC', name: 'Param-SERC Supercomputer Tier', vlan: 84, subnet: '10.10.20', zone: 'HPC-Cluster', hostPrefix: 'hpc-node' },
-    { code: 'CAD', name: 'Structural CAE Workstations', vlan: 40, subnet: '10.10.40', zone: 'ICT_Lan_Access', hostPrefix: 'cad-ws' },
-    { code: 'VPN', name: 'Remote SSL-VPN Scientists', vlan: 1, subnet: '10.212.134', zone: 'ssl.root', hostPrefix: 'vpn-user' }
+    // 172.17.0.0/16 Departmental VLANs (Live FortiGate Discovered)
+    { code: 'ICTD', name: 'Information Communication Technology (ICTD)', vlan: 11, subnet: '172.17.11', zone: 'ICTD-VLAN 11', hostPrefix: 'ict-ws', segment: '172.17.0.0/16', iface: 'port3' },
+    { code: 'BKMD', name: 'Business Dev & Knowledge Mgmt (BKMD)', vlan: 12, subnet: '172.17.12', zone: 'BKMD-VLAN 12', hostPrefix: 'bkmd-term', segment: '172.17.0.0/16', iface: 'port5' },
+    { code: 'ASTAR', name: 'Advanced Structural Testing Lab (ASTAR)', vlan: 13, subnet: '172.17.13', zone: 'ASTAR-VLAN 13', hostPrefix: 'astar-daq', segment: '172.17.0.0/16', iface: 'port6' },
+    { code: 'SMSL', name: 'Special Materials & Structures (SMSL)', vlan: 14, subnet: '172.17.14', zone: 'SMSL-VLAN 14', hostPrefix: 'smsl-sensor', segment: '172.17.0.0/16', iface: 'port7' },
+    { code: 'KRD', name: 'Knowledge Resource & Library (KRD)', vlan: 15, subnet: '172.17.15', zone: 'KRD-VLAN 15', hostPrefix: 'krd-kiosk', segment: '172.17.0.0/16', iface: 'port8' },
+    { code: 'ACTEL', name: 'Concrete Testing & Evaluation (ACTEL)', vlan: 16, subnet: '172.17.16', zone: 'ACTEL-VLAN 16', hostPrefix: 'actel-test', segment: '172.17.0.0/16', iface: 'port9' },
+    { code: 'NAFAAMS', name: 'Numerical Analysis Facility (NAFAAMS)', vlan: 17, subnet: '172.17.17', zone: 'NAFAAMS-VLAN17', hostPrefix: 'nafaams-cae', segment: '172.17.0.0/16', iface: 'port11' },
+    { code: 'STORES', name: 'Purchase & Central Stores (STORES)', vlan: 18, subnet: '172.17.18', zone: 'STORES-VLAN 18', hostPrefix: 'stores-erp', segment: '172.17.0.0/16', iface: 'port12' },
+    { code: 'APSML', name: 'Advanced Polymer & Smart Materials (APSML)', vlan: 19, subnet: '172.17.19', zone: 'APSML-VLAN 19', hostPrefix: 'apsml-inst', segment: '172.17.0.0/16', iface: 'port13' },
+    { code: 'AML', name: 'Advanced Materials Characterization (AML)', vlan: 20, subnet: '172.17.20', zone: 'AML-VLAN 20', hostPrefix: 'aml-inst', segment: '172.17.0.0/16', iface: 'port13' },
+    { code: 'WEL', name: 'Wind Engineering Boundary Layer (WEL)', vlan: 21, subnet: '172.17.21', zone: 'WEL-VLAN 21', hostPrefix: 'windtunnel-daq', segment: '172.17.0.0/16', iface: 'port14' },
+    { code: 'TDC', name: 'Tower Testing Research Station (TDC)', vlan: 22, subnet: '172.17.22', zone: 'TDC-VLAN 22', hostPrefix: 'tower-daq', segment: '172.17.0.0/16', iface: 'port15' },
+    { code: 'AUDITORIUM', name: 'Campus Auditorium AV Facility', vlan: 23, subnet: '172.17.23', zone: 'AUDITORIUM-23', hostPrefix: 'auditorium-av', segment: '172.17.0.0/16', iface: 'port15' },
+    { code: 'SHML', name: 'Structural Health Monitoring (SHML)', vlan: 24, subnet: '172.17.24', zone: 'SHML-VLAN 24', hostPrefix: 'shml-sensor', segment: '172.17.0.0/16', iface: 'port16' },
+    { code: 'SERC_GH', name: 'CSIR Guest House & Campus WiFi', vlan: 25, subnet: '172.17.25', zone: 'SERC GH-VLAN 25', hostPrefix: 'gh-wifi', segment: '172.17.0.0/16', iface: 'port17' },
+    { code: 'FFL', name: 'Fatigue & Fracture Laboratory (FFL)', vlan: 26, subnet: '172.17.26', zone: 'FFL-VLAN 26', hostPrefix: 'ffl-daq', segment: '172.17.0.0/16', iface: 'port18' },
+    { code: 'ACCNT', name: 'Finance & Accounts Division (ACCNT)', vlan: 27, subnet: '172.17.27', zone: 'ACCNT-VLAN 27', hostPrefix: 'accnt-erp', segment: '172.17.0.0/16', iface: 'port19' },
+    { code: 'GATE', name: 'Perimeter Security & CCTV (MAIN GTE)', vlan: 28, subnet: '172.17.28', zone: 'MAIN GTE-VLAN28', hostPrefix: 'gate-cctv', segment: '172.17.0.0/16', iface: 'port20' },
+    { code: 'QTMNET', name: 'SERC Quantum Computing Network', vlan: 10, subnet: '172.17.10', zone: 'SERC_LAN_QTMNET_2024', hostPrefix: 'qtm-node', segment: '172.17.0.0/16', iface: 'port10' },
+
+    // 172.16.0.0/12 Scope (Physical Links & Clusters)
+    { code: 'ACTEL_RIG', name: 'ACTEL Concrete Compression Rig Link', vlan: 9, subnet: '172.16.171', zone: 'port9', hostPrefix: 'actel-rig', segment: '172.16.0.0/12', iface: 'port9' },
+    { code: 'NAFAAMS_HPC', name: 'NAFAAMS High-Throughput Cluster Link', vlan: 171, subnet: '172.31.1', zone: 'port11', hostPrefix: 'cae-cluster', segment: '172.16.0.0/12', iface: 'port11' },
+
+    // 192.168.0.0/16 Scope (Management & Links)
+    { code: 'MGMT', name: 'Dedicated Out-of-Band Hardware Mgmt', vlan: 99, subnet: '192.168.1', zone: 'mgmt', hostPrefix: 'mgmt-ipmi', segment: '192.168.0.0/16', iface: 'mgmt' },
+
+    // 10.0.0.0/8 Scope (Datacenter, CAE, HPC, VPN)
+    { code: 'DATACENTER', name: 'Central Datacenter Virtualization', vlan: 2, subnet: '10.20.10', zone: 'SERC_Srv_access', hostPrefix: 'serc-srv', segment: '10.0.0.0/8', iface: 'port2' },
+    { code: 'HPC', name: 'Param-SERC Supercomputer HPC Tier', vlan: 84, subnet: '10.10.20', zone: 'HPC-Cluster', hostPrefix: 'hpc-node', segment: '10.0.0.0/8', iface: 'port25' },
+    { code: 'CAD', name: 'Structural CAE Workstations', vlan: 40, subnet: '10.10.40', zone: 'ICT_Lan_Access', hostPrefix: 'cad-ws', segment: '10.0.0.0/8', iface: 'port3' },
+    { code: 'VPN', name: 'Remote SSL-VPN Research Scientists', vlan: 1, subnet: '10.212.134', zone: 'ssl.root', hostPrefix: 'vpn-user', segment: '10.0.0.0/8', iface: 'ssl.root' }
   ];
 
   private apps = [
@@ -127,7 +144,7 @@ export class TelemetrySimulator {
     const hostNumber = Math.floor(Math.random() * 240) + 2; // .2 to .242
     const ip = `${dept.subnet}.${hostNumber}`;
     const name = `${dept.hostPrefix}${hostNumber}.${dept.code.toLowerCase()}.serc.res.in`;
-    return { ip, name, dept: dept.name, zone: dept.zone, vlan: dept.vlan };
+    return { ip, name, dept: dept.name, zone: dept.zone, vlan: dept.vlan, segment: dept.segment, iface: dept.iface };
   }
 
   private generateTick() {
@@ -254,7 +271,11 @@ export class TelemetrySimulator {
       policyName,
       severity: threatSeverity === 'critical' ? 'critical' : isBlocked ? 'warning' : 'info',
       threatCategory,
-      rawLog: `date=2026-09-18 time=12:00:00 devname="FortiGate-CSIR-SERC" devid="FG600F12345678" type="traffic" direction="${direction}" action="${action === 'allow' ? 'accept' : 'deny'}" policyname="${policyName}" srcip=${srcIp} srcport=${sourcePort} dstip=${dstIp} dstport=${app.port} proto=${app.proto === 'TCP' ? 6 : 17} app="${app.name}" sentbyte=${bytesIn} rcvdbyte=${bytesOut} ${threatCategory ? `threat="${threatCategory}"` : ''}`
+      vlanId: internalHost.vlan,
+      vlanName: internalHost.zone,
+      interface: internalHost.iface,
+      subnetSegment: internalHost.segment,
+      rawLog: `date=2026-09-18 time=12:00:00 devname="FortiGate-CSIR-SERC" devid="FG600F12345678" type="traffic" direction="${direction}" action="${action === 'allow' ? 'accept' : 'deny'}" policyname="${policyName}" srcip=${srcIp} srcport=${sourcePort} dstip=${dstIp} dstport=${app.port} proto=${app.proto === 'TCP' ? 6 : 17} app="${app.name}" sentbyte=${bytesIn} rcvdbyte=${bytesOut} vlan=${internalHost.vlan} vlan_name="${internalHost.zone}" ${threatCategory ? `threat="${threatCategory}"` : ''}`
     };
 
     influxService.storeTrafficLog(trafficRecord);

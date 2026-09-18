@@ -25,7 +25,9 @@ const imgVlans = getBase64Image('docs/screenshots/05b_snmp_vlans_filter.png');
 const imgInterfaceDrilldown = getBase64Image('docs/screenshots/05c_interface_drilldown_modal.png');
 const imgPolicies = getBase64Image('docs/screenshots/06_firewall_policies.png');
 const imgLogs = getBase64Image('docs/screenshots/07_live_syslog_stream.png');
+const imgLogsMatrix = getBase64Image('docs/screenshots/07a_vlan_subnet_matrix.png');
 const imgLogsExplorer = getBase64Image('docs/screenshots/07b_traffic_log_explorer.png');
+const imgLogsFiltered = getBase64Image('docs/screenshots/07c_vlan_172_17_filtered.png');
 const imgCompliance = getBase64Image('docs/screenshots/08_certin_compliance.png');
 const imgUsers = getBase64Image('docs/screenshots/09_user_management.png');
 const imgSettings = getBase64Image('docs/screenshots/10_settings_branding.png');
@@ -345,11 +347,12 @@ const htmlContent = `<!DOCTYPE html>
 
   <h2>Core Components</h2>
   <ul>
-    <li><strong>Parallel SNMP Poller (<200ms)</strong>: Concurrently queries FortiGate appliances across MIB-II, IF-MIB, and FortiOS enterprise sensor trees. Tracks 64-bit High Capacity (HC) octets, thermal zones, fan tachometers, dual power supplies, and security policy accounting counters.</li>
-    <li><strong>Full-Spectrum Traffic & Log Ingester</strong>: Listens on UDP port 1514 (Syslog) and port 2055 (NetFlow v5/v9 & IPFIX) with multi-subnet institutional host resolution, capturing all ingress, egress, inter-VLAN, and blocked security threats across the entire perimeter.</li>
+    <li><strong>Parallel SNMP Poller (&lt;200ms)</strong>: Concurrently queries FortiGate appliances across MIB-II, IF-MIB, and FortiOS enterprise sensor trees. Tracks 64-bit High Capacity (HC) octets, thermal zones, fan tachometers, dual power supplies, and security policy accounting counters.</li>
+    <li><strong>SNMP Trap Receiver (UDP 162)</strong>: Native asynchronous UDP trap daemon listening on port 162, supporting both SNMPv2c (community: <code>fortinet</code>) and SNMPv3 (user: <code>fortinet</code> noAuthNoPriv). Ingests real-time hardware status changes, interface link up/down transitions, and FortiOS security alerts.</li>
+    <li><strong>Full-Spectrum Traffic &amp; Log Ingester</strong>: Listens on UDP port 1514 (Syslog) and port 2055 (NetFlow v5/v9 &amp; IPFIX) with multi-subnet institutional host resolution, capturing all ingress, egress, inter-VLAN, and blocked security threats across the entire perimeter.</li>
     <li><strong>InfluxDB 2.7 Time-Series TSDB Engine</strong>: High-throughput batch Line-Protocol ingestion engine maintaining dedicated time-series buckets with a 180-day automated retention lifecycle meeting CERT-In national mandates.</li>
     <li><strong>PostgreSQL 18 Database Engine</strong>: Relational persistence layer in an optimized Alpine container managing operator accounts, RBAC permissions, and automated configuration/log backups.</li>
-    <li><strong>Reactive Vue 3.5 & ECharts Operations Console</strong>: Single-page application conforming to Government of India UX4G design standards with real-time WebSocket streaming and multi-parameter log filtering.</li>
+    <li><strong>Reactive Vue 3.5 &amp; ECharts Operations Console</strong>: Single-page application conforming to Government of India UX4G design standards with real-time WebSocket streaming and multi-parameter log filtering.</li>
   </ul>
 
   <h2>Network Port Matrix</h2>
@@ -365,12 +368,13 @@ const htmlContent = `<!DOCTYPE html>
       </tr>
     </thead>
     <tbody>
-      <tr><td>80 / 443</td><td>TCP</td><td>Inbound</td><td>Admin Workstation</td><td>Telemetry Console</td><td>Web UI & REST / WebSocket API</td></tr>
+      <tr><td>80 / 443</td><td>TCP</td><td>Inbound</td><td>Admin Workstation</td><td>Telemetry Console</td><td>Web UI &amp; REST / WebSocket API</td></tr>
       <tr><td>161</td><td>UDP</td><td>Outbound</td><td>Telemetry Console</td><td>FortiGate Gateway</td><td>SNMPv2c / SNMPv3 Polling</td></tr>
+      <tr><td>162</td><td>UDP</td><td>Inbound</td><td>FortiGate Gateway</td><td>Telemetry Console</td><td>SNMPv2c / SNMPv3 Trap Receiver (fortinet)</td></tr>
       <tr><td>1514 / 514</td><td>UDP</td><td>Inbound</td><td>FortiGate Gateway</td><td>Telemetry Console</td><td>Hardware Syslog Forwarding</td></tr>
-      <tr><td>2055</td><td>UDP</td><td>Inbound</td><td>FortiGate Gateway</td><td>Telemetry Console</td><td>NetFlow v5/v9 & IPFIX Records</td></tr>
-      <tr><td>8086</td><td>TCP</td><td>Internal</td><td>Web Console</td><td>InfluxDB 2.7 TSDB</td><td>Time-Series Line Protocol Writes & Flux Queries</td></tr>
-      <tr><td>5432</td><td>TCP</td><td>Internal</td><td>Web Console</td><td>PostgreSQL 18 DB</td><td>Relational Metadata & Audit Persistence</td></tr>
+      <tr><td>2055</td><td>UDP</td><td>Inbound</td><td>FortiGate Gateway</td><td>Telemetry Console</td><td>NetFlow v5/v9 &amp; IPFIX Records</td></tr>
+      <tr><td>8086</td><td>TCP</td><td>Internal</td><td>Web Console</td><td>InfluxDB 2.7 TSDB</td><td>Time-Series Line Protocol Writes &amp; Flux Queries</td></tr>
+      <tr><td>5432</td><td>TCP</td><td>Internal</td><td>Web Console</td><td>PostgreSQL 18 DB</td><td>Relational Metadata &amp; Audit Persistence</td></tr>
     </tbody>
   </table>
 
@@ -534,24 +538,28 @@ const htmlContent = `<!DOCTYPE html>
   <div class="page-break"></div>
 
   <div class="avoid-break">
-    <h2>2.7 Full-Spectrum Firewall Traffic & Log Analyzer (InfluxDB 2.7 TSDB Engine)</h2>
+    <h2>2.7 Full-Spectrum Firewall Traffic &amp; Multi-VLAN Log Analyzer (InfluxDB 2.7 TSDB Engine)</h2>
     <p>
-      High-velocity time-series traffic ingestion and multi-parameter log analyzer capturing all traffic passing through the perimeter gateway across all 46+ interfaces, departmental VLANs, HPC clusters, and external WAN. Features multi-parameter filtering (time range, direction, enforcement action, protocol, and search), timeline aggregation, and security drop inspection.
+      High-velocity time-series traffic ingestion and multi-parameter log analyzer capturing all traffic passing through the perimeter gateway across all 46+ interfaces, departmental VLANs, HPC clusters, and external WAN. 
+      Provides comprehensive visibility across <strong>Institutional Departmental VLANs (172.17.0.0/16 across VLANs 10–28)</strong>, Core Data Center &amp; Supercomputing (10.0.0.0/8 across VLANs 2, 40, 84, ssl.root), Management &amp; Gateway Links (192.168.0.0/16), and Specialized Research Clusters (172.16.0.0/12 across port9 and port11).
+      Features real-time 802.1Q VLAN filtering, interactive click-to-filter VLAN table badges, multi-parameter scoping (time range, direction, enforcement action, protocol, free-text search), timeline aggregation, and security drop inspection.
     </p>
 
     <div class="screenshot-card">
       <img src="${imgLogs}" alt="Firewall Traffic & Threat Analytics">
       <div class="screenshot-caption">
-        <span>Figure 13: InfluxDB Traffic & Threat Ingestion Velocity Analytics (Allowed vs Blocked)</span>
+        <span>Figure 13: InfluxDB Traffic &amp; Threat Ingestion Velocity Analytics (Allowed vs Blocked)</span>
         <span class="badge badge-primary">TSDB Analytics</span>
       </div>
     </div>
+  </div>
 
+  <div class="avoid-break">
     <div class="screenshot-card">
-      <img src="${imgLogsExplorer}" alt="Deep Log Explorer & Live Stream">
+      <img src="${imgLogsMatrix}" alt="Departmental 802.1Q VLAN Breakdown">
       <div class="screenshot-caption">
-        <span>Figure 14: Deep Multi-Parameter Log Explorer & Live Stream Table (All Subnets & Blocked Threats)</span>
-        <span class="badge badge-success">Log Explorer</span>
+        <span>Figure 14: Departmental 802.1Q VLAN Traffic &amp; Threat Breakdown with Subnet Segment Distribution</span>
+        <span class="badge badge-success">VLAN Distribution</span>
       </div>
     </div>
   </div>
@@ -559,7 +567,27 @@ const htmlContent = `<!DOCTYPE html>
   <div class="page-break"></div>
 
   <div class="avoid-break">
-    <h2>2.8 CERT-In Section 70B Compliance & Cybersecurity Baseline</h2>
+    <div class="screenshot-card">
+      <img src="${imgLogsExplorer}" alt="Deep Log Explorer Table">
+      <div class="screenshot-caption">
+        <span>Figure 15: Deep Multi-Parameter Log Explorer Table with Interactive 802.1Q VLAN Badges</span>
+        <span class="badge badge-primary">Log Explorer</span>
+      </div>
+    </div>
+
+    <div class="screenshot-card">
+      <img src="${imgLogsFiltered}" alt="172.17 Departmental VLAN Filtered Live Stream">
+      <div class="screenshot-caption">
+        <span>Figure 16: Granular 172.17.0.0/16 Departmental VLAN Filtered Live Stream (Institutional Subnets 10–28)</span>
+        <span class="badge badge-warning">172.17.0.0/16 Filtered</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <div class="avoid-break">
+    <h2>2.8 CERT-In Section 70B Compliance &amp; Cybersecurity Baseline</h2>
     <p>
       Dedicated compliance dashboard validating firewall operational controls against the Indian Computer Emergency Response Team (CERT-In) Section 70B directives, including 180-day secure time-series log retention and Stratum-1 IST NTP clock synchronization.
     </p>
@@ -567,14 +595,14 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgCompliance}" alt="CERT-In Compliance">
       <div class="screenshot-caption">
-        <span>Figure 15: CERT-In National Cyber Security Baseline Compliance Dashboard</span>
+        <span>Figure 17: CERT-In National Cyber Security Baseline Compliance Dashboard</span>
         <span class="badge badge-success">Compliance</span>
       </div>
     </div>
   </div>
 
   <div class="avoid-break">
-    <h2>2.9 User Management & System Configuration</h2>
+    <h2>2.9 User Management &amp; System Configuration</h2>
     <p>
       Multi-tenant user management console with protected superadmin account, role-based permissions, Telegram alert integration, organization branding, custom logo upload, InfluxDB time-series retention, and PostgreSQL 18 automated backup operations.
     </p>
@@ -582,15 +610,15 @@ const htmlContent = `<!DOCTYPE html>
     <div class="screenshot-card">
       <img src="${imgUsers}" alt="User Management">
       <div class="screenshot-caption">
-        <span>Figure 16: User Management & Telegram Alert Configuration</span>
+        <span>Figure 18: User Management &amp; Telegram Alert Configuration</span>
         <span class="badge badge-primary">RBAC</span>
       </div>
     </div>
 
     <div class="screenshot-card">
-      <img src="${imgSettings}" alt="Settings & Branding">
+      <img src="${imgSettings}" alt="Settings &amp; Branding">
       <div class="screenshot-caption">
-        <span>Figure 17: Institutional Branding, Custom Logo & PostgreSQL 18 / InfluxDB 2.7 Engines</span>
+        <span>Figure 19: Institutional Branding, Custom Logo &amp; PostgreSQL 18 / InfluxDB 2.7 Engines</span>
         <span class="badge badge-primary">Administration</span>
       </div>
     </div>

@@ -114,15 +114,24 @@ Canonical Rule Abstract Syntax Tree (AST) engine that parses and models multi-ve
 
 ---
 
-### 7. Full-Spectrum Firewall Traffic & Log Analyzer (InfluxDB 2.7 TSDB Engine)
+### 7. Full-Spectrum Firewall Traffic & Multi-VLAN Log Analyzer (InfluxDB 2.7 TSDB Engine)
 A high-velocity time-series traffic intelligence and log analyzer monitoring all traffic passing through the institutional firewall across all 46+ interfaces, departmental VLANs, HPC clusters, and external WAN:
 - **InfluxDB 2.7 Time-Series Ingestion**: High-throughput non-blocking line-protocol batch pipeline with CERT-In mandated 180-day retention bucket and microsecond query latency.
-- **Multi-Parameter Filtering**: Instantly isolate traffic by Time Range (15m, 1h, 6h, 24h, 7d), Traffic Direction (`Inbound`, `Outbound`, `Internal`), Enforcement Action (`All`, `Allowed`, `Blocked`), Protocol (`TCP`, `UDP`, `ICMP`), and free-text search (IP/CIDR, hostname, subnet, or App-ID).
+- **Full Multi-Segment & Departmental VLAN Visibility**:
+  - **172.17.0.0/16 (Institutional Departmental VLANs 10–28)**: Dedicated monitoring across ICTD (`VLAN 11`), BKMD (`VLAN 12`), ASTAR (`VLAN 13`), SMSL (`VLAN 14`), KRD (`VLAN 15`), ACTEL (`VLAN 16`), NAFAAMS (`VLAN 17`), Stores (`VLAN 18`), APSML (`VLAN 19`), AML (`VLAN 20`), WEL (`VLAN 21`), TDC (`VLAN 22`), Auditorium (`VLAN 23`), SHML (`VLAN 24`), Guest House & WiFi (`VLAN 25`), FFL (`VLAN 26`), Accounts (`VLAN 27`), Campus Gate (`VLAN 28`), and QTMNET (`VLAN 10`).
+  - **10.0.0.0/8 (Core Campus, CAE & Param-SERC Supercomputer)**: Central Services (`VLAN 2`), ICT Access (`VLAN 40`), HPC Cluster (`VLAN 84`), and SSL-VPN tunnels.
+  - **192.168.0.0/16 (Out-of-Band Management & HA Heartbeats)**: `mgmt` port (`192.168.1.99`), `port5`, and `port6`.
+  - **172.16.0.0/12 (High-Speed Research Clusters)**: `port9` (`172.16.171.128/26`) and `port11` (`172.31.1.0/24`).
+- **Interactive 802.1Q VLAN Filtering & Table Badges**: Click any 802.1Q VLAN badge directly in the Log Explorer table to instantly isolate that VLAN's traffic stream, or use the dedicated Subnet Segment and VLAN dropdown selectors.
+- **VLAN & Subnet Analytical Breakdown**: Proportional bandwidth utilization, packet volumes, and security drop rates segmented per 802.1Q VLAN tag and CIDR network block.
+- **Multi-Parameter Filtering**: Instantly isolate traffic by Time Range (15m, 1h, 6h, 24h, 7d), Traffic Direction (`Inbound`, `Outbound`, `Internal`), Enforcement Action (`All`, `Allowed`, `Blocked`), Protocol (`TCP`, `UDP`, `ICMP`), Subnet Segment, 802.1Q VLAN, and free-text search.
 - **Allowed vs. Blocked Volume Timeline**: Interactive ECharts velocity stream visualizing permitted campus bandwidth alongside blocked threat attacks (Tor C2 beacons, botnet probes, mining pools, unauthorized P2P).
-- **Deep Log Explorer & Live Stream**: High-performance streaming log explorer table with bi-directional volume counters, destination country flags, policy names, and one-click CSV export.
+- **Native SNMP Trap Receiver (UDP 162)**: Embedded trap listener processing SNMPv2c (`fortinet`) and SNMPv3 (`fortinet` noAuthNoPriv) notifications for instantaneous link-state changes and FortiOS UTM alerts.
 
 ![InfluxDB Traffic & Threat Ingestion Analytics](docs/screenshots/07_live_syslog_stream.png)
-![Deep Multi-Parameter Log Explorer & Live Stream](docs/screenshots/07b_traffic_log_explorer.png)
+![Departmental 802.1Q VLAN Traffic & Threat Breakdown](docs/screenshots/07a_vlan_subnet_matrix.png)
+![Deep Multi-Parameter Log Explorer with 802.1Q VLAN Badges](docs/screenshots/07b_traffic_log_explorer.png)
+![Granular 172.17 Departmental VLAN Filtered Live Stream](docs/screenshots/07c_vlan_172_17_filtered.png)
 
 ---
 
@@ -230,6 +239,7 @@ Ensure the telemetry host or virtual machine has direct routing to monitored per
 | :--- | :--- | :--- | :--- |
 | **80 / 443** | TCP | Inbound | Web Management Console & REST / WebSocket API |
 | **161** | UDP | Outbound | SNMPv2c / SNMPv3 queries to Firewall Gateways |
+| **162** | UDP | Inbound | SNMPv2c / SNMPv3 Trap Receiver (`fortinet` community / user) |
 | **1514 / 514**| UDP | Inbound | Syslog stream reception from firewalls |
 | **2055** | UDP | Inbound | NetFlow v5 / v9 & IPFIX binary flow records |
 | **8086** | TCP | Internal | InfluxDB 2.7 TSDB Line-Protocol & Flux queries |

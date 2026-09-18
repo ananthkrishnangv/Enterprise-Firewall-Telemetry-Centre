@@ -162,12 +162,12 @@
         </div>
 
         <!-- Protocol Filter -->
-        <div class="w-32">
+        <div class="w-28">
           <label class="block text-[10px] uppercase font-bold text-violet-400 mb-1">Protocol</label>
           <select
             v-model="filters.protocol"
             @change="applyFilters"
-            class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
+            class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
           >
             <option value="all">All Protocols</option>
             <option value="TCP">TCP</option>
@@ -176,15 +176,52 @@
           </select>
         </div>
 
+        <!-- Network Segment Filter -->
+        <div class="w-48">
+          <label class="block text-[10px] uppercase font-bold text-cyan-400 mb-1 flex items-center gap-1">
+            <Network class="w-3 h-3 text-neon-cyan" />
+            <span>Subnet Segment</span>
+          </label>
+          <select
+            v-model="filters.segment"
+            @change="applyFilters"
+            class="w-full bg-violet-950/80 border border-cyan-500/40 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
+          >
+            <option value="all">All Segments (Full Spectrum)</option>
+            <option value="172.17.0.0/16">172.17.0.0/16 (Departmental VLANs)</option>
+            <option value="10.0.0.0/8">10.0.0.0/8 (Campus, CAE &amp; HPC)</option>
+            <option value="192.168.0.0/16">192.168.0.0/16 (Mgmt &amp; Links)</option>
+            <option value="172.16.0.0/12">172.16.0.0/12 (Lab Rigs &amp; Clusters)</option>
+          </select>
+        </div>
+
+        <!-- 802.1Q VLAN Filter -->
+        <div class="w-48">
+          <label class="block text-[10px] uppercase font-bold text-violet-400 mb-1 flex items-center gap-1">
+            <GitBranch class="w-3 h-3 text-violet-400" />
+            <span>802.1Q VLAN</span>
+          </label>
+          <select
+            v-model="filters.vlan"
+            @change="applyFilters"
+            class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
+          >
+            <option value="all">All VLANs (Trunks &amp; Access)</option>
+            <option v-for="v in availableVlans" :key="v.vlanId" :value="v.vlanId">
+              VLAN {{ v.vlanId }} - {{ v.name }}
+            </option>
+          </select>
+        </div>
+
         <!-- Free Text IP / Hostname / Subnet / App Search -->
-        <div class="flex-1 min-w-[220px]">
+        <div class="flex-1 min-w-[200px]">
           <label class="block text-[10px] uppercase font-bold text-violet-400 mb-1">Search IP / Subnet / Host / App</label>
           <div class="relative">
             <input
               v-model="filters.search"
               @input="handleSearchDebounced"
               type="text"
-              placeholder="e.g. 10.10.11.14, 185.220.101.5, Ansys, BitTorrent, ICTD..."
+              placeholder="e.g. 172.17.11.14, 10.10.3.15, Ansys, BitTorrent..."
               class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-violet-500 focus:outline-none focus:border-cyan-400 font-mono"
             />
             <Search class="w-3.5 h-3.5 text-violet-400 absolute left-2.5 top-2.5" />
@@ -384,6 +421,100 @@
           </div>
         </div>
       </div>
+
+      <!-- 802.1Q VLAN & Subnet Segment Volume Matrix (FortiGate Discovered Scopes) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <!-- Per-VLAN Traffic & Threat Ingestion Matrix -->
+        <div class="ux4g-glass rounded-2xl p-5 border border-violet-800/40 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <GitBranch class="w-4 h-4 text-neon-cyan" />
+              <h3 class="text-xs font-bold uppercase tracking-wider text-violet-200">
+                802.1Q VLAN Traffic &amp; Threat Volume Breakdown
+              </h3>
+            </div>
+            <span class="text-[10px] font-mono text-cyan-300">Click to Filter</span>
+          </div>
+
+          <div class="space-y-2.5 overflow-y-auto max-h-72 pr-1">
+            <div
+              v-for="vItem in (stats.vlanDistribution || [])"
+              :key="vItem.vlanId"
+              @click="filterByVlan(vItem.vlanId)"
+              class="p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/40 hover:border-cyan-500/60 transition cursor-pointer flex flex-col gap-1.5"
+            >
+              <div class="flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="px-2 py-0.5 rounded font-mono font-bold text-[10px] bg-violet-800/80 text-cyan-300 border border-violet-600/50">
+                    VLAN {{ vItem.vlanId }}
+                  </span>
+                  <span class="font-bold text-white truncate">{{ vItem.vlanName }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-right">
+                  <span v-if="vItem.blockedCount > 0" class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                    {{ vItem.blockedCount }} drops
+                  </span>
+                  <span class="font-mono text-cyan-300 font-bold text-xs">{{ formatBytes(vItem.bytes) }}</span>
+                </div>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-violet-900/60 overflow-hidden">
+                <div
+                  class="h-full rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-cyan-400"
+                  :style="{ width: `${Math.min(100, Math.max(4, (vItem.bytes / (stats.totalBytes || 1)) * 100))}%` }"
+                ></div>
+              </div>
+            </div>
+            <div v-if="!stats.vlanDistribution || stats.vlanDistribution.length === 0" class="py-8 text-center text-xs text-violet-400 font-mono">
+              Collecting per-VLAN telemetry across FortiGate subinterfaces...
+            </div>
+          </div>
+        </div>
+
+        <!-- Subnet Segment Distribution Matrix -->
+        <div class="ux4g-glass rounded-2xl p-5 border border-violet-800/40 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <Network class="w-4 h-4 text-indigo-400" />
+              <h3 class="text-xs font-bold uppercase tracking-wider text-violet-200">
+                Network Subnet Segment Distribution
+              </h3>
+            </div>
+            <span class="text-[10px] font-mono text-indigo-300">RFC 1918 Scopes</span>
+          </div>
+
+          <div class="space-y-2.5 overflow-y-auto max-h-72 pr-1">
+            <div
+              v-for="sItem in (stats.segmentDistribution || [])"
+              :key="sItem.segment"
+              @click="filterBySegment(sItem.segment)"
+              class="p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/40 hover:border-indigo-500/60 transition cursor-pointer flex flex-col gap-1.5"
+            >
+              <div class="flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                  <span class="font-mono font-bold text-white">{{ sItem.segment }}</span>
+                  <span class="text-[10px] text-violet-400">({{ sItem.count }} flows)</span>
+                </div>
+                <div class="flex items-center gap-2 text-right">
+                  <span v-if="sItem.blockedCount > 0" class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                    {{ sItem.blockedCount }} drops
+                  </span>
+                  <span class="font-mono text-indigo-300 font-bold text-xs">{{ formatBytes(sItem.bytes) }}</span>
+                </div>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-violet-900/60 overflow-hidden">
+                <div
+                  class="h-full rounded-full bg-gradient-to-r from-purple-500 to-indigo-400"
+                  :style="{ width: `${Math.min(100, Math.max(5, (sItem.bytes / (stats.totalBytes || 1)) * 100))}%` }"
+                ></div>
+              </div>
+            </div>
+            <div v-if="!stats.segmentDistribution || stats.segmentDistribution.length === 0" class="py-8 text-center text-xs text-violet-400 font-mono">
+              Aggregating multi-subnet institutional segments...
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- TAB 2: DEEP LOG EXPLORER & LIVE STREAM -->
@@ -415,6 +546,7 @@
                 <th class="py-3 px-4">Timestamp</th>
                 <th class="py-3 px-3">Direction</th>
                 <th class="py-3 px-3">Action</th>
+                <th class="py-3 px-3">802.1Q VLAN</th>
                 <th class="py-3 px-4">Source Host &amp; Dept</th>
                 <th class="py-3 px-4">Destination Target</th>
                 <th class="py-3 px-3">App / Protocol</th>
@@ -466,6 +598,24 @@
                   </span>
                 </td>
 
+                <!-- 802.1Q VLAN Badge -->
+                <td class="py-2.5 px-3 whitespace-nowrap">
+                  <div v-if="log.vlanId !== undefined && log.vlanId !== null" class="flex flex-col gap-0.5">
+                    <span
+                      @click="filterByVlan(log.vlanId)"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-violet-800/80 text-cyan-300 border border-violet-600/50 hover:bg-violet-700 cursor-pointer w-fit transition shadow-sm"
+                      :title="`Filter logs by VLAN ${log.vlanId}`"
+                    >
+                      <GitBranch class="w-2.5 h-2.5 text-cyan-400" />
+                      <span>VLAN {{ log.vlanId }}</span>
+                    </span>
+                    <span class="text-[9px] text-violet-400 truncate max-w-[130px]" :title="log.vlanName || log.subnetSegment">
+                      {{ log.vlanName || log.subnetSegment || 'Access' }}
+                    </span>
+                  </div>
+                  <span v-else class="text-[10px] text-violet-500 font-mono">Trunk / WAN</span>
+                </td>
+
                 <!-- Source Host & Department -->
                 <td class="py-2.5 px-4">
                   <div class="text-white font-bold text-xs">{{ log.sourceIp }}:{{ log.sourcePort }}</div>
@@ -510,7 +660,7 @@
               </tr>
 
               <tr v-if="logsList.length === 0">
-                <td colspan="8" class="py-12 text-center text-xs text-violet-400 font-sans">
+                <td colspan="9" class="py-12 text-center text-xs text-violet-400 font-sans">
                   No log events found matching the active filters.
                 </td>
               </tr>
@@ -617,7 +767,9 @@ import {
   XCircle,
   ChevronLeft,
   ChevronRight,
-  Eye
+  Eye,
+  Network,
+  GitBranch
 } from 'lucide-vue-next';
 import AutoRefreshControl from '../components/AutoRefreshControl.vue';
 
@@ -634,6 +786,8 @@ interface TrafficStats {
   topBlockedThreats: { ip: string; threat: string; count: number; lastSeen: string }[];
   topApplications: { name: string; bytes: number; count: number; risk: string }[];
   protocolDistribution: { protocol: string; bytes: number; count: number }[];
+  vlanDistribution?: { vlanId: number; vlanName: string; bytes: number; count: number; blockedCount: number }[];
+  segmentDistribution?: { segment: string; bytes: number; count: number; blockedCount: number }[];
 }
 
 const activeTab = ref<'analytics' | 'explorer'>('analytics');
@@ -664,8 +818,36 @@ const filters = reactive({
   action: 'all',
   protocol: 'all',
   severity: 'all',
+  segment: 'all',
+  vlan: 'all' as string | number,
   search: ''
 });
+
+const availableVlans = ref<{ vlanId: number; name: string; alias?: string; parentInterface?: string; ipSubnet?: string }[]>([
+  { vlanId: 11, name: 'ICTD-VLAN 11', ipSubnet: '172.17.11.0/25' },
+  { vlanId: 12, name: 'BKMD-VLAN 12', ipSubnet: '172.17.12.0/25' },
+  { vlanId: 13, name: 'ASTAR-VLAN 13', ipSubnet: '172.17.13.0/25' },
+  { vlanId: 14, name: 'SMSL-VLAN 14', ipSubnet: '172.17.14.0/25' },
+  { vlanId: 15, name: 'KRD-VLAN 15', ipSubnet: '172.17.15.0/25' },
+  { vlanId: 16, name: 'ACTEL-VLAN 16', ipSubnet: '172.17.16.0/25' },
+  { vlanId: 17, name: 'NAFAAMS-VLAN17', ipSubnet: '172.17.17.0/25' },
+  { vlanId: 18, name: 'STORES-VLAN 18', ipSubnet: '172.17.18.0/25' },
+  { vlanId: 19, name: 'APSML-VLAN 19', ipSubnet: '172.17.19.0/25' },
+  { vlanId: 20, name: 'AML-VLAN 20', ipSubnet: '172.17.20.0/25' },
+  { vlanId: 21, name: 'WEL-VLAN 21', ipSubnet: '172.17.21.0/25' },
+  { vlanId: 22, name: 'TDC-VLAN 22', ipSubnet: '172.17.22.0/25' },
+  { vlanId: 23, name: 'AUDITORIUM-23', ipSubnet: '172.17.23.0/25' },
+  { vlanId: 24, name: 'SHML-VLAN 24', ipSubnet: '172.17.24.0/25' },
+  { vlanId: 25, name: 'SERC GH-VLAN 25', ipSubnet: '172.17.25.0/25' },
+  { vlanId: 26, name: 'FFL-VLAN 26', ipSubnet: '172.17.26.0/25' },
+  { vlanId: 27, name: 'ACCNT-VLAN 27', ipSubnet: '172.17.27.0/24' },
+  { vlanId: 28, name: 'MAIN GTE-VLAN28', ipSubnet: '172.17.28.0/26' },
+  { vlanId: 10, name: 'SERC_LAN_QTMNET_2024', ipSubnet: '172.17.10.0/28' },
+  { vlanId: 2, name: 'SERC_Srv_access', ipSubnet: '10.20.10.0/24' },
+  { vlanId: 40, name: 'ICT_Lan_Access', ipSubnet: '10.10.40.0/24' },
+  { vlanId: 84, name: 'HPC-Cluster', ipSubnet: '10.10.20.0/24' },
+  { vlanId: 1, name: 'ssl.root (VPN)', ipSubnet: '10.212.134.0/24' }
+]);
 
 const logsList = ref<any[]>([]);
 const timelineData = ref<{ timestamp: string; allowedBytes: number; blockedBytes: number }[]>([]);
@@ -791,6 +973,30 @@ async function fetchTimeline() {
   }
 }
 
+async function fetchVlans() {
+  try {
+    const res = await fetch('/api/logs/analyzer/vlans');
+    const data = await res.json();
+    if (data.success && data.vlans && data.vlans.length > 0) {
+      availableVlans.value = data.vlans;
+    }
+  } catch (err) {
+    console.warn('Using default FortiGate VLANs list');
+  }
+}
+
+function filterByVlan(vlanId: number) {
+  filters.vlan = vlanId;
+  activeTab.value = 'explorer';
+  applyFilters();
+}
+
+function filterBySegment(segment: string) {
+  filters.segment = segment;
+  activeTab.value = 'explorer';
+  applyFilters();
+}
+
 async function fetchLogs() {
   if (isPaused.value) return;
 
@@ -801,6 +1007,8 @@ async function fetchLogs() {
       action: filters.action,
       protocol: filters.protocol,
       severity: filters.severity,
+      vlan: filters.vlan.toString(),
+      segment: filters.segment,
       search: filters.search,
       timeRange: filters.timeRangeMinutes.toString(),
       limit: pageSize.toString(),
@@ -842,6 +1050,8 @@ function resetFilters() {
   filters.action = 'all';
   filters.protocol = 'all';
   filters.severity = 'all';
+  filters.segment = 'all';
+  filters.vlan = 'all';
   filters.search = '';
   applyFilters();
 }
@@ -891,6 +1101,7 @@ function formatRelativeTime(iso: string): string {
 }
 
 onMounted(() => {
+  fetchVlans();
   handleRefresh();
 });
 

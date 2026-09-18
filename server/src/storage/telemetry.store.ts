@@ -684,6 +684,190 @@ class TelemetryStore {
   }
 
   private static readonly KNOWN_HOSTS: Record<string, { systemName: string; department: string; zone: string; defaultApp: string; defaultDest: string; defaultSource: string }> = {
+    '172.17.11.25': {
+      systemName: 'ict-ws25.ictd.serc.res.in',
+      department: 'Information Communication Technology (ICTD)',
+      zone: 'ICTD-VLAN 11 (port3)',
+      defaultApp: 'HTTPS-Web-Portal',
+      defaultDest: 'NIC National Cloud',
+      defaultSource: 'ICTD Access Switch'
+    },
+    '172.17.12.18': {
+      systemName: 'bkmd-ws18.bkmd.serc.res.in',
+      department: 'Business Dev & Knowledge Mgmt (BKMD)',
+      zone: 'BKMD-VLAN 12 (port5)',
+      defaultApp: 'e-Office-CSIR',
+      defaultDest: 'CSIR HQ Gateway',
+      defaultSource: 'BKMD Access Switch'
+    },
+    '172.17.13.44': {
+      systemName: 'astar-daq44.astar.serc.res.in',
+      department: 'Advanced Structural Testing Lab (ASTAR)',
+      zone: 'ASTAR-VLAN 13 (port6)',
+      defaultApp: 'Ansys-FEA-HPC',
+      defaultDest: 'Param-SERC HPC Cluster',
+      defaultSource: 'Shake Table DAQ Controller'
+    },
+    '172.17.14.30': {
+      systemName: 'smsl-sensor30.smsl.serc.res.in',
+      department: 'Special Materials & Structures (SMSL)',
+      zone: 'SMSL-VLAN 14 (port7)',
+      defaultApp: 'PostgreSQL-Cluster',
+      defaultDest: 'Central Scientific Database',
+      defaultSource: 'Material Sensor Ingest'
+    },
+    '172.17.15.52': {
+      systemName: 'krd-kiosk52.krd.serc.res.in',
+      department: 'Knowledge Resource & Library (KRD)',
+      zone: 'KRD-VLAN 15 (port8)',
+      defaultApp: 'ScienceDirect-Journals',
+      defaultDest: 'Elsevier ScienceDirect CDN',
+      defaultSource: 'Library Access Terminal'
+    },
+    '172.17.16.22': {
+      systemName: 'actel-test22.actel.serc.res.in',
+      department: 'Concrete Testing & Evaluation (ACTEL)',
+      zone: 'ACTEL-VLAN 16 (port9)',
+      defaultApp: 'Ansys-FEA-HPC',
+      defaultDest: 'Param-SERC HPC Nodes',
+      defaultSource: 'Concrete Compression Rig'
+    },
+    '172.17.17.65': {
+      systemName: 'nafaams-cae65.nafaams.serc.res.in',
+      department: 'Numerical Analysis Facility (NAFAAMS)',
+      zone: 'NAFAAMS-VLAN17 (port11)',
+      defaultApp: 'OpenMPI-Parallel',
+      defaultDest: 'HPC Compute Array',
+      defaultSource: 'FEA Workstation'
+    },
+    '172.17.18.14': {
+      systemName: 'stores-erp14.stores.serc.res.in',
+      department: 'Purchase & Central Stores (STORES)',
+      zone: 'STORES-VLAN 18 (port12)',
+      defaultApp: 'e-Office-CSIR',
+      defaultDest: 'Government GeM Portal',
+      defaultSource: 'Stores Terminal'
+    },
+    '172.17.19.10': {
+      systemName: 'apsml-inst10.apsml.serc.res.in',
+      department: 'Advanced Polymer & Smart Materials (APSML)',
+      zone: 'APSML-VLAN 19 (port13)',
+      defaultApp: 'PostgreSQL-Cluster',
+      defaultDest: 'Central Scientific Database',
+      defaultSource: 'Polymer Characterization Rig'
+    },
+    '172.17.20.15': {
+      systemName: 'aml-inst15.aml.serc.res.in',
+      department: 'Advanced Materials Characterization (AML)',
+      zone: 'AML-VLAN 20 (port13)',
+      defaultApp: 'PostgreSQL-Cluster',
+      defaultDest: 'Central Scientific Database',
+      defaultSource: 'Materials Sensor'
+    },
+    '172.17.21.32': {
+      systemName: 'windtunnel-daq32.wel.serc.res.in',
+      department: 'Wind Engineering Boundary Layer (WEL)',
+      zone: 'WEL-VLAN 21 (port14)',
+      defaultApp: 'Lustre-Storage-Sync',
+      defaultDest: 'HPC BigData Storage',
+      defaultSource: 'Wind Pressure Sensors'
+    },
+    '172.17.22.40': {
+      systemName: 'tower-daq40.tdc.serc.res.in',
+      department: 'Tower Testing Research Station (TDC)',
+      zone: 'TDC-VLAN 22 (port15)',
+      defaultApp: 'Ansys-FEA-HPC',
+      defaultDest: 'SERC-TTRS VPN Tunnel',
+      defaultSource: 'Tower Strain Gauges'
+    },
+    '172.17.23.12': {
+      systemName: 'auditorium-av12.serc.res.in',
+      department: 'CSIR-SERC Campus Auditorium AV',
+      zone: 'AUDITORIUM-23 (port15)',
+      defaultApp: 'Zoom-Video',
+      defaultDest: 'Zoom Cloud Video Bridge',
+      defaultSource: 'Auditorium AV Console'
+    },
+    '172.17.24.50': {
+      systemName: 'shml-sensor50.shml.serc.res.in',
+      department: 'Structural Health Monitoring (SHML)',
+      zone: 'SHML-VLAN 24 (port16)',
+      defaultApp: 'Ansys-FEA-HPC',
+      defaultDest: 'Param-SERC Supercomputing Cluster',
+      defaultSource: 'Bridge Fiber Optic Sensors'
+    },
+    '172.17.25.88': {
+      systemName: 'gh-wifi88.gh.serc.res.in',
+      department: 'CSIR Guest House & Campus WiFi',
+      zone: 'SERC GH-VLAN 25 (port17)',
+      defaultApp: 'HTTPS-Web-Portal',
+      defaultDest: 'NKN High-Speed Internet Transit',
+      defaultSource: 'Guest House AP'
+    },
+    '172.17.26.24': {
+      systemName: 'ffl-daq24.ffl.serc.res.in',
+      department: 'Fatigue & Fracture Laboratory (FFL)',
+      zone: 'FFL-VLAN 26 (port18)',
+      defaultApp: 'Ansys-FEA-HPC',
+      defaultDest: 'Param-SERC Supercomputing Cluster',
+      defaultSource: 'Fatigue Rig Controller'
+    },
+    '172.17.27.16': {
+      systemName: 'accnt-erp16.accnt.serc.res.in',
+      department: 'Finance & Accounts Division (ACCNT)',
+      zone: 'ACCNT-VLAN 27 (port19)',
+      defaultApp: 'e-Office-CSIR',
+      defaultDest: 'State Bank PFMS Portal',
+      defaultSource: 'Finance Payroll Terminal'
+    },
+    '172.17.28.10': {
+      systemName: 'gate-cctv10.gate.serc.res.in',
+      department: 'Perimeter Security & CCTV (MAIN GTE)',
+      zone: 'MAIN GTE-VLAN28 (port20)',
+      defaultApp: 'HTTPS-Web-Portal',
+      defaultDest: 'Campus Central NVR System',
+      defaultSource: 'Main Gate ANPR Camera'
+    },
+    '172.17.10.5': {
+      systemName: 'qtmnet-node05.serc.res.in',
+      department: 'SERC Quantum Computing & Testbed (port10)',
+      zone: 'SERC_LAN_QTMNET_2024 (port10)',
+      defaultApp: 'OpenMPI-Parallel',
+      defaultDest: 'QTM Quantum Link Hub',
+      defaultSource: 'Quantum Node Server'
+    },
+    '172.16.171.135': {
+      systemName: 'actel-rig135.serc.res.in',
+      department: 'ACTEL Concrete Compression Rig Link (port9)',
+      zone: 'ACTEL Rig Link (port9)',
+      defaultApp: 'Ansys-FEA-HPC',
+      defaultDest: 'Param-SERC HPC Cluster',
+      defaultSource: 'Concrete Rig Controller'
+    },
+    '172.31.1.20': {
+      systemName: 'nafaams-hpc20.serc.res.in',
+      department: 'NAFAAMS Numerical Analysis Cluster (port11)',
+      zone: 'NAFAAMS Cluster (port11)',
+      defaultApp: 'OpenMPI-Parallel',
+      defaultDest: 'HPC Compute Array',
+      defaultSource: 'CAE Cluster Node'
+    },
+    '192.168.1.99': {
+      systemName: 'fortigate-mgmt.serc.res.in',
+      department: 'Dedicated Out-of-Band Hardware Management',
+      zone: 'mgmt (port mgmt)',
+      defaultApp: 'FortiOS-Admin-HTTPS',
+      defaultDest: 'Out-of-Band Console',
+      defaultSource: 'FortiGate Hardware OOB'
+    },
+    '10.10.3.15': {
+      systemName: 'fortigate-csir-serc.serc.res.in',
+      department: 'Perimeter FortiGate Security Gateway (port1)',
+      zone: 'WAN port1 (NKN 1Gbps)',
+      defaultApp: 'FortiOS-Admin-HTTPS',
+      defaultDest: 'NKN National Leased Line',
+      defaultSource: 'FortiOS Kernel Engine'
+    },
     '10.10.40.85': {
       systemName: 'cad-cae-workstation-lab3.serc.res.in',
       department: 'Advanced Structural Health Monitoring Lab',
@@ -711,7 +895,7 @@ class TelemetryStore {
     '10.10.20.15': {
       systemName: 'hpc-compute-node01.serc.res.in',
       department: 'Param-SERC Supercomputing Centre',
-      zone: 'SERC_Srv_access (port2)',
+      zone: 'SERC_Srv_access (port25)',
       defaultApp: 'OpenMPI-Parallel',
       defaultDest: 'C-DAC Supercomputing Grid',
       defaultSource: 'Master Head Node (Param)'
@@ -719,7 +903,7 @@ class TelemetryStore {
     '10.10.20.24': {
       systemName: 'hpc-storage-head.serc.res.in',
       department: 'Cluster Parallel Lustre Storage',
-      zone: 'SERC_Srv_access (port2)',
+      zone: 'SERC_Srv_access (port28)',
       defaultApp: 'Lustre-Storage-Sync',
       defaultDest: 'NKN Scientific BigData Store',
       defaultSource: 'Lustre OSS Storage Bricks'
@@ -831,51 +1015,123 @@ class TelemetryStore {
     const parts = ip.split('.');
     const last = parts[3] || '1';
 
+    // FortiGate Physical VLAN Subnets (172.17.11.0/25 - 172.17.28.0/26)
+    if (ip.startsWith('172.17.11.')) {
+      return { systemName: `ict-ws${last}.ictd.serc.res.in`, department: 'Information Communication Technology (ICTD)', zone: 'ICTD-VLAN 11', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NIC National Cloud', defaultSource: 'ICTD Access Switch', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.12.')) {
+      return { systemName: `bkmd-ws${last}.bkmd.serc.res.in`, department: 'Business Dev & Knowledge Mgmt (BKMD)', zone: 'BKMD-VLAN 12', defaultApp: 'e-Office-CSIR', defaultDest: 'CSIR HQ Gateway', defaultSource: 'BKMD Access Switch', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.13.')) {
+      return { systemName: `astar-daq${last}.astar.serc.res.in`, department: 'Advanced Structural Testing Lab (ASTAR)', zone: 'ASTAR-VLAN 13', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC HPC Cluster', defaultSource: 'Shake Table DAQ Controller', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.14.')) {
+      return { systemName: `smsl-sensor${last}.smsl.serc.res.in`, department: 'Special Materials & Structures (SMSL)', zone: 'SMSL-VLAN 14', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Material Sensor Ingest', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.15.')) {
+      return { systemName: `krd-kiosk${last}.krd.serc.res.in`, department: 'Knowledge Resource & Library (KRD)', zone: 'KRD-VLAN 15', defaultApp: 'ScienceDirect-Journals', defaultDest: 'Elsevier ScienceDirect CDN', defaultSource: 'Library Access Terminal', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.16.')) {
+      return { systemName: `actel-test${last}.actel.serc.res.in`, department: 'Concrete Testing & Evaluation (ACTEL)', zone: 'ACTEL-VLAN 16', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC HPC Nodes', defaultSource: 'Concrete Compression Rig', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.17.')) {
+      return { systemName: `nafaams-cae${last}.nafaams.serc.res.in`, department: 'Numerical Analysis Facility (NAFAAMS)', zone: 'NAFAAMS-VLAN17', defaultApp: 'OpenMPI-Parallel', defaultDest: 'HPC Compute Array', defaultSource: 'FEA Workstation', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.18.')) {
+      return { systemName: `stores-erp${last}.stores.serc.res.in`, department: 'Purchase & Central Stores (STORES)', zone: 'STORES-VLAN 18', defaultApp: 'e-Office-CSIR', defaultDest: 'Government GeM Portal', defaultSource: 'Stores Terminal', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.19.')) {
+      return { systemName: `apsml-inst${last}.apsml.serc.res.in`, department: 'Advanced Polymer & Smart Materials (APSML)', zone: 'APSML-VLAN 19', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Polymer Characterization Rig', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.20.')) {
+      return { systemName: `aml-inst${last}.aml.serc.res.in`, department: 'Advanced Materials Characterization (AML)', zone: 'AML-VLAN 20', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Materials Sensor', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.21.')) {
+      return { systemName: `windtunnel-daq${last}.wel.serc.res.in`, department: 'Wind Engineering Boundary Layer (WEL)', zone: 'WEL-VLAN 21', defaultApp: 'Lustre-Storage-Sync', defaultDest: 'HPC BigData Storage', defaultSource: 'Wind Pressure Sensors', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.22.')) {
+      return { systemName: `tower-daq${last}.tdc.serc.res.in`, department: 'Tower Testing Research Station (TDC)', zone: 'TDC-VLAN 22', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'SERC-TTRS VPN Tunnel', defaultSource: 'Tower Strain Gauges', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.23.')) {
+      return { systemName: `auditorium-av${last}.serc.res.in`, department: 'CSIR-SERC Campus Auditorium AV', zone: 'AUDITORIUM-23', defaultApp: 'Zoom-Video', defaultDest: 'Zoom Cloud Video Bridge', defaultSource: 'Auditorium AV Console', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.24.')) {
+      return { systemName: `shml-sensor${last}.shml.serc.res.in`, department: 'Structural Health Monitoring (SHML)', zone: 'SHML-VLAN 24', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Bridge Fiber Optic Sensors', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.25.')) {
+      return { systemName: `gh-wifi${last}.gh.serc.res.in`, department: 'CSIR Guest House & Campus WiFi', zone: 'SERC GH-VLAN 25', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NKN High-Speed Internet Transit', defaultSource: 'Guest House AP', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.26.')) {
+      return { systemName: `ffl-daq${last}.ffl.serc.res.in`, department: 'Fatigue & Fracture Laboratory (FFL)', zone: 'FFL-VLAN 26', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Fatigue Rig Controller', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.27.')) {
+      return { systemName: `accnt-erp${last}.accnt.serc.res.in`, department: 'Finance & Accounts Division (ACCNT)', zone: 'ACCNT-VLAN 27', defaultApp: 'e-Office-CSIR', defaultDest: 'State Bank PFMS Portal', defaultSource: 'Finance Payroll Terminal', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.28.')) {
+      return { systemName: `gate-cctv${last}.gate.serc.res.in`, department: 'Perimeter Security & CCTV (MAIN GTE)', zone: 'MAIN GTE-VLAN28', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'Campus Central NVR System', defaultSource: 'Main Gate ANPR Camera', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.17.10.')) {
+      return { systemName: `qtmnet-node${last}.serc.res.in`, department: 'SERC Quantum Computing Testbed', zone: 'SERC_LAN_QTMNET_2024', defaultApp: 'OpenMPI-Parallel', defaultDest: 'QTM Quantum Link Hub', defaultSource: 'Quantum Node Server', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.16.171.')) {
+      return { systemName: `actel-rig${last}.actel.serc.res.in`, department: 'ACTEL Concrete Rig Link (port9)', zone: 'port9', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC HPC Cluster', defaultSource: 'Concrete Rig Controller', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('172.31.1.')) {
+      return { systemName: `nafaams-hpc${last}.nafaams.serc.res.in`, department: 'NAFAAMS Numerical Cluster (port11)', zone: 'port11', defaultApp: 'OpenMPI-Parallel', defaultDest: 'HPC Compute Array', defaultSource: 'CAE Cluster Node', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('192.168.1.')) {
+      return { systemName: `fortigate-oob-mgmt.serc.res.in`, department: 'Dedicated Out-of-Band Mgmt (mgmt)', zone: 'mgmt', defaultApp: 'FortiOS-Admin-HTTPS', defaultDest: 'Out-of-Band Console', defaultSource: 'FortiGate Hardware OOB', isInternal: true, country: 'IN' };
+    }
+    if (ip.startsWith('192.168.254.')) {
+      return { systemName: `ptp-link${last}.serc.res.in`, department: 'Point-to-Point Switch Interconnect', zone: 'port5/port6', defaultApp: 'Infrastructure', defaultDest: 'Transit Switch', defaultSource: 'FortiGate Trunk', isInternal: true, country: 'IN' };
+    }
+
+    // 10.0.0.0/8 Subnets
     if (ip.startsWith('10.10.11.')) {
-      return { systemName: `ict-ws${last}.ictd.serc.res.in`, department: 'Information & Comm. Technology Div (ICTD)', zone: 'ICTD-VLAN11', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NIC National Cloud', defaultSource: 'ICTD Access Switch', isInternal: true, country: 'IN' };
+      return { systemName: `ict-ws${last}.ictd.serc.res.in`, department: 'Information & Comm. Technology Div (ICTD)', zone: 'ICTD-VLAN 11', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NIC National Cloud', defaultSource: 'ICTD Access Switch', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.12.')) {
-      return { systemName: `bkmd-ws${last}.bkmd.serc.res.in`, department: 'Business Dev & Knowledge Mgmt (BKMD)', zone: 'BKMD-VLAN12', defaultApp: 'e-Office-CSIR', defaultDest: 'CSIR HQ Gateway', defaultSource: 'BKMD Access Switch', isInternal: true, country: 'IN' };
+      return { systemName: `bkmd-ws${last}.bkmd.serc.res.in`, department: 'Business Dev & Knowledge Mgmt (BKMD)', zone: 'BKMD-VLAN 12', defaultApp: 'e-Office-CSIR', defaultDest: 'CSIR HQ Gateway', defaultSource: 'BKMD Access Switch', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.13.')) {
-      return { systemName: `astar-daq${last}.astar.serc.res.in`, department: 'Advanced Structural Testing Lab (ASTAR)', zone: 'ASTAR-VLAN13', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Shake Table DAQ Controller', isInternal: true, country: 'IN' };
+      return { systemName: `astar-daq${last}.astar.serc.res.in`, department: 'Advanced Structural Testing Lab (ASTAR)', zone: 'ASTAR-VLAN 13', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Shake Table DAQ Controller', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.14.')) {
-      return { systemName: `smsl-sensor${last}.smsl.serc.res.in`, department: 'Special Materials & Structures (SMSL)', zone: 'SMSL-VLAN14', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Material Sensor Ingest', isInternal: true, country: 'IN' };
+      return { systemName: `smsl-sensor${last}.smsl.serc.res.in`, department: 'Special Materials & Structures (SMSL)', zone: 'SMSL-VLAN 14', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Material Sensor Ingest', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.15.')) {
-      return { systemName: `krd-kiosk${last}.krd.serc.res.in`, department: 'Knowledge Resource & Library (KRD)', zone: 'KRD-VLAN15', defaultApp: 'ScienceDirect-Journals', defaultDest: 'Elsevier ScienceDirect CDN', defaultSource: 'Library Access Terminal', isInternal: true, country: 'IN' };
+      return { systemName: `krd-kiosk${last}.krd.serc.res.in`, department: 'Knowledge Resource & Library (KRD)', zone: 'KRD-VLAN 15', defaultApp: 'ScienceDirect-Journals', defaultDest: 'Elsevier ScienceDirect CDN', defaultSource: 'Library Access Terminal', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.16.')) {
-      return { systemName: `actel-ws${last}.actel.serc.res.in`, department: 'Concrete Testing & Evaluation Lab (ACTEL)', zone: 'ACTEL-VLAN16', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC HPC Nodes', defaultSource: 'Concrete Compression Rig', isInternal: true, country: 'IN' };
+      return { systemName: `actel-ws${last}.actel.serc.res.in`, department: 'Concrete Testing & Evaluation Lab (ACTEL)', zone: 'ACTEL-VLAN 16', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC HPC Nodes', defaultSource: 'Concrete Compression Rig', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.17.')) {
       return { systemName: `nafaams-cae${last}.nafaams.serc.res.in`, department: 'Numerical Analysis Facility (NAFAAMS)', zone: 'NAFAAMS-VLAN17', defaultApp: 'OpenMPI-Parallel', defaultDest: 'HPC Compute Array', defaultSource: 'FEA Workstation', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.18.')) {
-      return { systemName: `stores-erp${last}.stores.serc.res.in`, department: 'Purchase & Central Stores Div (STORES)', zone: 'STORES-VLAN18', defaultApp: 'e-Office-CSIR', defaultDest: 'Government GeM Portal', defaultSource: 'Stores Terminal', isInternal: true, country: 'IN' };
+      return { systemName: `stores-erp${last}.stores.serc.res.in`, department: 'Purchase & Central Stores Div (STORES)', zone: 'STORES-VLAN 18', defaultApp: 'e-Office-CSIR', defaultDest: 'Government GeM Portal', defaultSource: 'Stores Terminal', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.20.')) {
       const num = parseInt(last, 10);
       if (num < 100) {
         return { systemName: `hpc-compute-node${num.toString().padStart(2, '0')}.serc.res.in`, department: 'Param-SERC Supercomputing Centre', zone: 'HPC-Cluster', defaultApp: 'OpenMPI-Parallel', defaultDest: 'Lustre Storage Fabric', defaultSource: 'Param Master Scheduler', isInternal: true, country: 'IN' };
       }
-      return { systemName: `aml-inst${last}.aml.serc.res.in`, department: 'Advanced Materials Lab (AML)', zone: 'AML-VLAN20', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Materials Sensor', isInternal: true, country: 'IN' };
+      return { systemName: `aml-inst${last}.aml.serc.res.in`, department: 'Advanced Materials Lab (AML)', zone: 'AML-VLAN 20', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Central Scientific Database', defaultSource: 'Materials Sensor', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.21.')) {
-      return { systemName: `windtunnel-daq${last}.wel.serc.res.in`, department: 'Wind Engineering Laboratory (WEL)', zone: 'WEL-VLAN21', defaultApp: 'Lustre-Storage-Sync', defaultDest: 'HPC BigData Storage', defaultSource: 'Wind Pressure Sensors', isInternal: true, country: 'IN' };
+      return { systemName: `windtunnel-daq${last}.wel.serc.res.in`, department: 'Wind Engineering Laboratory (WEL)', zone: 'WEL-VLAN 21', defaultApp: 'Lustre-Storage-Sync', defaultDest: 'HPC BigData Storage', defaultSource: 'Wind Pressure Sensors', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.22.')) {
-      return { systemName: `tower-test${last}.tdc.serc.res.in`, department: 'Tower Testing Research Station (TDC)', zone: 'TDC-VLAN22', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'SERC-TTRS VPN Tunnel', defaultSource: 'Tower Strain Gauges', isInternal: true, country: 'IN' };
+      return { systemName: `tower-test${last}.tdc.serc.res.in`, department: 'Tower Testing Research Station (TDC)', zone: 'TDC-VLAN 22', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'SERC-TTRS VPN Tunnel', defaultSource: 'Tower Strain Gauges', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.25.')) {
-      return { systemName: `gh-wifi${last}.gh.serc.res.in`, department: 'CSIR Guest House & Campus Wifi', zone: 'GH-VLAN25', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NKN High-Speed Internet Transit', defaultSource: 'Campus AP', isInternal: true, country: 'IN' };
+      return { systemName: `gh-wifi${last}.gh.serc.res.in`, department: 'CSIR Guest House & Campus Wifi', zone: 'SERC GH-VLAN 25', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'NKN High-Speed Internet Transit', defaultSource: 'Campus AP', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.26.')) {
-      return { systemName: `ffl-daq${last}.ffl.serc.res.in`, department: 'Fatigue & Fracture Laboratory (FFL)', zone: 'FFL-VLAN26', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Fatigue Rig Controller', isInternal: true, country: 'IN' };
+      return { systemName: `ffl-daq${last}.ffl.serc.res.in`, department: 'Fatigue & Fracture Laboratory (FFL)', zone: 'FFL-VLAN 26', defaultApp: 'Ansys-FEA-HPC', defaultDest: 'Param-SERC Supercomputing Cluster', defaultSource: 'Fatigue Rig Controller', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.10.28.')) {
-      return { systemName: `cctv-cam${last}.gate.serc.res.in`, department: 'Security Access & Campus Surveillance', zone: 'GATE-VLAN28', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'Campus Central NVR System', defaultSource: 'Gate CCTV', isInternal: true, country: 'IN' };
+      return { systemName: `cctv-cam${last}.gate.serc.res.in`, department: 'Security Access & Campus Surveillance', zone: 'MAIN GTE-VLAN28', defaultApp: 'HTTPS-Web-Portal', defaultDest: 'Campus Central NVR System', defaultSource: 'Gate CCTV', isInternal: true, country: 'IN' };
     }
     if (ip.startsWith('10.20.10.')) {
       return { systemName: `serc-srv${last}.serc.res.in`, department: 'Central Scientific Database & Core Datacenter', zone: 'SERC_Srv_access', defaultApp: 'PostgreSQL-Cluster', defaultDest: 'Campus Core Switch Fabric', defaultSource: 'Datacenter SAN', isInternal: true, country: 'IN' };
@@ -885,6 +1141,9 @@ class TelemetryStore {
     }
     if (ip.startsWith('10.212.134.')) {
       return { systemName: `vpn-remote-scientist${last}.serc.res.in`, department: 'Remote SSL-VPN Research Scientists', zone: 'ssl.root', defaultApp: 'e-Office-CSIR', defaultDest: 'Perimeter FortiGate Gateway', defaultSource: 'FortiClient SSL', isInternal: true, country: 'IN' };
+    }
+    if (ip === '10.10.3.15') {
+      return { systemName: 'fortigate-csir-serc.serc.res.in', department: 'Perimeter FortiGate Security Gateway', zone: 'port1 (WAN)', defaultApp: 'FortiOS-Admin-HTTPS', defaultDest: 'NKN Leased Line', defaultSource: 'FortiOS Kernel', isInternal: true, country: 'IN' };
     }
 
     return {
@@ -897,6 +1156,77 @@ class TelemetryStore {
       isInternal: true,
       country: 'IN'
     };
+  }
+
+  /**
+   * Resolves Network Subnet Segment for any IP address
+   */
+  public static resolveSubnetSegment(ip: string): string {
+    if (!ip) return 'WAN';
+    if (ip.startsWith('172.17.')) return '172.17.0.0/16';
+    if (ip.startsWith('172.16.') || ip.startsWith('172.31.') || (ip.startsWith('172.') && TelemetryStore.isPrivateIp(ip))) return '172.16.0.0/12';
+    if (ip.startsWith('192.168.')) return '192.168.0.0/16';
+    if (ip.startsWith('10.')) return '10.0.0.0/8';
+    return 'WAN';
+  }
+
+  /**
+   * Resolves exact 802.1Q VLAN, Name, Interface, and Subnet Segment for any IP address
+   */
+  public static resolveVlanForIp(ip: string): { vlanId?: number; vlanName?: string; parentIf?: string; subnetSegment: string } {
+    const subnetSegment = TelemetryStore.resolveSubnetSegment(ip);
+
+    // 172.17.x Departmental VLANs
+    if (ip.startsWith('172.17.11.')) return { vlanId: 11, vlanName: 'ICTD-VLAN 11', parentIf: 'port3', subnetSegment };
+    if (ip.startsWith('172.17.12.')) return { vlanId: 12, vlanName: 'BKMD-VLAN 12', parentIf: 'port5', subnetSegment };
+    if (ip.startsWith('172.17.13.')) return { vlanId: 13, vlanName: 'ASTAR-VLAN 13', parentIf: 'port6', subnetSegment };
+    if (ip.startsWith('172.17.14.')) return { vlanId: 14, vlanName: 'SMSL-VLAN 14', parentIf: 'port7', subnetSegment };
+    if (ip.startsWith('172.17.15.')) return { vlanId: 15, vlanName: 'KRD-VLAN 15', parentIf: 'port8', subnetSegment };
+    if (ip.startsWith('172.17.16.')) return { vlanId: 16, vlanName: 'ACTEL-VLAN 16', parentIf: 'port9', subnetSegment };
+    if (ip.startsWith('172.17.17.')) return { vlanId: 17, vlanName: 'NAFAAMS-VLAN17', parentIf: 'port11', subnetSegment };
+    if (ip.startsWith('172.17.18.')) return { vlanId: 18, vlanName: 'STORES-VLAN 18', parentIf: 'port12', subnetSegment };
+    if (ip.startsWith('172.17.19.')) return { vlanId: 19, vlanName: 'APSML-VLAN 19', parentIf: 'port13', subnetSegment };
+    if (ip.startsWith('172.17.20.')) return { vlanId: 20, vlanName: 'AML-VLAN 20', parentIf: 'port13', subnetSegment };
+    if (ip.startsWith('172.17.21.')) return { vlanId: 21, vlanName: 'WEL-VLAN 21', parentIf: 'port14', subnetSegment };
+    if (ip.startsWith('172.17.22.')) return { vlanId: 22, vlanName: 'TDC-VLAN 22', parentIf: 'port15', subnetSegment };
+    if (ip.startsWith('172.17.23.')) return { vlanId: 23, vlanName: 'AUDITORIUM-23', parentIf: 'port15', subnetSegment };
+    if (ip.startsWith('172.17.24.')) return { vlanId: 24, vlanName: 'SHML-VLAN 24', parentIf: 'port16', subnetSegment };
+    if (ip.startsWith('172.17.25.')) return { vlanId: 25, vlanName: 'SERC GH-VLAN 25', parentIf: 'port17', subnetSegment };
+    if (ip.startsWith('172.17.26.')) return { vlanId: 26, vlanName: 'FFL-VLAN 26', parentIf: 'port18', subnetSegment };
+    if (ip.startsWith('172.17.27.')) return { vlanId: 27, vlanName: 'ACCNT-VLAN 27', parentIf: 'port19', subnetSegment };
+    if (ip.startsWith('172.17.28.')) return { vlanId: 28, vlanName: 'MAIN GTE-VLAN28', parentIf: 'port20', subnetSegment };
+    if (ip.startsWith('172.17.10.')) return { vlanId: 10, vlanName: 'SERC_LAN_QTMNET_2024', parentIf: 'port10', subnetSegment };
+
+    // 172.16.x / 172.31.x Physical Links
+    if (ip.startsWith('172.16.171.')) return { vlanId: 9, vlanName: 'ACTEL Concrete Rig Link', parentIf: 'port9', subnetSegment };
+    if (ip.startsWith('172.31.1.')) return { vlanId: 171, vlanName: 'NAFAAMS Cluster Link', parentIf: 'port11', subnetSegment };
+
+    // 192.168.x Scope
+    if (ip.startsWith('192.168.1.')) return { vlanId: 99, vlanName: 'Dedicated Out-of-Band Mgmt', parentIf: 'mgmt', subnetSegment };
+    if (ip.startsWith('192.168.254.')) return { vlanId: 254, vlanName: 'PtP Interconnect', parentIf: 'port5/port6', subnetSegment };
+
+    // 10.0.0.0/8 Scope
+    if (ip.startsWith('10.20.10.')) return { vlanId: 2, vlanName: 'SERC_Srv_access', parentIf: 'port2', subnetSegment };
+    if (ip.startsWith('10.10.40.')) return { vlanId: 40, vlanName: 'ICT_Lan_Access', parentIf: 'port3', subnetSegment };
+    if (ip.startsWith('10.10.20.')) return { vlanId: 84, vlanName: 'HPC-Cluster', parentIf: 'port25', subnetSegment };
+    if (ip.startsWith('10.212.134.')) return { vlanId: 1, vlanName: 'ssl.root (VPN)', parentIf: 'ssl.root', subnetSegment };
+    if (ip === '10.10.3.15') return { vlanId: 1, vlanName: 'FortiGate Physical', parentIf: 'port1', subnetSegment };
+
+    return { subnetSegment };
+  }
+
+  /**
+   * Return canonical list of all configured 802.1Q VLANs
+   */
+  public getVlanCatalog() {
+    return FORTIGATE_INTERFACE_CATALOG.filter(i => i.type === 'vlan' || (i.vlanId && i.vlanId > 0)).map(v => ({
+      vlanId: v.vlanId,
+      name: v.name,
+      alias: v.alias,
+      parentInterface: v.parentInterface,
+      ipSubnet: v.ipSubnet,
+      operStatus: v.operStatus
+    }));
   }
 
   public getBentoTrafficAnalytics(): BentoTrafficAnalytics {

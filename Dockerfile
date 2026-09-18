@@ -29,8 +29,8 @@ COPY client/dist ./public
 COPY client/dist ./dist/public
 COPY client/dist /app/client/dist
 
-# Expose standard HTTP and collector ports
-EXPOSE 80 1514/udp 2055/udp 514/udp
+# Expose standard HTTP and collector ports (including SNMP Trap UDP 162)
+EXPOSE 80 1514/udp 2055/udp 514/udp 162/udp
 
 VOLUME ["/app/data", "/app/uploads", "/app/backups"]
 

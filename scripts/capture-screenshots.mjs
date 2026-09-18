@@ -204,11 +204,25 @@ try {
       await new Promise(r => setTimeout(r, 500));
     }
 
-    // If capturing logs, also capture the deep log explorer tab
+    // If capturing logs, capture analytics matrix, log explorer, and 172.17.0.0/16 filtered view
     if (p.name === '07_live_syslog_stream') {
+      console.log('Capturing 07a_vlan_subnet_matrix (VLAN & Subnet Breakdown)...');
+      await send('Runtime.evaluate', {
+        expression: `
+          const m = document.querySelector('main');
+          if (m) m.scrollBy({ top: 580, behavior: 'instant' });
+        `
+      });
+      await new Promise(r => setTimeout(r, 1200));
+      const resVlanMatrix = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync('docs/screenshots/07a_vlan_subnet_matrix.png', Buffer.from(resVlanMatrix.data, 'base64'));
+      console.log('Successfully captured docs/screenshots/07a_vlan_subnet_matrix.png');
+
       console.log('Capturing 07b_traffic_log_explorer (Explorer Tab)...');
       await send('Runtime.evaluate', {
         expression: `
+          const m = document.querySelector('main');
+          if (m) m.scrollTo({ top: 0, behavior: 'instant' });
           const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Log Explorer'));
           if (btn) btn.click();
         `
@@ -217,6 +231,22 @@ try {
       const resExplorer = await send('Page.captureScreenshot', { format: 'png' });
       fs.writeFileSync('docs/screenshots/07b_traffic_log_explorer.png', Buffer.from(resExplorer.data, 'base64'));
       console.log('Successfully captured docs/screenshots/07b_traffic_log_explorer.png');
+
+      console.log('Capturing 07c_vlan_172_17_filtered (172.17.0.0/16 Departmental Filter)...');
+      await send('Runtime.evaluate', {
+        expression: `
+          const selects = Array.from(document.querySelectorAll('select'));
+          const segmentSelect = selects.find(s => Array.from(s.options).some(o => o.value === '172.17.0.0/16'));
+          if (segmentSelect) {
+            segmentSelect.value = '172.17.0.0/16';
+            segmentSelect.dispatchEvent(new Event('change'));
+          }
+        `
+      });
+      await new Promise(r => setTimeout(r, 2000));
+      const resFiltered = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync('docs/screenshots/07c_vlan_172_17_filtered.png', Buffer.from(resFiltered.data, 'base64'));
+      console.log('Successfully captured docs/screenshots/07c_vlan_172_17_filtered.png');
     }
   }
 

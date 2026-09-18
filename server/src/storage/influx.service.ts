@@ -25,6 +25,10 @@ export interface TrafficLogRecord {
   policyName?: string;
   severity: 'info' | 'warning' | 'critical';
   threatCategory?: string;
+  vlanId?: number;
+  vlanName?: string;
+  interface?: string;
+  subnetSegment?: string;
   rawLog?: string;
 }
 
@@ -42,6 +46,8 @@ export interface TrafficAnalyticsSummary {
   topBlockedThreats: { ip: string; threat: string; count: number; lastSeen: string }[];
   topApplications: { name: string; bytes: number; count: number; risk: string }[];
   protocolDistribution: { protocol: string; bytes: number; count: number }[];
+  vlanDistribution: { vlanId: number; vlanName: string; bytes: number; count: number; blockedCount: number }[];
+  segmentDistribution: { segment: string; bytes: number; count: number; blockedCount: number }[];
 }
 
 export interface TimelineBucket {
@@ -139,7 +145,11 @@ export class InfluxService {
       `application=${this.escapeTag(record.application)}`,
       `severity=${this.escapeTag(record.severity)}`,
       `source_dept=${this.escapeTag(record.sourceDept || 'General')}`,
-      `threat_category=${this.escapeTag(record.threatCategory || 'None')}`
+      `threat_category=${this.escapeTag(record.threatCategory || 'None')}`,
+      `vlan_id=${record.vlanId !== undefined ? record.vlanId : 'none'}`,
+      `vlan_name=${this.escapeTag(record.vlanName || 'None')}`,
+      `interface=${this.escapeTag(record.interface || 'None')}`,
+      `subnet_segment=${this.escapeTag(record.subnetSegment || 'General')}`
     ].join(',');
 
     const fields = [
@@ -214,6 +224,8 @@ export class InfluxService {
     search?: string;
     protocol?: string;
     severity?: string;
+    vlan?: string | number;
+    segment?: string;
     timeRangeMinutes?: number;
     limit?: number;
     offset?: number;
@@ -236,6 +248,13 @@ export class InfluxService {
       }
       if (params.protocol && params.protocol !== 'all' && log.protocol.toUpperCase() !== params.protocol.toUpperCase()) return false;
       if (params.severity && params.severity !== 'all' && log.severity !== params.severity) return false;
+      if (params.vlan && params.vlan !== 'all') {
+        const vNum = typeof params.vlan === 'string' ? parseInt(params.vlan, 10) : params.vlan;
+        if (log.vlanId !== vNum) return false;
+      }
+      if (params.segment && params.segment !== 'all') {
+        if (log.subnetSegment !== params.segment) return false;
+      }
 
       if (searchLower) {
         const matches = (
@@ -283,6 +302,9 @@ export class InfluxService {
     const appMap = new Map<string, { name: string; bytes: number; count: number; risk: string }>();
     const protoMap = new Map<string, { protocol: string; bytes: number; count: number }>();
 
+    const vlanMap = new Map<number, { vlanId: number; vlanName: string; bytes: number; count: number; blockedCount: number }>();
+    const segmentMap = new Map<string, { segment: string; bytes: number; count: number; blockedCount: number }>();
+
     for (const log of sample) {
       const bIn = log.bytesIn || 0;
       const bOut = log.bytesOut || 0;
@@ -291,7 +313,9 @@ export class InfluxService {
       totalBytesIn += bIn;
       totalBytesOut += bOut;
 
-      if (log.action === 'allow') {
+      const isBlocked = log.action === 'drop' || log.action === 'block' || log.action === 'reject' || log.action === 'deny';
+
+      if (!isBlocked) {
         allowedCount++;
       } else {
         blockedCount++;
@@ -307,6 +331,34 @@ export class InfluxService {
         existingThreat.lastSeen = log.timestamp;
         threatMap.set(threatKey, existingThreat);
       }
+
+      // VLAN Distribution
+      if (log.vlanId !== undefined) {
+        const vRec = vlanMap.get(log.vlanId) || {
+          vlanId: log.vlanId,
+          vlanName: log.vlanName || `VLAN ${log.vlanId}`,
+          bytes: 0,
+          count: 0,
+          blockedCount: 0
+        };
+        vRec.bytes += totalB;
+        vRec.count++;
+        if (isBlocked) vRec.blockedCount++;
+        vlanMap.set(log.vlanId, vRec);
+      }
+
+      // Segment Distribution
+      const segName = log.subnetSegment || 'General Subnet';
+      const segRec = segmentMap.get(segName) || {
+        segment: segName,
+        bytes: 0,
+        count: 0,
+        blockedCount: 0
+      };
+      segRec.bytes += totalB;
+      segRec.count++;
+      if (isBlocked) segRec.blockedCount++;
+      segmentMap.set(segName, segRec);
 
       // Top Sources
       const src = sourceMap.get(log.sourceIp) || {
@@ -376,6 +428,12 @@ export class InfluxService {
     const protocolDistribution = Array.from(protoMap.values())
       .sort((a, b) => b.bytes - a.bytes);
 
+    const vlanDistribution = Array.from(vlanMap.values())
+      .sort((a, b) => b.bytes - a.bytes);
+
+    const segmentDistribution = Array.from(segmentMap.values())
+      .sort((a, b) => b.bytes - a.bytes);
+
     return {
       timeRange: `${timeRangeMinutes}m`,
       totalLogs,
@@ -389,7 +447,9 @@ export class InfluxService {
       topDestinations,
       topBlockedThreats,
       topApplications,
-      protocolDistribution
+      protocolDistribution,
+      vlanDistribution,
+      segmentDistribution
     };
   }
 

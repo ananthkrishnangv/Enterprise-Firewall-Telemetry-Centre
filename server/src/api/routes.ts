@@ -215,6 +215,8 @@ apiRouter.get('/logs/analyzer/query', (req: Request, res: Response) => {
   const search = req.query.search as string || '';
   const protocol = req.query.protocol as string || 'all';
   const severity = req.query.severity as string || 'all';
+  const vlan = req.query.vlan as string || 'all';
+  const segment = req.query.segment as string || 'all';
   const timeRangeMinutes = parseInt(req.query.timeRange as string, 10) || 60;
   const limit = parseInt(req.query.limit as string, 10) || 50;
   const offset = parseInt(req.query.offset as string, 10) || 0;
@@ -225,12 +227,19 @@ apiRouter.get('/logs/analyzer/query', (req: Request, res: Response) => {
     search,
     protocol,
     severity,
+    vlan,
+    segment,
     timeRangeMinutes,
     limit,
     offset
   });
 
   res.json({ success: true, ...result });
+});
+
+apiRouter.get('/logs/analyzer/vlans', (req: Request, res: Response) => {
+  const vlans = telemetryStore.getVlanCatalog();
+  res.json({ success: true, count: vlans.length, vlans });
 });
 
 apiRouter.get('/logs/analyzer/timeline', (req: Request, res: Response) => {
@@ -241,11 +250,15 @@ apiRouter.get('/logs/analyzer/timeline', (req: Request, res: Response) => {
 
 apiRouter.get('/logs/analyzer/export', (req: Request, res: Response) => {
   const result = influxService.queryTrafficLogs({ limit: 2000, timeRangeMinutes: 1440 });
-  const headers = ['Timestamp', 'Direction', 'Action', 'Source IP', 'Source Port', 'Department', 'Destination IP', 'Dest Port', 'Protocol', 'Application', 'Bytes In', 'Bytes Out', 'Severity', 'Threat Category', 'Policy'];
+  const headers = ['Timestamp', 'Direction', 'Action', 'VLAN ID', 'VLAN Name', 'Subnet Segment', 'Interface', 'Source IP', 'Source Port', 'Department', 'Destination IP', 'Dest Port', 'Protocol', 'Application', 'Bytes In', 'Bytes Out', 'Severity', 'Threat Category', 'Policy'];
   const rows = result.logs.map(l => [
     `"${l.timestamp}"`,
     `"${l.direction}"`,
     `"${l.action.toUpperCase()}"`,
+    l.vlanId !== undefined ? l.vlanId : '',
+    `"${(l.vlanName || '').replace(/"/g, '""')}"`,
+    `"${(l.subnetSegment || '').replace(/"/g, '""')}"`,
+    `"${(l.interface || '').replace(/"/g, '""')}"`,
     `"${l.sourceIp}"`,
     l.sourcePort,
     `"${(l.sourceDept || '').replace(/"/g, '""')}"`,

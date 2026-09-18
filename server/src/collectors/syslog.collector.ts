@@ -162,9 +162,10 @@ export class SyslogCollector {
 
     // Forward to InfluxDB Time-Series Engine
     try {
-      const isInternal = sourceIp.startsWith('10.') || sourceIp.startsWith('192.168.');
-      const isDestInternal = destIp.startsWith('10.') || destIp.startsWith('192.168.');
+      const isInternal = (telemetryStore.constructor as any).isPrivateIp(sourceIp);
+      const isDestInternal = (telemetryStore.constructor as any).isPrivateIp(destIp);
       const direction = isInternal && isDestInternal ? 'internal' : isInternal ? 'outbound' : 'inbound';
+      const resolvedVlan = (telemetryStore.constructor as any).resolveVlanForIp(isInternal ? sourceIp : destIp);
       
       influxService.storeTrafficLog({
         id: entry.id,
@@ -184,6 +185,10 @@ export class SyslogCollector {
         packetsOut: 1,
         policyName: ruleName,
         severity,
+        vlanId: resolvedVlan.vlanId,
+        vlanName: resolvedVlan.vlanName,
+        interface: resolvedVlan.parentIf,
+        subnetSegment: resolvedVlan.subnetSegment,
         rawLog: raw
       });
     } catch {}
