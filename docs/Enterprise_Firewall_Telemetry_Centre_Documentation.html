@@ -344,6 +344,26 @@
     </tbody>
   </table>
 
+  <h2>1.2 Universal Linux Automated Installer &amp; Whitelabeling Wizard</h2>
+  <p>
+    The platform includes an automated universal installer script (<code>install.sh</code>) engineered for rapid production provisioning across <strong>Ubuntu (20.04/22.04/24.04/Debian)</strong> and <strong>Rocky Linux (8/9/RHEL/AlmaLinux)</strong> virtual machines and bare-metal servers:
+  </p>
+
+  <div class="callout">
+    <div class="callout-title">One-Line Automated Deployment Command</div>
+    <code>curl -fsSL https://raw.githubusercontent.com/ananthkrishnangv/Enterprise-Firewall-Telemetry-Centre/main/install.sh | sudo bash</code>
+  </div>
+
+  <ul>
+    <li><strong>OS Detection &amp; Security Updates</strong>: Automatically detects Linux distribution, applies upstream operating system security updates via <code>apt-get</code> or <code>dnf</code>, and configures required base utilities (<code>curl</code>, <code>git</code>, <code>jq</code>, <code>openssl</code>, <code>net-snmp-utils</code>).</li>
+    <li><strong>Node.js 22 LTS Runtime</strong>: Installs current LTS Node.js and npm via official NodeSource enterprise repositories.</li>
+    <li><strong>Container Engine &amp; Compose</strong>: Provisions official Docker CE engine and registers systemd daemon services.</li>
+    <li><strong>Perimeter Host Firewall Configuration</strong>: Automatically programs <code>ufw</code> (Ubuntu) or <code>firewalld</code> (Rocky Linux) rules for web (80/443), SNMP trap (162/udp), Syslog (1514/514/udp), and NetFlow (2055/udp).</li>
+    <li><strong>Automated Database &amp; TSDB Ingestion</strong>: Launches isolated <code>postgres:18-alpine</code> and <code>influxdb:2.7-alpine</code> containers using a universal host-bridge Docker Compose configuration.</li>
+    <li><strong>Interactive Terminal Whitelabeling Wizard</strong>: Directly prompts the administrator for customized organization name, division, portal title, subtitle, vector logo preset, primary firewall IP, vendor, and SNMP community/v3 credentials.</li>
+    <li><strong>Universal Licensing &amp; Attribution Preservation</strong>: Strictly maintains the universal legal footer and institutional attribution (<em>"Made by ICTD CSIR-SERC for CSIR with ❤️"</em>) in full compliance with the CSIR-SERC Free Community &amp; Institutional License (v1.0).</li>
+  </ul>
+
   <div class="page-break"></div>
 
   <!-- SECTION 2: SCREENSHOT TOUR -->

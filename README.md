@@ -250,7 +250,37 @@ Ensure the telemetry host or virtual machine has direct routing to monitored per
 
 ## Deployment Guide
 
-### Option A: Docker Compose Deployment (Recommended)
+### Option A: Universal Linux Installer (Ubuntu & Rocky Linux / RHEL) — Recommended
+
+Deploy the entire telemetry platform, databases, and time-series engines onto any Ubuntu (20.04/22.04/24.04) or Rocky Linux (8/9/RHEL/CentOS Stream) virtual machine with a single command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ananthkrishnangv/Enterprise-Firewall-Telemetry-Centre/main/install.sh | sudo bash
+```
+
+Or manually clone and run:
+
+```bash
+git clone https://github.com/ananthkrishnangv/Enterprise-Firewall-Telemetry-Centre.git
+cd Enterprise-Firewall-Telemetry-Centre
+sudo bash install.sh
+```
+
+#### What the Installer Does:
+1. **Host Preflight & OS Detection**: Validates system resources and detects package manager (`apt-get` on Debian/Ubuntu, `dnf`/`yum` on Rocky Linux/RHEL).
+2. **System Update & Core Utilities**: Applies OS security patches and installs required tools (`curl`, `git`, `jq`, `openssl`, `net-snmp-tools` / `net-snmp-utils`, `tar`, `gzip`).
+3. **Node.js 22 LTS Runtime**: Installs modern Node.js and npm via official NodeSource repositories.
+4. **Docker Engine & Docker Compose**: Configures official Docker CE container runtime and enables systemd boot services.
+5. **Perimeter Host Firewall Configuration**: Automatically configures `ufw` (Ubuntu) or `firewalld` (Rocky Linux) with permissions for ports `80/tcp`, `443/tcp`, `162/udp` (SNMP Trap), `1514/udp` (Syslog), `514/udp`, and `2055/udp` (NetFlow/IPFIX).
+6. **Multi-Tier Automated Build**: Clones repository to `/opt/firewall-telemetry`, builds Vue 3.5 frontend (`vite build`) and TypeScript backend (`tsc`).
+7. **Database & TSDB Orchestration**: Deploys `postgres:18-alpine` (metadata, RBAC, backups) and `influxdb:2.7-alpine` (time-series traffic logs with 180-day retention).
+8. **Interactive Post-Installation Whitelabeling & SNMP Wizard**: Colorized terminal wizard prompting for custom organization name, division, portal title, subtitle, vector logo preset, firewall IP, vendor, and SNMP community/v3 strings.
+9. **Permanent Universal Licensing**: Preserves the CSIR-SERC Free Community & Institutional License (v1.0) and institutional footer notice (*"Made by ICTD CSIR-SERC for CSIR with ❤️"*).
+10. **Systemd Daemon Registration**: Registers `/etc/systemd/system/firewall-telemetry.service` for automated recovery across system reboots and power outages.
+
+---
+
+### Option B: Manual Docker Compose Deployment (Custom/Macvlan Networks)
 
 1. **Clone the Repository**:
    ```bash
