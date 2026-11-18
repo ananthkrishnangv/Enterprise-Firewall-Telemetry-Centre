@@ -6,19 +6,19 @@
         <button
           @click="activeViewMode = 'bento'"
           class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer"
-          :class="activeViewMode === 'bento' ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-800'"
+          :class="activeViewMode === 'bento' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-950/40 font-heading' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-800 font-heading'"
         >
           <Layers class="w-4 h-4 text-cyan-300" />
-          <span>🍱 Bento Traffic Intelligence</span>
+          <span>Bento Traffic Intelligence</span>
         </button>
 
         <button
           @click="activeViewMode = 'flows'"
           class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer"
-          :class="activeViewMode === 'flows' ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-800'"
+          :class="activeViewMode === 'flows' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-950/40 font-heading' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-800 font-heading'"
         >
           <Activity class="w-4 h-4 text-emerald-400" />
-          <span>📋 Live NetFlow Stream</span>
+          <span>Live NetFlow Stream</span>
         </button>
       </div>
 
@@ -46,7 +46,7 @@
           <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Primary Gateway</label>
           <select
             v-model="selectedFw"
-            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500 font-medium"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500 font-medium"
           >
             <option value="">All Firewalls (Unified)</option>
             <option v-for="dev in fwStore.devices" :key="dev.id" :value="dev.id">
@@ -60,7 +60,7 @@
           <label class="block text-[10px] uppercase font-semibold text-slate-400 mb-1">Action</label>
           <select
             v-model="selectedAction"
-            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500"
           >
             <option value="">All Actions</option>
             <option value="allow">Allowed (Pass)</option>
@@ -76,7 +76,7 @@
               v-model="searchQuery"
               type="text"
               placeholder="e.g. 10.10.20.15, Oracle SQL, alice.smith..."
-              class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 font-mono"
+              class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
             />
             <Search class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
           </div>
@@ -110,7 +110,7 @@
               <span class="text-[10px] font-mono text-slate-500 w-3">{{ idx + 1 }}</span>
               <span class="font-mono text-slate-200 truncate">{{ src.ip }}</span>
             </div>
-            <span class="font-mono text-brand-400 text-[11px] font-medium">{{ formatBytes(src.bytes) }}</span>
+            <span class="font-mono text-cyan-400 text-[11px] font-medium">{{ formatBytes(src.bytes) }}</span>
           </div>
         </div>
       </div>

@@ -9,7 +9,7 @@
         class="text-left p-4 rounded-xl border transition relative"
         :class="[
           selectedDevId === dev.id
-            ? 'bg-slate-900 border-brand-500/80 shadow-lg shadow-brand-500/10'
+            ? 'bg-slate-900 border-cyan-500/80 shadow-lg shadow-cyan-500/10'
             : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
         ]"
       >

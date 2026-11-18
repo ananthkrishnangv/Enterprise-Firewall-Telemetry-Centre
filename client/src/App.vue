@@ -16,14 +16,14 @@
           <RouterView />
         </div>
 
-        <!-- Mandatory Institutional Footer Matching UX4G Core Violet Theme -->
-        <footer class="mt-8 pt-4 pb-2 border-t border-violet-900/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-violet-400/80 flex-shrink-0">
+        <!-- Institutional Footer Matching Clean Dark Cockpit NOC Theme -->
+        <footer class="mt-8 pt-4 pb-2 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400/80 flex-shrink-0">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-violet-950/90 border border-violet-700/50 text-[11px] font-medium text-violet-300">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-700/60 text-[11px] font-medium text-slate-300">
               Made by ICTD CSIR-SERC for CSIR with ❤️
             </span>
-            <span class="text-violet-600 hidden sm:inline">•</span>
-            <span class="text-[11px] font-mono text-violet-400/70 hidden sm:inline">
+            <span class="text-slate-600 hidden sm:inline">•</span>
+            <span class="text-[11px] font-mono text-slate-400/70 hidden sm:inline">
               CSIR-SERC Free Community &amp; Institutional License v1.0
             </span>
           </div>
@@ -32,8 +32,8 @@
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               Universal Free &amp; Community Edition
             </span>
-            <span class="text-violet-700">|</span>
-            <RouterLink to="/settings" class="hover:text-cyan-300 transition text-violet-400">
+            <span class="text-slate-700">|</span>
+            <RouterLink to="/settings" class="hover:text-cyan-300 transition text-slate-400">
               License &amp; Terms
             </RouterLink>
           </div>

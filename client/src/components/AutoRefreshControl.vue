@@ -7,7 +7,7 @@
       :class="[
         isEnabled
           ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 shadow-sm shadow-emerald-950/50'
-          : 'bg-violet-900/40 border-violet-700/50 text-violet-400 hover:text-white'
+          : 'bg-slate-800/80 border-slate-700/60 text-slate-400 hover:text-white'
       ]"
       :title="isEnabled ? 'Auto-Refresh Active' : 'Auto-Refresh Paused'"
     >
@@ -24,7 +24,7 @@
       v-if="isEnabled"
       v-model.number="intervalSec"
       @change="restartTimer"
-      class="px-2 py-1.5 bg-violet-900/50 border border-violet-700/50 rounded-xl text-[11px] text-cyan-300 focus:outline-none focus:border-cyan-400 cursor-pointer font-bold"
+      class="px-2 py-1.5 bg-slate-900 border border-slate-700/60 rounded-xl text-[11px] text-cyan-300 focus:outline-none focus:border-cyan-400 cursor-pointer font-bold"
       title="Auto-refresh interval"
     >
       <option :value="5">Every 5s</option>
@@ -38,7 +38,7 @@
     <button
       @click="triggerManualRefresh"
       :disabled="isRefreshing"
-      class="p-1.5 rounded-xl bg-violet-900/50 hover:bg-violet-800 border border-violet-700/40 text-cyan-300 hover:text-white transition disabled:opacity-50"
+      class="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/60 text-cyan-300 hover:text-white transition disabled:opacity-50"
       title="Refresh Telemetry Now"
     >
       <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': isRefreshing }" />

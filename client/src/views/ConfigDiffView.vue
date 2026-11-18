@@ -13,7 +13,7 @@
           <select
             v-model="fwStore.selectedFirewallId"
             @change="loadConfigData"
-            class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500 font-medium"
+            class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500 font-medium"
           >
             <option v-for="dev in fwStore.devices" :key="dev.id" :value="dev.id">
               {{ dev.name }} ({{ dev.model }})
@@ -38,7 +38,7 @@
             {{ fwStore.configDiff.riskRating }} RISK DRIFT
           </span>
           <span class="text-xs text-white font-medium">
-            Comparing <span class="font-mono text-cyan-400">{{ fwStore.configDiff.previousVersion }}</span> → <span class="font-mono text-brand-400">{{ fwStore.configDiff.currentVersion }}</span>
+            Comparing <span class="font-mono text-cyan-400">{{ fwStore.configDiff.previousVersion }}</span> → <span class="font-mono text-emerald-400">{{ fwStore.configDiff.currentVersion }}</span>
           </span>
         </div>
 
@@ -83,7 +83,7 @@
           class="flex items-center justify-between p-3.5 rounded-lg bg-slate-950/60 border border-slate-800 text-xs"
         >
           <div class="flex items-center gap-3">
-            <span class="font-mono text-brand-400 font-bold">{{ snap.version }}</span>
+            <span class="font-mono text-emerald-400 font-bold">{{ snap.version }}</span>
             <span class="text-slate-200">{{ snap.author }}</span>
             <span class="px-2 py-0.5 rounded text-[10px] uppercase font-mono bg-slate-800 text-slate-400">
               {{ snap.changeType }}

@@ -104,7 +104,7 @@
         <!-- VPN Tunnels -->
         <div class="p-3 rounded-lg bg-slate-950/70 border border-slate-800/80">
           <div class="text-[10px] uppercase font-semibold text-slate-400 font-mono">Active VPN Tunnels</div>
-          <div class="text-xl font-bold font-mono text-indigo-400 mt-1">
+          <div class="text-xl font-bold font-mono text-cyan-400 mt-1">
             {{ metrics?.vpnActiveTunnels ?? 12 }}
           </div>
           <div class="text-[10px] text-slate-400 mt-2 flex items-center justify-between">
@@ -181,10 +181,10 @@
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-800">
           <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
             <h3 class="text-xs font-bold text-white uppercase tracking-wider font-mono">UDP Datagrams</h3>
           </div>
-          <span class="text-[10px] font-mono text-indigo-400 px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">RFC 768</span>
+          <span class="text-[10px] font-mono text-sky-400 px-1.5 py-0.5 rounded bg-sky-500/10 border border-sky-500/20">RFC 768</span>
         </div>
         <div class="mt-3 space-y-2.5 text-xs font-mono">
           <div class="flex items-center justify-between">
@@ -193,7 +193,7 @@
           </div>
           <div class="flex items-center justify-between">
             <span class="text-slate-400">Out Datagrams:</span>
-            <span class="text-indigo-400">{{ formatPackets(protocols?.udp.outDatagrams ?? 872700000) }}</span>
+            <span class="text-sky-400">{{ formatPackets(protocols?.udp.outDatagrams ?? 872700000) }}</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-slate-400">No Ports (Unreachable):</span>
@@ -230,7 +230,7 @@
           </div>
           <div class="flex items-center justify-between">
             <span class="text-slate-400">Multicast Packets:</span>
-            <span class="text-purple-400">{{ formatPackets(protocols?.packetTotals.multicastIn ?? 4120000) }}</span>
+            <span class="text-teal-400">{{ formatPackets(protocols?.packetTotals.multicastIn ?? 4120000) }}</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-slate-400">Broadcast Packets:</span>
@@ -263,7 +263,7 @@
           </div>
           <div class="flex items-center justify-between">
             <span class="text-slate-400">Botnet C2 Intercepted:</span>
-            <span class="text-purple-400 font-bold">{{ (threats?.botnetsBlocked ?? 2604).toLocaleString() }}</span>
+            <span class="text-rose-400 font-bold">{{ (threats?.botnetsBlocked ?? 2604).toLocaleString() }}</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-slate-400">Threat Sensor:</span>
@@ -361,7 +361,7 @@
     <div v-if="topPolicies && topPolicies.length > 0" class="bg-slate-900 border border-slate-800 rounded-xl p-5">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-2">
         <div class="flex items-center gap-3">
-          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
           <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">
@@ -389,7 +389,7 @@
               :key="pol.policyId"
               class="hover:bg-slate-800/40 transition"
             >
-              <td class="py-2.5 px-4 font-bold text-indigo-400">
+              <td class="py-2.5 px-4 font-bold text-cyan-400">
                 #{{ pol.policyId }}
               </td>
               <td class="py-2.5 px-4 font-sans font-medium text-slate-200">
@@ -404,7 +404,7 @@
               <td class="py-2.5 px-4 w-40">
                 <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
                   <div
-                    class="bg-indigo-500 h-1.5 rounded-full"
+                    class="bg-cyan-500 h-1.5 rounded-full"
                     :style="{ width: `${Math.min(100, Math.max(3, (pol.byteCount / (topPolicies[0]?.byteCount || 1)) * 100))}%` }"
                   ></div>
                 </div>
@@ -502,7 +502,7 @@
         <!-- Card 3: Departmental VLANs -->
         <div class="p-3 rounded-lg bg-slate-950/70 border border-slate-800/80">
           <div class="text-[10px] uppercase font-semibold text-slate-400 font-mono">Department VLANs</div>
-          <div class="text-xl font-bold font-mono text-purple-400 mt-1">
+          <div class="text-xl font-bold font-mono text-cyan-400 mt-1">
             {{ totals?.vlanInterfacesCount || interfaces.filter(i => i.type === 'vlan').length }}
           </div>
           <div class="text-[10px] text-emerald-400 mt-1 font-mono">100% 802.1Q Subnets</div>
@@ -566,7 +566,7 @@
               <td class="py-3 px-3.5">
                 <div class="flex items-center gap-2">
                   <span class="font-bold text-slate-100 group-hover:text-cyan-300 transition">{{ iface.name }}</span>
-                  <span v-if="iface.vlanId" class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                  <span v-if="iface.vlanId" class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
                     VLAN {{ iface.vlanId }}
                   </span>
                   <span v-if="iface.parentInterface" class="text-[10px] text-slate-500">
@@ -588,7 +588,7 @@
                   class="px-2 py-0.5 rounded text-[10px] font-bold uppercase"
                   :class="[
                     iface.type === 'physical' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                    iface.type === 'vlan' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                    iface.type === 'vlan' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
                     iface.type === 'vpn' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
                     'bg-slate-800 text-slate-400'
                   ]"
@@ -701,7 +701,7 @@
               <td class="py-3 px-3 text-center whitespace-nowrap">
                 <button
                   @click="openInterfaceDossier(iface.name)"
-                  class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-violet-900/60 border border-slate-700 hover:border-violet-500/50 text-slate-200 hover:text-white text-[11px] font-mono transition flex items-center gap-1.5 mx-auto cursor-pointer"
+                  class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500/50 text-slate-200 hover:text-white text-[11px] font-mono transition flex items-center gap-1.5 mx-auto cursor-pointer"
                   title="Inspect detailed interface telemetry, connected host devices, and unapproved traffic"
                 >
                   <Search class="w-3 h-3 text-cyan-400" />
@@ -730,12 +730,12 @@
     >
       <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl relative">
         <!-- Glow accent -->
-        <div class="absolute -top-16 -right-16 w-48 h-48 bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -top-16 -right-16 w-48 h-48 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <!-- Modal Header -->
         <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60 relative z-10">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-violet-900/40 border border-violet-700/50 flex items-center justify-center text-cyan-300">
+            <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/60 flex items-center justify-center text-cyan-300">
               <Network class="w-5 h-5" />
             </div>
             <div>
@@ -769,7 +769,7 @@
         <div class="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
           <!-- Loading state -->
           <div v-if="isLoadingDrilldown" class="py-16 text-center text-slate-400 space-y-3 font-mono">
-            <div class="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div class="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
             <div>Loading real-time hardware telemetry and host mapping...</div>
           </div>
 
@@ -962,7 +962,7 @@
             <!-- Top Legitimate Research & Enterprise Applications -->
             <div class="space-y-2.5">
               <h4 class="text-xs font-bold text-white uppercase font-mono flex items-center gap-2">
-                <Layers class="w-3.5 h-3.5 text-indigo-400" />
+                <Layers class="w-3.5 h-3.5 text-cyan-400" />
                 <span>Application Bandwidth Distribution on this Interface</span>
               </h4>
 
@@ -992,9 +992,9 @@
                 <span class="font-bold text-slate-300 uppercase font-mono text-[11px]">FortiOS Interface Quarantine &amp; Policy Enforcement</span>
                 <button
                   @click="copyCliSnippet"
-                  class="px-2.5 py-1 rounded bg-violet-900/40 hover:bg-violet-800/60 border border-violet-700/50 text-violet-300 hover:text-white font-mono text-[10px] flex items-center gap-1 transition cursor-pointer"
+                  class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-300 hover:text-white font-mono text-[10px] flex items-center gap-1 transition cursor-pointer"
                 >
-                  <component :is="isCopied ? Check : Copy" class="w-3 h-3 text-neon-cyan" />
+                  <component :is="isCopied ? Check : Copy" class="w-3 h-3 text-cyan-400" />
                   <span>{{ isCopied ? 'Copied CLI!' : 'Copy FortiOS CLI' }}</span>
                 </button>
               </div>

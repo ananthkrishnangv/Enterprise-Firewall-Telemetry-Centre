@@ -13,7 +13,7 @@
           <select
             v-model="fwStore.selectedFirewallId"
             @change="loadPolicyData"
-            class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500 font-medium"
+            class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500 font-medium"
           >
             <option v-for="dev in fwStore.devices" :key="dev.id" :value="dev.id">
               {{ dev.name }} ({{ dev.model }})
@@ -87,7 +87,7 @@
             </span>
           </div>
           <p class="text-slate-200">{{ find.message }}</p>
-          <div class="text-[11px] text-brand-400 bg-brand-500/10 p-2 rounded border border-brand-500/20 mt-1">
+          <div class="text-[11px] text-cyan-400 bg-cyan-500/10 p-2 rounded border border-cyan-500/20 mt-1">
             <span class="font-semibold text-slate-300">Remediation:</span> {{ find.remediation }}
           </div>
         </div>
@@ -180,7 +180,7 @@
                   </span>
                   <span
                     v-if="!rule.logging"
-                    class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                    class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-slate-800 text-slate-300 border border-slate-700"
                   >
                     NO LOGGING
                   </span>

@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-6">
     <!-- Header Banner -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-violet-800/40">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-800">
       <div>
         <div class="flex items-center gap-2 mb-1">
-          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-violet-500/20 text-violet-300 border border-violet-500/30">
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
             RBAC ACCESS CONTROL
           </span>
           <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
@@ -12,11 +12,11 @@
             SUPER ADMIN PROTOCOL
           </span>
         </div>
-        <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-2 font-sans">
-          <Users class="w-6 h-6 text-neon-cyan" />
+        <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-2 font-heading">
+          <Users class="w-6 h-6 text-cyan-400" />
           Enterprise User Management
         </h1>
-        <p class="text-xs text-violet-300/80 mt-1">
+        <p class="text-xs text-slate-400 mt-1 font-body">
           Role-based identity management, user credential provisioning, and personalized Telegram security alert subscriptions.
         </p>
       </div>
@@ -25,7 +25,7 @@
         <button
           @click="usersStore.fetchUsers"
           :disabled="usersStore.isLoading"
-          class="px-3 py-2 rounded-xl bg-violet-900/40 hover:bg-violet-800/50 border border-violet-700/40 text-violet-200 text-xs font-semibold flex items-center gap-2 transition"
+          class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-2 transition"
           title="Refresh Users"
         >
           <RotateCw class="w-3.5 h-3.5" :class="{ 'animate-spin': usersStore.isLoading }" />
@@ -34,7 +34,7 @@
 
         <button
           @click="openCreateModal"
-          class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-95 text-white text-xs font-bold shadow-lg shadow-violet-600/30 flex items-center gap-2 transition transform active:scale-95"
+          class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold shadow-lg shadow-cyan-950/40 flex items-center gap-2 transition transform active:scale-95 font-heading"
         >
           <UserPlus class="w-4 h-4" />
           <span>Add New User</span>
@@ -85,22 +85,22 @@
 
     <!-- Metrics Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="p-4 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 hover:border-violet-600/50 transition">
+      <div class="p-4 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 hover:border-slate-700 transition">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-violet-300">Total Users</span>
-          <div class="p-2 rounded-xl bg-violet-900/50 text-neon-cyan">
+          <span class="text-xs font-semibold text-slate-300 font-heading">Total Users</span>
+          <div class="p-2 rounded-xl bg-slate-800 text-cyan-400 border border-slate-700">
             <Users class="w-4 h-4" />
           </div>
         </div>
         <div class="mt-2 text-2xl font-black font-mono text-white tracking-tight">
           {{ usersStore.totalUsers }}
         </div>
-        <div class="mt-1 text-[11px] text-violet-400">Configured in Local Directory</div>
+        <div class="mt-1 text-[11px] text-slate-400">Configured in Local Directory</div>
       </div>
 
-      <div class="p-4 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 hover:border-amber-500/50 transition">
+      <div class="p-4 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 hover:border-amber-500/50 transition">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-violet-300">Super Administrators</span>
+          <span class="text-xs font-semibold text-slate-300 font-heading">Super Administrators</span>
           <div class="p-2 rounded-xl bg-amber-500/20 text-amber-400">
             <Crown class="w-4 h-4" />
           </div>
@@ -108,12 +108,12 @@
         <div class="mt-2 text-2xl font-black font-mono text-amber-300 tracking-tight">
           {{ usersStore.superAdminsCount }}
         </div>
-        <div class="mt-1 text-[11px] text-violet-400">Full System & Gateway Authority</div>
+        <div class="mt-1 text-[11px] text-slate-400">Full System & Gateway Authority</div>
       </div>
 
-      <div class="p-4 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 hover:border-emerald-500/50 transition">
+      <div class="p-4 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 hover:border-emerald-500/50 transition">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-violet-300">Active Accounts</span>
+          <span class="text-xs font-semibold text-slate-300 font-heading">Active Accounts</span>
           <div class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
             <CheckCircle2 class="w-4 h-4" />
           </div>
@@ -121,12 +121,12 @@
         <div class="mt-2 text-2xl font-black font-mono text-emerald-300 tracking-tight">
           {{ usersStore.activeUsersCount }}
         </div>
-        <div class="mt-1 text-[11px] text-violet-400">Ready for Session Authentication</div>
+        <div class="mt-1 text-[11px] text-slate-400">Ready for Session Authentication</div>
       </div>
 
-      <div class="p-4 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 hover:border-cyan-500/50 transition">
+      <div class="p-4 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 hover:border-cyan-500/50 transition">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-violet-300">Telegram Alert Feeds</span>
+          <span class="text-xs font-semibold text-slate-300 font-heading">Telegram Alert Feeds</span>
           <div class="p-2 rounded-xl bg-cyan-500/20 text-cyan-400">
             <Send class="w-4 h-4" />
           </div>
@@ -134,26 +134,26 @@
         <div class="mt-2 text-2xl font-black font-mono text-cyan-300 tracking-tight">
           {{ usersStore.telegramSubscribersCount }}
         </div>
-        <div class="mt-1 text-[11px] text-violet-400">Subscribed to Threat Notifications</div>
+        <div class="mt-1 text-[11px] text-slate-400">Subscribed to Threat Notifications</div>
       </div>
     </div>
 
     <!-- Filter & Search Toolbar -->
-    <div class="p-4 rounded-2xl bg-violet-950/50 border border-violet-800/40 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="relative w-full sm:w-80">
-        <Search class="w-4 h-4 text-violet-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search by name, email, role, or ID..."
-          class="w-full pl-9 pr-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-xs text-white placeholder-violet-400/60 focus:outline-none focus:border-cyan-400 transition"
+          class="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition"
         />
       </div>
 
       <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto">
         <select
           v-model="roleFilter"
-          class="px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-xs text-violet-200 focus:outline-none focus:border-cyan-400 transition"
+          class="px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-cyan-400 transition"
         >
           <option value="all">All Roles</option>
           <option value="super_admin">Super Admin</option>
@@ -164,7 +164,7 @@
 
         <select
           v-model="statusFilter"
-          class="px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-xs text-violet-200 focus:outline-none focus:border-cyan-400 transition"
+          class="px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-cyan-400 transition"
         >
           <option value="all">All Status</option>
           <option value="active">Active</option>
@@ -174,11 +174,11 @@
     </div>
 
     <!-- Users Table Card -->
-    <div class="rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 overflow-hidden shadow-xl shadow-violet-950/40">
+    <div class="rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 overflow-hidden shadow-xl">
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs text-violet-200 border-collapse">
+        <table class="w-full text-left text-xs text-slate-200 border-collapse">
           <thead>
-            <tr class="border-b border-violet-800/60 bg-violet-900/40 text-[11px] font-bold text-violet-300 uppercase tracking-wider font-mono">
+            <tr class="border-b border-slate-800 bg-slate-950/80 text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">
               <th class="py-3 px-4">User / Identity</th>
               <th class="py-3 px-4">Mail ID</th>
               <th class="py-3 px-4">Role & Authority</th>
@@ -188,25 +188,25 @@
               <th class="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-violet-800/30">
+          <tbody class="divide-y divide-slate-800/60">
             <tr
               v-for="u in filteredUsers"
               :key="u.id"
-              class="hover:bg-violet-900/20 transition group"
+              class="hover:bg-slate-800/40 transition group"
             >
               <!-- Identity -->
               <td class="py-3.5 px-4">
                 <div class="flex items-center gap-3">
                   <div
                     class="w-9 h-9 rounded-xl p-0.5 flex-shrink-0"
-                    :class="u.role === 'super_admin' ? 'bg-gradient-to-tr from-amber-500 via-fuchsia-500 to-cyan-400' : 'bg-gradient-to-tr from-violet-600 to-cyan-500'"
+                    :class="u.role === 'super_admin' ? 'bg-gradient-to-tr from-amber-500 via-teal-500 to-cyan-400' : 'bg-gradient-to-tr from-cyan-600 to-teal-500'"
                   >
-                    <div class="w-full h-full bg-violet-950 rounded-[10px] flex items-center justify-center font-bold text-white text-xs">
+                    <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-bold text-white text-xs">
                       {{ getInitials(u.name) }}
                     </div>
                   </div>
                   <div>
-                    <div class="font-bold text-white flex items-center gap-1.5 font-sans text-sm">
+                    <div class="font-bold text-white flex items-center gap-1.5 font-heading text-sm">
                       <span>{{ u.name }}</span>
                       <span
                         v-if="u.isProtected"
@@ -217,10 +217,10 @@
                         DEFAULT SUPER ADMIN
                       </span>
                     </div>
-                    <div class="text-[11px] text-violet-400 font-mono flex items-center gap-2 mt-0.5">
+                    <div class="text-[11px] text-slate-400 font-mono flex items-center gap-2 mt-0.5">
                       <span>@{{ u.username }}</span>
                       <span>•</span>
-                      <span class="text-violet-500">{{ u.badgeNumber || 'No Badge' }}</span>
+                      <span class="text-slate-500">{{ u.badgeNumber || 'No Badge' }}</span>
                     </div>
                   </div>
                 </div>
@@ -229,7 +229,7 @@
               <!-- Mail ID -->
               <td class="py-3.5 px-4 font-mono text-xs">
                 <div class="flex items-center gap-1.5 text-cyan-300">
-                  <Mail class="w-3.5 h-3.5 text-violet-400 flex-shrink-0" />
+                  <Mail class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                   <span class="truncate max-w-[180px]">{{ u.email }}</span>
                 </div>
               </td>
@@ -243,14 +243,14 @@
                   <Crown v-if="u.role === 'super_admin'" class="w-3 h-3 text-amber-300" />
                   <Shield v-else-if="u.role === 'admin'" class="w-3 h-3 text-cyan-300" />
                   <Activity v-else-if="u.role === 'operator'" class="w-3 h-3 text-emerald-300" />
-                  <FileCheck2 v-else class="w-3 h-3 text-fuchsia-300" />
+                  <FileCheck2 v-else class="w-3 h-3 text-sky-300" />
                   <span>{{ formatRole(u.role) }}</span>
                 </span>
               </td>
 
               <!-- Department -->
               <td class="py-3.5 px-4">
-                <div class="text-violet-300 text-xs font-medium truncate max-w-[200px]">
+                <div class="text-slate-300 text-xs font-medium truncate max-w-[200px]">
                   {{ u.department || 'CSIR-SERC General' }}
                 </div>
               </td>
@@ -265,7 +265,7 @@
                   <button
                     @click="triggerUserTelegramTest(u)"
                     :disabled="testingTelegramId === u.id"
-                    class="p-1 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-700/40 text-cyan-300 hover:text-white transition text-[10px] flex items-center gap-1"
+                    class="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-300 hover:text-white transition text-[10px] flex items-center gap-1"
                     title="Send Test Alert to Telegram"
                   >
                     <Send class="w-2.5 h-2.5" :class="{ 'animate-pulse': testingTelegramId === u.id }" />
@@ -279,7 +279,7 @@
                   </span>
                 </div>
                 <div v-else>
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono text-violet-500">
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono text-slate-500">
                     Disabled
                   </span>
                 </div>
@@ -301,7 +301,7 @@
                 <div class="flex items-center justify-end gap-1.5">
                   <button
                     @click="openEditModal(u)"
-                    class="p-1.5 rounded-lg bg-violet-900/50 hover:bg-violet-800 text-violet-300 hover:text-white border border-violet-700/40 transition"
+                    class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
                     title="Edit User (Name, Email, Role, Telegram)"
                   >
                     <Edit3 class="w-3.5 h-3.5" />
@@ -312,7 +312,7 @@
                     :disabled="u.isProtected || u.role === 'super_admin' || authStore.user?.id === u.id"
                     class="p-1.5 rounded-lg border transition"
                     :class="u.isProtected || u.role === 'super_admin' || authStore.user?.id === u.id
-                      ? 'bg-violet-950/40 border-violet-900/40 text-violet-600 cursor-not-allowed'
+                      ? 'bg-slate-900 border-slate-800 text-slate-600 cursor-not-allowed'
                       : 'bg-rose-950/40 hover:bg-rose-900/60 border-rose-800/40 text-rose-400 hover:text-rose-200'"
                     :title="u.isProtected ? 'Super Admin cannot be deleted' : (authStore.user?.id === u.id ? 'Cannot delete yourself' : 'Delete User')"
                   >
@@ -323,7 +323,7 @@
             </tr>
 
             <tr v-if="filteredUsers.length === 0">
-              <td colspan="7" class="py-8 text-center text-violet-400 text-xs font-mono">
+              <td colspan="7" class="py-8 text-center text-slate-400 text-xs font-mono">
                 No users matching current filters.
               </td>
             </tr>
@@ -337,18 +337,18 @@
       v-if="showCreateModal"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
     >
-      <div class="w-full max-w-lg rounded-2xl bg-violet-950 border border-violet-700/60 shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between pb-3 border-b border-violet-800/40">
+      <div class="w-full max-w-lg rounded-2xl bg-slate-950 border border-slate-800 shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
           <div class="flex items-center gap-2">
-            <div class="p-2 rounded-xl bg-gradient-to-tr from-violet-600 to-cyan-500 text-white">
+            <div class="p-2 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-500 text-white">
               <UserPlus class="w-5 h-5" />
             </div>
             <div>
-              <h3 class="text-sm font-bold text-white font-sans">Create New User Account</h3>
-              <p class="text-[11px] text-violet-300 font-mono">Assign portal credentials and security privileges</p>
+              <h3 class="text-sm font-bold text-white font-heading">Create New User Account</h3>
+              <p class="text-[11px] text-slate-400 font-mono">Assign portal credentials and security privileges</p>
             </div>
           </div>
-          <button @click="showCreateModal = false" class="text-violet-400 hover:text-white">
+          <button @click="showCreateModal = false" class="text-slate-400 hover:text-white">
             <X class="w-4 h-4" />
           </button>
         </div>
@@ -357,24 +357,24 @@
           <!-- Username & Password -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Username *</label>
+              <label class="block text-slate-300 font-semibold mb-1">Username *</label>
               <input
                 v-model="createForm.username"
                 type="text"
                 required
                 placeholder="e.g. j.sharma"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white font-mono placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white font-mono placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
 
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Password *</label>
+              <label class="block text-slate-300 font-semibold mb-1">Password *</label>
               <input
                 v-model="createForm.password"
                 type="password"
                 required
                 placeholder="Min 6 characters"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white font-mono placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white font-mono placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
           </div>
@@ -382,24 +382,24 @@
           <!-- Full Name & Email -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Full Name *</label>
+              <label class="block text-slate-300 font-semibold mb-1">Full Name *</label>
               <input
                 v-model="createForm.name"
                 type="text"
                 required
                 placeholder="e.g. Dr. Jyoti Sharma"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
 
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Mail ID (Email) *</label>
+              <label class="block text-slate-300 font-semibold mb-1">Mail ID (Email) *</label>
               <input
                 v-model="createForm.email"
                 type="email"
                 required
                 placeholder="e.g. j.sharma@serc.res.in"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white font-mono placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white font-mono placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
           </div>
@@ -407,10 +407,10 @@
           <!-- Role & Department -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Role / Security Clearance</label>
+              <label class="block text-slate-300 font-semibold mb-1">Role / Security Clearance</label>
               <select
                 v-model="createForm.role"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-400"
               >
                 <option value="operator">Network Operator</option>
                 <option value="admin">Security Administrator</option>
@@ -420,57 +420,57 @@
             </div>
 
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Department / Division</label>
+              <label class="block text-slate-300 font-semibold mb-1">Department / Division</label>
               <input
                 v-model="createForm.department"
                 type="text"
                 placeholder="e.g. ICT & Network Security"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
           </div>
 
           <!-- Telegram Notification Settings -->
-          <div class="p-3.5 rounded-xl bg-violet-900/30 border border-violet-800/60 space-y-3">
+          <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-violet-200 flex items-center gap-1.5 text-xs">
+              <span class="font-bold text-slate-200 flex items-center gap-1.5 text-xs">
                 <Send class="w-3.5 h-3.5 text-cyan-400" />
                 Telegram Incident Notification Settings
               </span>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" v-model="createForm.telegramEnabled" class="sr-only peer" />
-                <div class="w-9 h-5 bg-violet-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
               </label>
             </div>
 
-            <div v-if="createForm.telegramEnabled" class="space-y-2 pt-1 border-t border-violet-800/40">
+            <div v-if="createForm.telegramEnabled" class="space-y-2 pt-1 border-t border-slate-800">
               <div>
-                <label class="block text-violet-300 text-[11px] mb-1">Telegram Chat ID / User ID</label>
+                <label class="block text-slate-300 text-[11px] mb-1">Telegram Chat ID / User ID</label>
                 <input
                   v-model="createForm.telegramChatId"
                   type="text"
                   placeholder="e.g. 148920194 or -10019284910"
-                  class="w-full px-3 py-1.5 bg-violet-950 border border-violet-700/60 rounded-lg text-white font-mono text-xs placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                  class="w-full px-3 py-1.5 bg-slate-950 border border-slate-700/60 rounded-lg text-white font-mono text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-400"
                 />
               </div>
-              <div class="text-[10px] text-violet-400/80 leading-relaxed font-mono">
+              <div class="text-[10px] text-slate-400 leading-relaxed font-mono">
                 Tip: Send <code>/start</code> to your Telegram bot or get your ID from <code>@userinfobot</code>.
               </div>
             </div>
           </div>
 
-          <div class="flex items-center justify-end gap-2 pt-3 border-t border-violet-800/40">
+          <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
             <button
               type="button"
               @click="showCreateModal = false"
-              class="px-4 py-2 rounded-xl bg-violet-900/50 hover:bg-violet-800 text-violet-300 font-semibold"
+              class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold"
             >
               Cancel
             </button>
             <button
               type="submit"
               :disabled="usersStore.isLoading"
-              class="px-5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white font-bold flex items-center gap-1.5 shadow-lg shadow-violet-600/30"
+              class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-90 text-white font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-950/40 font-heading"
             >
               <Loader2 v-if="usersStore.isLoading" class="w-3.5 h-3.5 animate-spin" />
               <span>Create Account</span>
@@ -485,18 +485,18 @@
       v-if="showEditModal && editingUser"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
     >
-      <div class="w-full max-w-lg rounded-2xl bg-violet-950 border border-violet-700/60 shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between pb-3 border-b border-violet-800/40">
+      <div class="w-full max-w-lg rounded-2xl bg-slate-950 border border-slate-800 shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
           <div class="flex items-center gap-2">
-            <div class="p-2 rounded-xl bg-cyan-600/30 text-cyan-300 border border-cyan-500/40">
+            <div class="p-2 rounded-xl bg-cyan-600/20 text-cyan-300 border border-cyan-500/40">
               <Edit3 class="w-5 h-5" />
             </div>
             <div>
-              <h3 class="text-sm font-bold text-white font-sans">Edit User Profile & Settings</h3>
-              <p class="text-[11px] text-violet-300 font-mono">Modify full name, mail ID, clearance, and Telegram alerts</p>
+              <h3 class="text-sm font-bold text-white font-heading">Edit User Profile & Settings</h3>
+              <p class="text-[11px] text-slate-400 font-mono">Modify full name, mail ID, clearance, and Telegram alerts</p>
             </div>
           </div>
-          <button @click="showEditModal = false" class="text-violet-400 hover:text-white">
+          <button @click="showEditModal = false" class="text-slate-400 hover:text-white">
             <X class="w-4 h-4" />
           </button>
         </div>
@@ -505,22 +505,22 @@
           <!-- Username (Readonly) & Password Reset -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-violet-400 font-semibold mb-1">Username (System Locked)</label>
+              <label class="block text-slate-400 font-semibold mb-1">Username (System Locked)</label>
               <input
                 :value="editingUser.username"
                 disabled
                 type="text"
-                class="w-full px-3 py-2 bg-violet-900/20 border border-violet-800/50 rounded-xl text-violet-400 font-mono cursor-not-allowed"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-slate-500 font-mono cursor-not-allowed"
               />
             </div>
 
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Reset Password (Optional)</label>
+              <label class="block text-slate-300 font-semibold mb-1">Reset Password (Optional)</label>
               <input
                 v-model="editForm.password"
                 type="password"
                 placeholder="Leave blank to preserve"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white font-mono placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white font-mono placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
           </div>
@@ -528,24 +528,24 @@
           <!-- Name Change & Mail ID Change -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Full Name (Name Change) *</label>
+              <label class="block text-slate-300 font-semibold mb-1">Full Name (Name Change) *</label>
               <input
                 v-model="editForm.name"
                 type="text"
                 required
                 placeholder="Full name"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
 
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Mail ID (Email Change) *</label>
+              <label class="block text-slate-300 font-semibold mb-1">Mail ID (Email Change) *</label>
               <input
                 v-model="editForm.email"
                 type="email"
                 required
                 placeholder="Email address"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white font-mono placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white font-mono placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
           </div>
@@ -553,11 +553,11 @@
           <!-- Role & Status -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Role / Authority</label>
+              <label class="block text-slate-300 font-semibold mb-1">Role / Authority</label>
               <select
                 v-model="editForm.role"
                 :disabled="editingUser.isProtected"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-400 disabled:opacity-50"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-400 disabled:opacity-50"
               >
                 <option value="super_admin">Super Administrator</option>
                 <option value="admin">Security Administrator</option>
@@ -567,11 +567,11 @@
             </div>
 
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Account State</label>
+              <label class="block text-slate-300 font-semibold mb-1">Account State</label>
               <select
                 v-model="editForm.status"
                 :disabled="editingUser.isProtected"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-400 disabled:opacity-50"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-400 disabled:opacity-50"
               >
                 <option value="active">Active (Permitted to Log In)</option>
                 <option value="disabled">Disabled (Lockout Access)</option>
@@ -582,78 +582,78 @@
           <!-- Department & Badge -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Department / Division</label>
+              <label class="block text-slate-300 font-semibold mb-1">Department / Division</label>
               <input
                 v-model="editForm.department"
                 type="text"
                 placeholder="Department"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
 
             <div>
-              <label class="block text-violet-300 font-semibold mb-1">Badge / Employee ID</label>
+              <label class="block text-slate-300 font-semibold mb-1">Badge / Employee ID</label>
               <input
                 v-model="editForm.badgeNumber"
                 type="text"
                 placeholder="Badge Number"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/60 rounded-xl text-white font-mono placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                class="w-full px-3 py-2 bg-slate-900 border border-slate-700/60 rounded-xl text-white font-mono placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
             </div>
           </div>
 
           <!-- Telegram Notification Settings -->
-          <div class="p-3.5 rounded-xl bg-violet-900/30 border border-violet-800/60 space-y-3">
+          <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-violet-200 flex items-center gap-1.5 text-xs">
+              <span class="font-bold text-slate-200 flex items-center gap-1.5 text-xs">
                 <Send class="w-3.5 h-3.5 text-cyan-400" />
                 Telegram Incident Notification Settings
               </span>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" v-model="editForm.telegramEnabled" class="sr-only peer" />
-                <div class="w-9 h-5 bg-violet-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
               </label>
             </div>
 
-            <div v-if="editForm.telegramEnabled" class="space-y-2.5 pt-1 border-t border-violet-800/40">
+            <div v-if="editForm.telegramEnabled" class="space-y-2.5 pt-1 border-t border-slate-800">
               <div>
-                <label class="block text-violet-300 text-[11px] mb-1">Telegram Chat ID / User ID</label>
+                <label class="block text-slate-300 text-[11px] mb-1">Telegram Chat ID / User ID</label>
                 <div class="flex gap-2">
                   <input
                     v-model="editForm.telegramChatId"
                     type="text"
                     placeholder="e.g. 148920194 or -10019284910"
-                    class="flex-1 px-3 py-1.5 bg-violet-950 border border-violet-700/60 rounded-lg text-white font-mono text-xs placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                    class="flex-1 px-3 py-1.5 bg-slate-950 border border-slate-700/60 rounded-lg text-white font-mono text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-400"
                   />
                   <button
                     type="button"
                     @click="testModalTelegram"
                     :disabled="!editForm.telegramChatId || testingTelegramId === editingUser.id"
-                    class="px-3 py-1.5 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-700/50 text-cyan-300 text-xs font-bold flex items-center gap-1 disabled:opacity-50 transition"
+                    class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-300 text-xs font-bold flex items-center gap-1 disabled:opacity-50 transition"
                   >
                     <Send class="w-3 h-3" :class="{ 'animate-pulse': testingTelegramId === editingUser.id }" />
                     <span>Send Ping</span>
                   </button>
                 </div>
               </div>
-              <div class="text-[10px] text-violet-400/80 leading-relaxed font-mono">
+              <div class="text-[10px] text-slate-400 leading-relaxed font-mono">
                 When enabled, security incident dispatches and firewall health warnings will route to this chat ID.
               </div>
             </div>
           </div>
 
-          <div class="flex items-center justify-end gap-2 pt-3 border-t border-violet-800/40">
+          <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
             <button
               type="button"
               @click="showEditModal = false"
-              class="px-4 py-2 rounded-xl bg-violet-900/50 hover:bg-violet-800 text-violet-300 font-semibold"
+              class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold"
             >
               Cancel
             </button>
             <button
               type="submit"
               :disabled="usersStore.isLoading"
-              class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-600 hover:opacity-90 text-white font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-600/30"
+              class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-90 text-white font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-950/40 font-heading"
             >
               <Loader2 v-if="usersStore.isLoading" class="w-3.5 h-3.5 animate-spin" />
               <span>Save Changes</span>
@@ -668,18 +668,18 @@
       v-if="showDeleteModal && deletingUser"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
     >
-      <div class="w-full max-w-md rounded-2xl bg-violet-950 border border-rose-700/60 shadow-2xl p-6 space-y-4">
+      <div class="w-full max-w-md rounded-2xl bg-slate-950 border border-rose-700/60 shadow-2xl p-6 space-y-4">
         <div class="flex items-center gap-3 pb-3 border-b border-rose-800/40">
           <div class="p-2.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40">
             <AlertTriangle class="w-5 h-5" />
           </div>
           <div>
-            <h3 class="text-sm font-bold text-white font-sans">Confirm Account Deletion</h3>
+            <h3 class="text-sm font-bold text-white font-heading">Confirm Account Deletion</h3>
             <p class="text-[11px] text-rose-300 font-mono">Irrevocable credential removal</p>
           </div>
         </div>
 
-        <p class="text-xs text-violet-200 leading-relaxed">
+        <p class="text-xs text-slate-300 leading-relaxed">
           Are you sure you want to permanently delete user account <strong class="text-white font-mono">@{{ deletingUser.username }}</strong> (<span class="text-cyan-300">{{ deletingUser.name }}</span>)?
         </p>
 
@@ -692,7 +692,7 @@
         <div class="flex items-center justify-end gap-2 pt-2">
           <button
             @click="showDeleteModal = false"
-            class="px-4 py-2 rounded-xl bg-violet-900/50 hover:bg-violet-800 text-violet-300 font-semibold text-xs"
+            class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs"
           >
             Cancel
           </button>
@@ -835,9 +835,9 @@ function getRoleBadgeClass(role: UserRole): string {
     case 'operator':
       return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
     case 'auditor':
-      return 'bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/40';
+      return 'bg-sky-500/20 text-sky-300 border-sky-500/40';
     default:
-      return 'bg-violet-500/20 text-violet-300 border-violet-500/40';
+      return 'bg-slate-800 text-slate-300 border-slate-700';
   }
 }
 

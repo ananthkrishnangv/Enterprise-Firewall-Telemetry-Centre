@@ -2,23 +2,23 @@
   <div class="space-y-6 max-w-7xl mx-auto select-none">
     
     <!-- Top Header & Institutional Banner -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-violet-950/80 via-purple-950/70 to-indigo-950/80 border border-violet-700/40 backdrop-blur-xl shadow-xl shadow-violet-950/50">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-slate-900/90 border border-slate-700/60 backdrop-blur-xl shadow-xl shadow-slate-950/40">
       <div>
         <div class="flex items-center gap-2 mb-1.5">
-          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-violet-700/50 text-cyan-300 border border-violet-500/50">
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-800 text-cyan-300 border border-slate-700">
             CSIR-SERC SYSTEM ADMINISTRATION
           </span>
-          <span class="text-xs text-violet-400">•</span>
+          <span class="text-xs text-slate-400">•</span>
           <span class="text-xs text-emerald-400 font-mono font-bold flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
             SNMP Engine Active (10.10.3.15)
           </span>
         </div>
         <h1 class="text-2xl font-black text-white tracking-tight flex items-center gap-2.5 font-sans">
-          <Sliders class="w-6 h-6 text-neon-cyan" />
+          <Sliders class="w-6 h-6 text-cyan-400" />
           Enterprise Telemetry & Security Settings
         </h1>
-        <p class="text-xs text-violet-300/80 mt-1 max-w-2xl font-normal">
+        <p class="text-xs text-slate-400 mt-1 max-w-2xl font-normal">
           Manage institutional branding text, SMTP & Telegram security alert dispatches, FortiGate SNMP profiles, syslog listeners, and CERT-In compliance retention.
         </p>
       </div>
@@ -28,7 +28,7 @@
         <button
           @click="handlePollNow"
           :disabled="isPollingNow"
-          class="px-3.5 py-2 rounded-xl bg-violet-900/60 hover:bg-violet-800/80 border border-violet-700/50 text-cyan-300 hover:text-white text-xs font-semibold transition flex items-center gap-2 shadow-sm disabled:opacity-50"
+          class="px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-700 border border-slate-700/60 text-cyan-300 hover:text-white text-xs font-semibold transition flex items-center gap-2 shadow-sm disabled:opacity-50"
         >
           <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': isPollingNow }" />
           <span>Poll Live SNMP Now</span>
@@ -37,7 +37,7 @@
         <button
           @click="saveAllSettings"
           :disabled="isSaving"
-          class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30 disabled:opacity-50"
+          class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-950/40 disabled:opacity-50"
         >
           <Save class="w-3.5 h-3.5" />
           <span>{{ isSaving ? 'Saving...' : 'Save Changes' }}</span>
@@ -60,7 +60,7 @@
     </div>
 
     <!-- Tab Navigation -->
-    <div class="flex items-center gap-2 border-b border-violet-800/40 pb-2 overflow-x-auto">
+    <div class="flex items-center gap-2 border-b border-slate-800 pb-2 overflow-x-auto">
       <button
         v-for="tab in tabs"
         :key="tab.id"
@@ -68,16 +68,16 @@
         class="px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 whitespace-nowrap"
         :class="[
           activeTab === tab.id
-            ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white shadow-lg shadow-violet-600/25 border border-violet-400/40'
-            : 'text-violet-300/70 hover:bg-violet-900/40 hover:text-white'
+            ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-950/40 border border-slate-700'
+            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
         ]"
       >
-        <component :is="tab.icon" class="w-4 h-4" :class="activeTab === tab.id ? 'text-neon-cyan' : 'text-violet-400'" />
+        <component :is="tab.icon" class="w-4 h-4" :class="activeTab === tab.id ? 'text-cyan-400' : 'text-slate-400'" />
         <span>{{ tab.label }}</span>
         <span
           v-if="tab.badge"
           class="px-1.5 py-0.2 rounded-full text-[10px] font-mono"
-          :class="activeTab === tab.id ? 'bg-white/25 text-white' : 'bg-violet-800/60 text-violet-300'"
+          :class="activeTab === tab.id ? 'bg-white/25 text-white' : 'bg-slate-800 text-slate-300'"
         >
           {{ tab.badge }}
         </span>
@@ -87,22 +87,22 @@
     <!-- ========================================================================= -->
     <!-- TAB 0: ORGANIZATION LOGO & VISUAL IDENTITY STUDIO                         -->
     <!-- ========================================================================= -->
-    <div v-if="activeTab === 'logo'" class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-6 animate-fadeIn">
+    <div v-if="activeTab === 'logo'" class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-6 animate-fadeIn">
       <!-- Section Header -->
-      <div class="border-b border-violet-800/40 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div class="flex items-center gap-2 mb-1">
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-500/40">
               FIRST-CLASS BRANDING
             </span>
-            <span class="text-xs text-violet-400">•</span>
-            <span class="text-xs text-violet-300 font-mono">Real-Time Hot Reload</span>
+            <span class="text-xs text-slate-400">•</span>
+            <span class="text-xs text-slate-300 font-mono">Real-Time Hot Reload</span>
           </div>
           <h3 class="text-xl font-bold text-white flex items-center gap-2.5 font-sans">
-            <ImageIcon class="w-6 h-6 text-neon-cyan" />
+            <ImageIcon class="w-6 h-6 text-cyan-400" />
             Organization Logo & Visual Identity Studio
           </h3>
-          <p class="text-xs text-violet-300/80 mt-1 max-w-3xl leading-relaxed">
+          <p class="text-xs text-slate-400 mt-1 max-w-3xl leading-relaxed">
             Upload your organization's official emblem, agency insignia, or security operations logo. Changes apply instantaneously across the navigation sidebar, top system header, login portal, and audit reports.
           </p>
         </div>
@@ -110,14 +110,14 @@
         <div class="flex items-center gap-2 self-start sm:self-auto">
           <button
             @click="resetToDefaultLogo"
-            class="px-3.5 py-2 rounded-xl bg-violet-900/50 hover:bg-violet-800/80 text-violet-300 text-xs border border-violet-700/50 transition font-medium"
+            class="px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700/60 transition font-medium"
           >
             Reset Default
           </button>
           <button
             @click="saveAllSettings"
             :disabled="isSaving"
-            class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-500 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30 disabled:opacity-50"
+            class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-950/40 disabled:opacity-50"
           >
             <Save class="w-3.5 h-3.5" />
             <span>{{ isSaving ? 'Saving...' : 'Save Logo' }}</span>
@@ -131,7 +131,7 @@
         <div
           @click="settingsForm.branding.logoType = 'custom'"
           class="p-4 rounded-2xl border cursor-pointer transition-all duration-200 relative overflow-hidden"
-          :class="settingsForm.branding.logoType === 'custom' ? 'bg-violet-900/60 border-cyan-400 shadow-lg shadow-cyan-950/50 ring-1 ring-cyan-400/50' : 'bg-violet-950/40 border-violet-800/60 hover:bg-violet-900/30'"
+          :class="settingsForm.branding.logoType === 'custom' ? 'bg-slate-950 border-cyan-400 shadow-lg shadow-cyan-950/50 ring-1 ring-cyan-400/50' : 'bg-slate-900/90 border-slate-800 hover:bg-slate-800'"
         >
           <div class="flex items-center justify-between mb-2">
             <div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center">
@@ -145,7 +145,7 @@
             </span>
           </div>
           <h4 class="text-sm font-bold text-white mb-1">Upload Custom File</h4>
-          <p class="text-[11px] text-violet-300/80 leading-relaxed">
+          <p class="text-[11px] text-slate-400 leading-relaxed">
             Upload PNG, SVG, JPG, or WebP directly from your local computer. Converted to secure embedded Base64.
           </p>
         </div>
@@ -154,10 +154,10 @@
         <div
           @click="settingsForm.branding.logoType = 'preset'"
           class="p-4 rounded-2xl border cursor-pointer transition-all duration-200 relative overflow-hidden"
-          :class="settingsForm.branding.logoType === 'preset' ? 'bg-violet-900/60 border-cyan-400 shadow-lg shadow-cyan-950/50 ring-1 ring-cyan-400/50' : 'bg-violet-950/40 border-violet-800/60 hover:bg-violet-900/30'"
+          :class="settingsForm.branding.logoType === 'preset' ? 'bg-slate-950 border-cyan-400 shadow-lg shadow-cyan-950/50 ring-1 ring-cyan-400/50' : 'bg-slate-900/90 border-slate-800 hover:bg-slate-800'"
         >
           <div class="flex items-center justify-between mb-2">
-            <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center">
+            <div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center">
               <Sparkles class="w-5 h-5" />
             </div>
             <span
@@ -168,7 +168,7 @@
             </span>
           </div>
           <h4 class="text-sm font-bold text-white mb-1">Preset Vector Emblems</h4>
-          <p class="text-[11px] text-violet-300/80 leading-relaxed">
+          <p class="text-[11px] text-slate-400 leading-relaxed">
             Choose from official pre-rendered high-res vectors (National Emblem, Cyber Shield, Hardware Chipset, Globe).
           </p>
         </div>
@@ -177,7 +177,7 @@
         <div
           @click="settingsForm.branding.logoType = 'url'"
           class="p-4 rounded-2xl border cursor-pointer transition-all duration-200 relative overflow-hidden"
-          :class="settingsForm.branding.logoType === 'url' ? 'bg-violet-900/60 border-cyan-400 shadow-lg shadow-cyan-950/50 ring-1 ring-cyan-400/50' : 'bg-violet-950/40 border-violet-800/60 hover:bg-violet-900/30'"
+          :class="settingsForm.branding.logoType === 'url' ? 'bg-slate-950 border-cyan-400 shadow-lg shadow-cyan-950/50 ring-1 ring-cyan-400/50' : 'bg-slate-900/90 border-slate-800 hover:bg-slate-800'"
         >
           <div class="flex items-center justify-between mb-2">
             <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center">
@@ -191,7 +191,7 @@
             </span>
           </div>
           <h4 class="text-sm font-bold text-white mb-1">Remote Image URL</h4>
-          <p class="text-[11px] text-violet-300/80 leading-relaxed">
+          <p class="text-[11px] text-slate-400 leading-relaxed">
             Load an institutional image hosted on an external CDN, corporate web server, or intra-network repository.
           </p>
         </div>
@@ -203,12 +203,12 @@
         <div class="lg:col-span-7 space-y-4">
           
           <!-- Mode 1: Custom Image File Upload -->
-          <div v-if="settingsForm.branding.logoType === 'custom'" class="p-6 rounded-2xl bg-violet-950/80 border border-violet-800/60 space-y-4">
+          <div v-if="settingsForm.branding.logoType === 'custom'" class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
             <div class="flex items-center justify-between">
               <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono">
                 Custom Image File Upload
               </div>
-              <span class="text-[11px] text-violet-400 font-mono">Max size: 5 MB</span>
+              <span class="text-[11px] text-slate-400 font-mono">Max size: 5 MB</span>
             </div>
 
             <!-- Drag & Drop Zone -->
@@ -217,7 +217,7 @@
               @dragleave.prevent="isDraggingLogo = false"
               @drop.prevent="handleLogoDrop"
               class="border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-center gap-3 relative"
-              :class="isDraggingLogo ? 'border-cyan-400 bg-cyan-950/30 scale-[1.01]' : 'border-violet-700/60 bg-violet-900/20 hover:border-cyan-400 hover:bg-violet-900/30'"
+              :class="isDraggingLogo ? 'border-cyan-400 bg-cyan-950/30 scale-[1.01]' : 'border-slate-700/60 bg-slate-950 hover:border-cyan-400 hover:bg-slate-800'"
             >
               <input
                 ref="logoInputRef"
@@ -228,31 +228,31 @@
                 id="dedicatedLogoUpload"
               />
 
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-600 via-purple-600 to-cyan-400 p-0.5 shadow-lg shadow-violet-600/30">
-                <div class="w-full h-full bg-violet-950 rounded-[14px] flex items-center justify-center">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-600 p-0.5 shadow-lg shadow-cyan-950/40">
+                <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
                   <UploadCloud class="w-8 h-8 text-cyan-300" />
                 </div>
               </div>
 
               <div>
                 <label for="dedicatedLogoUpload" class="cursor-pointer">
-                  <span class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600 hover:opacity-95 text-white text-xs font-bold inline-block shadow-md transition">
+                  <span class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-500 hover:opacity-95 text-white text-xs font-bold inline-block shadow-md transition">
                     Browse Image from Computer
                   </span>
                 </label>
-                <div class="text-xs text-violet-300/80 mt-2">
+                <div class="text-xs text-slate-400 mt-2">
                   or drag & drop your image file right here
                 </div>
-                <div class="text-[10px] text-violet-400 mt-1 font-mono">
+                <div class="text-[10px] text-slate-400 mt-1 font-mono">
                   Supported formats: PNG (recommended transparent), SVG, JPG, WebP
                 </div>
               </div>
             </div>
 
             <!-- Current File Status Banner -->
-            <div v-if="settingsForm.branding.logoBase64" class="p-3.5 rounded-xl bg-violet-900/40 border border-violet-700/60 flex items-center justify-between gap-3">
+            <div v-if="settingsForm.branding.logoBase64" class="p-3.5 rounded-xl bg-slate-950 border border-slate-700/60 flex items-center justify-between gap-3">
               <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-10 h-10 rounded-lg bg-violet-950 p-1 border border-violet-700/50 flex items-center justify-center flex-shrink-0">
+                <div class="w-10 h-10 rounded-lg bg-slate-950 p-1 border border-slate-700/60 flex items-center justify-center flex-shrink-0">
                   <img :src="settingsForm.branding.logoBase64" class="w-full h-full object-contain" alt="Uploaded Logo" />
                 </div>
                 <div class="min-w-0">
@@ -260,13 +260,13 @@
                     <CheckCircle2 class="w-3.5 h-3.5" />
                     <span>Custom Logo Embedded</span>
                   </div>
-                  <div class="text-[10px] text-violet-400 font-mono truncate">
+                  <div class="text-[10px] text-slate-400 font-mono truncate">
                     Base64 Data • {{ Math.round(settingsForm.branding.logoBase64.length / 1024) }} KB
                   </div>
                 </div>
               </div>
               <div class="flex items-center gap-2 flex-shrink-0">
-                <label for="dedicatedLogoUpload" class="px-2.5 py-1.5 rounded-lg bg-violet-800 hover:bg-violet-700 text-violet-200 text-xs font-semibold cursor-pointer transition">
+                <label for="dedicatedLogoUpload" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold cursor-pointer transition">
                   Replace
                 </label>
                 <button
@@ -281,7 +281,7 @@
           </div>
 
           <!-- Mode 2: Preset Institutional Vectors -->
-          <div v-else-if="settingsForm.branding.logoType === 'preset'" class="p-6 rounded-2xl bg-violet-950/80 border border-violet-800/60 space-y-4">
+          <div v-else-if="settingsForm.branding.logoType === 'preset'" class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
             <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono">
               Choose Preset Institutional Icon
             </div>
@@ -291,16 +291,16 @@
               <div
                 @click="settingsForm.branding.presetLogo = 'emblem'"
                 class="p-3.5 rounded-xl border cursor-pointer transition flex items-center gap-3"
-                :class="settingsForm.branding.presetLogo === 'emblem' ? 'bg-violet-900/70 border-cyan-400 ring-1 ring-cyan-400/50' : 'bg-violet-950/50 border-violet-800 hover:bg-violet-900/40'"
+                :class="settingsForm.branding.presetLogo === 'emblem' ? 'bg-slate-950 border-cyan-400 ring-1 ring-cyan-400/50' : 'bg-slate-900/90 border-slate-800 hover:bg-slate-800'"
               >
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500 to-violet-600 p-0.5 flex-shrink-0">
-                  <div class="w-full h-full bg-violet-950 rounded-[10px] flex items-center justify-center text-xl">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500 to-teal-600 p-0.5 flex-shrink-0">
+                  <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center text-xl">
                     🇮🇳
                   </div>
                 </div>
                 <div class="min-w-0">
                   <div class="text-xs font-bold text-white">National Ashoka Emblem</div>
-                  <div class="text-[10px] text-violet-400 font-mono">Government of India Standard</div>
+                  <div class="text-[10px] text-slate-400 font-mono">Government of India Standard</div>
                 </div>
               </div>
 
@@ -308,16 +308,16 @@
               <div
                 @click="settingsForm.branding.presetLogo = 'shield'"
                 class="p-3.5 rounded-xl border cursor-pointer transition flex items-center gap-3"
-                :class="settingsForm.branding.presetLogo === 'shield' ? 'bg-violet-900/70 border-cyan-400 ring-1 ring-cyan-400/50' : 'bg-violet-950/50 border-violet-800 hover:bg-violet-900/40'"
+                :class="settingsForm.branding.presetLogo === 'shield' ? 'bg-slate-950 border-cyan-400 ring-1 ring-cyan-400/50' : 'bg-slate-900/90 border-slate-800 hover:bg-slate-800'"
               >
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-cyan-400 p-0.5 flex-shrink-0">
-                  <div class="w-full h-full bg-violet-950 rounded-[10px] flex items-center justify-center">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-500 p-0.5 flex-shrink-0">
+                  <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
                     <Shield class="w-6 h-6 text-cyan-300" />
                   </div>
                 </div>
                 <div class="min-w-0">
                   <div class="text-xs font-bold text-white">Cyber Defense Shield</div>
-                  <div class="text-[10px] text-violet-400 font-mono">CSIR-SERC Cyber SOC</div>
+                  <div class="text-[10px] text-slate-400 font-mono">CSIR-SERC Cyber SOC</div>
                 </div>
               </div>
 
@@ -325,16 +325,16 @@
               <div
                 @click="settingsForm.branding.presetLogo = 'cyber'"
                 class="p-3.5 rounded-xl border cursor-pointer transition flex items-center gap-3"
-                :class="settingsForm.branding.presetLogo === 'cyber' ? 'bg-violet-900/70 border-cyan-400 ring-1 ring-cyan-400/50' : 'bg-violet-950/50 border-violet-800 hover:bg-violet-900/40'"
+                :class="settingsForm.branding.presetLogo === 'cyber' ? 'bg-slate-950 border-cyan-400 ring-1 ring-cyan-400/50' : 'bg-slate-900/90 border-slate-800 hover:bg-slate-800'"
               >
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-600 to-cyan-500 p-0.5 flex-shrink-0">
-                  <div class="w-full h-full bg-violet-950 rounded-[10px] flex items-center justify-center">
+                  <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
                     <Cpu class="w-6 h-6 text-emerald-400" />
                   </div>
                 </div>
                 <div class="min-w-0">
                   <div class="text-xs font-bold text-white">Silicon Microprocessor</div>
-                  <div class="text-[10px] text-violet-400 font-mono">Hardware Security Engine</div>
+                  <div class="text-[10px] text-slate-400 font-mono">Hardware Security Engine</div>
                 </div>
               </div>
 
@@ -342,44 +342,44 @@
               <div
                 @click="settingsForm.branding.presetLogo = 'globe'"
                 class="p-3.5 rounded-xl border cursor-pointer transition flex items-center gap-3"
-                :class="settingsForm.branding.presetLogo === 'globe' ? 'bg-violet-900/70 border-cyan-400 ring-1 ring-cyan-400/50' : 'bg-violet-950/50 border-violet-800 hover:bg-violet-900/40'"
+                :class="settingsForm.branding.presetLogo === 'globe' ? 'bg-slate-950 border-cyan-400 ring-1 ring-cyan-400/50' : 'bg-slate-900/90 border-slate-800 hover:bg-slate-800'"
               >
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 flex-shrink-0">
-                  <div class="w-full h-full bg-violet-950 rounded-[10px] flex items-center justify-center">
-                    <Globe class="w-6 h-6 text-blue-300" />
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-500 p-0.5 flex-shrink-0">
+                  <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                    <Globe class="w-6 h-6 text-cyan-300" />
                   </div>
                 </div>
                 <div class="min-w-0">
                   <div class="text-xs font-bold text-white">Global Peering Spine</div>
-                  <div class="text-[10px] text-violet-400 font-mono">Autonomous System Network</div>
+                  <div class="text-[10px] text-slate-400 font-mono">Autonomous System Network</div>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Mode 3: Direct Remote URL -->
-          <div v-else class="p-6 rounded-2xl bg-violet-950/80 border border-violet-800/60 space-y-4">
+          <div v-else class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
             <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono">
               Remote Logo Endpoint URL
             </div>
             <div>
-              <label class="block text-xs font-semibold text-violet-300 mb-1.5 font-mono">
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5 font-mono">
                 Image Web Address (HTTPS Recommended)
               </label>
               <input
                 v-model="settingsForm.branding.logoUrl"
                 type="url"
                 placeholder="https://intranet.csir.res.in/assets/serc-logo.png"
-                class="w-full px-3.5 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
+                class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
               />
-              <p class="text-[11px] text-violet-400 mt-1.5">
+              <p class="text-[11px] text-slate-400 mt-1.5">
                 The image will be loaded directly from this URL by client browsers. Ensure CORS headers permit cross-origin access.
               </p>
             </div>
           </div>
 
           <!-- Helper Guidance Alert -->
-          <div class="p-4 rounded-xl bg-violet-900/30 border border-violet-700/40 text-xs text-violet-300/80 flex items-start gap-3">
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-700/60 text-xs text-slate-400 flex items-start gap-3">
             <Sparkles class="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
             <div class="space-y-1 leading-relaxed">
               <div class="font-bold text-white font-sans">Multi-Tenant & White-Label Deployments</div>
@@ -397,14 +397,14 @@
           </div>
 
           <!-- Preview 1: Sidebar Nav Layout -->
-          <div class="p-4 rounded-2xl bg-violet-950/90 border border-violet-800/80 shadow-xl space-y-2">
-            <div class="text-[10px] font-mono font-bold text-violet-400 uppercase tracking-wider flex items-center justify-between">
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-2">
+            <div class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
               <span>1. Sidebar Navigation Header</span>
               <span class="text-cyan-400">Desktop View</span>
             </div>
-            <div class="p-3 rounded-xl bg-violet-950 border border-violet-800/50 flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
               <!-- Rendered Logo -->
-              <div class="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-violet-900/60 border border-violet-700/50 shadow-md">
+              <div class="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-slate-950 border border-slate-700/60 shadow-md">
                 <img
                   v-if="settingsForm.branding.logoType === 'custom' && settingsForm.branding.logoBase64"
                   :src="settingsForm.branding.logoBase64"
@@ -420,11 +420,11 @@
                 <div v-else-if="settingsForm.branding.presetLogo === 'cyber'" class="w-full h-full bg-gradient-to-tr from-emerald-600 to-cyan-500 p-0.5 flex items-center justify-center">
                   <Cpu class="w-5 h-5 text-emerald-300" />
                 </div>
-                <div v-else-if="settingsForm.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 flex items-center justify-center">
-                  <Globe class="w-5 h-5 text-blue-300" />
+                <div v-else-if="settingsForm.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-cyan-600 to-teal-500 p-0.5 flex items-center justify-center">
+                  <Globe class="w-5 h-5 text-cyan-300" />
                 </div>
                 <div v-else-if="settingsForm.branding.presetLogo === 'emblem'" class="text-base">🇮🇳</div>
-                <div v-else class="w-full h-full bg-gradient-to-tr from-violet-600 to-cyan-400 flex items-center justify-center">
+                <div v-else class="w-full h-full bg-gradient-to-tr from-cyan-600 to-teal-500 flex items-center justify-center">
                   <Shield class="w-5 h-5 text-cyan-200" />
                 </div>
               </div>
@@ -432,7 +432,7 @@
                 <div class="text-xs font-bold text-white truncate font-sans">
                   {{ settingsForm.branding.orgName || 'CSIR - Structural Engineering Research Centre' }}
                 </div>
-                <div class="text-[10px] text-violet-300/80 truncate">
+                <div class="text-[10px] text-slate-400 truncate">
                   {{ settingsForm.branding.orgDivision || 'ICT & Network Security Division' }}
                 </div>
               </div>
@@ -440,14 +440,14 @@
           </div>
 
           <!-- Preview 2: Top Header Bar Layout -->
-          <div class="p-4 rounded-2xl bg-violet-950/90 border border-violet-800/80 shadow-xl space-y-2">
-            <div class="text-[10px] font-mono font-bold text-violet-400 uppercase tracking-wider flex items-center justify-between">
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-2">
+            <div class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
               <span>2. Top System Header Bar</span>
               <span class="text-emerald-400">Live Status</span>
             </div>
-            <div class="p-3 rounded-xl bg-violet-950 border border-violet-800/50 flex items-center justify-between gap-3 overflow-hidden">
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3 overflow-hidden">
               <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 bg-violet-900/60 border border-violet-700/50">
+                <div class="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 bg-slate-950 border border-slate-700/60">
                   <img
                     v-if="settingsForm.branding.logoType === 'custom' && settingsForm.branding.logoBase64"
                     :src="settingsForm.branding.logoBase64"
@@ -463,11 +463,11 @@
                   <div v-else-if="settingsForm.branding.presetLogo === 'cyber'" class="w-full h-full bg-gradient-to-tr from-emerald-600 to-cyan-500 p-0.5 flex items-center justify-center">
                     <Cpu class="w-4 h-4 text-emerald-300" />
                   </div>
-                  <div v-else-if="settingsForm.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 flex items-center justify-center">
-                    <Globe class="w-4 h-4 text-blue-300" />
+                  <div v-else-if="settingsForm.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-cyan-600 to-teal-500 p-0.5 flex items-center justify-center">
+                    <Globe class="w-4 h-4 text-cyan-300" />
                   </div>
                   <div v-else-if="settingsForm.branding.presetLogo === 'emblem'" class="text-xs">🇮🇳</div>
-                  <div v-else class="w-full h-full bg-gradient-to-tr from-violet-600 to-cyan-400 flex items-center justify-center">
+                  <div v-else class="w-full h-full bg-gradient-to-tr from-cyan-600 to-teal-500 flex items-center justify-center">
                     <Shield class="w-4 h-4 text-cyan-200" />
                   </div>
                 </div>
@@ -475,7 +475,7 @@
                   <div class="text-[11px] font-bold text-white truncate">
                     {{ settingsForm.branding.apexBody || 'CSIR' }}
                   </div>
-                  <div class="text-[9px] text-violet-400 font-mono truncate">
+                  <div class="text-[9px] text-slate-400 font-mono truncate">
                     10.10.3.15 • FortiGate Active
                   </div>
                 </div>
@@ -488,14 +488,14 @@
           </div>
 
           <!-- Preview 3: Glassmorphic Login Card -->
-          <div class="p-4 rounded-2xl bg-violet-950/90 border border-violet-800/80 shadow-xl space-y-2">
-            <div class="text-[10px] font-mono font-bold text-violet-400 uppercase tracking-wider flex items-center justify-between">
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-2">
+            <div class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
               <span>3. Login Authentication Card</span>
-              <span class="text-purple-400">Glassmorphic</span>
+              <span class="text-cyan-400">Glassmorphic</span>
             </div>
-            <div class="p-4 rounded-xl bg-violet-900/40 border border-violet-700/40 text-center space-y-2">
-              <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-violet-600 via-purple-600 to-cyan-400 p-0.5 shadow-md">
-                <div class="w-full h-full bg-violet-950 rounded-[10px] flex items-center justify-center overflow-hidden">
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-700/60 text-center space-y-2">
+              <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-600 p-0.5 shadow-md">
+                <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center overflow-hidden">
                   <img
                     v-if="settingsForm.branding.logoType === 'custom' && settingsForm.branding.logoBase64"
                     :src="settingsForm.branding.logoBase64"
@@ -511,11 +511,11 @@
                   <div v-else-if="settingsForm.branding.presetLogo === 'cyber'" class="w-full h-full bg-gradient-to-tr from-emerald-600 to-cyan-500 p-0.5 flex items-center justify-center">
                     <Cpu class="w-5 h-5 text-emerald-300" />
                   </div>
-                  <div v-else-if="settingsForm.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 flex items-center justify-center">
-                    <Globe class="w-5 h-5 text-blue-300" />
+                  <div v-else-if="settingsForm.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-cyan-600 to-teal-500 p-0.5 flex items-center justify-center">
+                    <Globe class="w-5 h-5 text-cyan-300" />
                   </div>
                   <div v-else-if="settingsForm.branding.presetLogo === 'emblem'" class="text-sm">🇮🇳</div>
-                  <div v-else class="w-full h-full bg-gradient-to-tr from-violet-600 to-cyan-400 flex items-center justify-center">
+                  <div v-else class="w-full h-full bg-gradient-to-tr from-cyan-600 to-teal-500 flex items-center justify-center">
                     <Shield class="w-5 h-5 text-cyan-200" />
                   </div>
                 </div>
@@ -524,7 +524,7 @@
                 <div class="text-xs font-bold text-white font-sans">
                   {{ settingsForm.branding.loginTitle || 'CSIR-SERC Security Operations Center' }}
                 </div>
-                <div class="text-[9px] text-violet-400 truncate max-w-[240px] mx-auto">
+                <div class="text-[9px] text-slate-400 truncate max-w-[240px] mx-auto">
                   {{ settingsForm.branding.loginSubtitle || 'Enter authorized credentials to access portal' }}
                 </div>
               </div>
@@ -536,7 +536,7 @@
             <button
               @click="saveAllSettings"
               :disabled="isSaving"
-              class="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-95 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-violet-600/30 disabled:opacity-50"
+              class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/40 disabled:opacity-50"
             >
               <Save class="w-4 h-4" />
               <span>{{ isSaving ? 'Committing Changes...' : 'Save & Apply Logo Immediately' }}</span>
@@ -550,20 +550,20 @@
     <!-- ========================================================================= -->
     <!-- TAB 1: INSTITUTIONAL BRANDING & PORTAL TEXT LABELS                        -->
     <!-- ========================================================================= -->
-    <div v-if="activeTab === 'branding'" class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-6">
-      <div class="border-b border-violet-800/40 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <div v-if="activeTab === 'branding'" class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-6">
+      <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <h3 class="text-base font-bold text-white flex items-center gap-2 font-sans">
-            <Type class="w-5 h-5 text-neon-cyan" />
+            <Type class="w-5 h-5 text-cyan-400" />
             Institutional Identity & Portal Text Labels
           </h3>
-          <p class="text-xs text-violet-300/80 mt-1">
+          <p class="text-xs text-slate-400 mt-1">
             Configure institutional titles, organization name, division, login page captions, and footer disclaimer across all portal views in Noto Sans.
           </p>
         </div>
         <button
           @click="resetDefaultBranding"
-          class="px-3 py-1.5 rounded-lg bg-violet-900/50 hover:bg-violet-800/80 text-violet-300 text-xs border border-violet-700/50 transition self-start sm:self-auto"
+          class="px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700/60 transition self-start sm:self-auto"
         >
           Reset CSIR-SERC Defaults
         </button>
@@ -575,49 +575,49 @@
           <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono">Institutional Hierarchy</h4>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Apex National Organization / Council
             </label>
             <input
               v-model="settingsForm.branding.apexBody"
               type="text"
-              class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400"
               placeholder="e.g. Council of Scientific & Industrial Research"
             />
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Primary Research Laboratory / Institute Name
             </label>
             <input
               v-model="settingsForm.branding.orgName"
               type="text"
-              class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400"
               placeholder="e.g. CSIR - Structural Engineering Research Centre"
             />
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Operational Division / Security Unit
             </label>
             <input
               v-model="settingsForm.branding.orgDivision"
               type="text"
-              class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400"
               placeholder="e.g. ICT & Network Security Division"
             />
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               NTP Clock / Region Badge Text
             </label>
             <input
               v-model="settingsForm.branding.ntpBadgeText"
               type="text"
-              class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
+              class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
               placeholder="e.g. NTP SYNC • NKN CHENNAI"
             />
           </div>
@@ -628,49 +628,49 @@
           <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono">Application Header & Subtitle</h4>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Portal Main Header Title
             </label>
             <input
               v-model="settingsForm.branding.portalTitle"
               type="text"
-              class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-semibold"
+              class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-semibold"
               placeholder="e.g. Firewall Telemetry & Security Operations Console"
             />
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Portal Header Subtitle / Description
             </label>
             <textarea
               v-model="settingsForm.branding.portalSubtitle"
               rows="2"
-              class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 resize-none"
+              class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 resize-none"
               placeholder="e.g. Real-Time Multi-Gigabit Ingress/Egress Inspection, Threat Mitigation & Unified SNMP Telemetry Engine"
             ></textarea>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Institutional Footer Notice / Disclaimer
             </label>
             <input
               v-model="settingsForm.branding.footerNotice"
               type="text"
-              class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
+              class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
               placeholder="e.g. CSIR-SERC (Chennai) • Council of Scientific & Industrial Research • Authorized Access Only"
             />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+              <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
                 Threat Advisory Level
               </label>
               <select
                 v-model="settingsForm.branding.threatAdvisoryLevel"
-                class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
+                class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
               >
                 <option value="NORMAL">NORMAL (Green)</option>
                 <option value="ELEVATED">ELEVATED (Amber)</option>
@@ -679,13 +679,13 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+              <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
                 Advisory Note
               </label>
               <input
                 v-model="settingsForm.branding.threatAdvisoryDetail"
                 type="text"
-                class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
+                class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
                 placeholder="e.g. Perimeter Defense Active"
               />
             </div>
@@ -694,38 +694,38 @@
       </div>
 
       <!-- Login Screen Captions -->
-      <div class="border-t border-violet-800/40 pt-4 space-y-4">
+      <div class="border-t border-slate-800 pt-4 space-y-4">
         <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono">Login Authentication Page Labels</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Login Form Header
             </label>
             <input
               v-model="settingsForm.branding.loginTitle"
               type="text"
-              class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-semibold"
+              class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-semibold"
             />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Login Form Subtitle
             </label>
             <input
               v-model="settingsForm.branding.loginSubtitle"
               type="text"
-              class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400"
             />
           </div>
         </div>
       </div>
 
       <!-- Organization Brand Logo & Emblem Section -->
-      <div class="border-t border-violet-800/40 pt-4 space-y-4">
+      <div class="border-t border-slate-800 pt-4 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono">Organization Logo & Iconography</h4>
-            <p class="text-[11px] text-violet-300/80">Customize the logo displayed in the top header, sidebar, and login page for white-label multi-agency deployments.</p>
+            <p class="text-[11px] text-slate-400">Customize the logo displayed in the top header, sidebar, and login page for white-label multi-agency deployments.</p>
           </div>
           <RouterLink
             to="/wizard"
@@ -739,25 +739,25 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
           <!-- Logo Selection Type -->
           <div class="space-y-2">
-            <label class="block text-xs font-semibold text-violet-300 font-mono">Logo Source Mode</label>
+            <label class="block text-xs font-semibold text-slate-300 font-mono">Logo Source Mode</label>
             <div class="space-y-1.5">
               <label
                 class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition text-xs"
-                :class="settingsForm.branding.logoType === 'preset' ? 'bg-violet-900/60 border-cyan-400 text-white' : 'bg-violet-950/40 border-violet-800 text-violet-300'"
+                :class="settingsForm.branding.logoType === 'preset' ? 'bg-slate-950 border-cyan-400 text-white' : 'bg-slate-900/90 border-slate-800 text-slate-300'"
               >
                 <input type="radio" v-model="settingsForm.branding.logoType" value="preset" class="text-cyan-400" />
                 <span>Preset Institutional Icon</span>
               </label>
               <label
                 class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition text-xs"
-                :class="settingsForm.branding.logoType === 'custom' ? 'bg-violet-900/60 border-cyan-400 text-white' : 'bg-violet-950/40 border-violet-800 text-violet-300'"
+                :class="settingsForm.branding.logoType === 'custom' ? 'bg-slate-950 border-cyan-400 text-white' : 'bg-slate-900/90 border-slate-800 text-slate-300'"
               >
                 <input type="radio" v-model="settingsForm.branding.logoType" value="custom" class="text-cyan-400" />
                 <span>Upload Custom Image (Base64)</span>
               </label>
               <label
                 class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition text-xs"
-                :class="settingsForm.branding.logoType === 'url' ? 'bg-violet-900/60 border-cyan-400 text-white' : 'bg-violet-950/40 border-violet-800 text-violet-300'"
+                :class="settingsForm.branding.logoType === 'url' ? 'bg-slate-950 border-cyan-400 text-white' : 'bg-slate-900/90 border-slate-800 text-slate-300'"
               >
                 <input type="radio" v-model="settingsForm.branding.logoType" value="url" class="text-cyan-400" />
                 <span>Direct Remote Logo URL</span>
@@ -768,10 +768,10 @@
           <!-- Configuration based on mode -->
           <div class="space-y-3">
             <div v-if="settingsForm.branding.logoType === 'preset'" class="space-y-2">
-              <label class="block text-xs font-semibold text-violet-300 font-mono">Choose Preset Icon</label>
+              <label class="block text-xs font-semibold text-slate-300 font-mono">Choose Preset Icon</label>
               <select
                 v-model="settingsForm.branding.presetLogo"
-                class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
+                class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
               >
                 <option value="emblem">🇮🇳 National Ashoka / Tricolor Emblem</option>
                 <option value="shield">🛡️ Cyber Defense Shield (Cyber SOC)</option>
@@ -781,32 +781,32 @@
             </div>
 
             <div v-else-if="settingsForm.branding.logoType === 'custom'" class="space-y-2">
-              <label class="block text-xs font-semibold text-violet-300 font-mono">Upload Image File (PNG, SVG, JPG)</label>
-              <div class="border-2 border-dashed border-violet-700/60 rounded-xl p-4 text-center hover:border-cyan-400 transition bg-violet-900/20">
+              <label class="block text-xs font-semibold text-slate-300 font-mono">Upload Image File (PNG, SVG, JPG)</label>
+              <div class="border-2 border-dashed border-slate-700/60 rounded-xl p-4 text-center hover:border-cyan-400 transition bg-slate-950">
                 <input type="file" accept="image/*" @change="handleLogoFileUpload" class="hidden" id="logoUploadInput" />
                 <label for="logoUploadInput" class="cursor-pointer flex flex-col items-center gap-1">
                   <UploadCloud class="w-6 h-6 text-cyan-400" />
                   <span class="text-xs font-semibold text-white">Click to browse file</span>
-                  <span class="text-[10px] text-violet-400">SVG, PNG, JPG (Max 2MB)</span>
+                  <span class="text-[10px] text-slate-400">SVG, PNG, JPG (Max 2MB)</span>
                 </label>
               </div>
             </div>
 
             <div v-else class="space-y-2">
-              <label class="block text-xs font-semibold text-violet-300 font-mono">Image URL</label>
+              <label class="block text-xs font-semibold text-slate-300 font-mono">Image URL</label>
               <input
                 v-model="settingsForm.branding.logoUrl"
                 type="url"
                 placeholder="https://example.org/logo.png"
-                class="w-full px-3.5 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
+                class="w-full px-3.5 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-400 font-mono"
               />
             </div>
           </div>
 
           <!-- Live Preview Box -->
-          <div class="p-4 rounded-xl bg-violet-900/30 border border-violet-700/40 flex flex-col items-center justify-center text-center space-y-2">
-            <span class="text-[10px] uppercase font-bold text-violet-400 font-mono">Live Logo Preview</span>
-            <div class="w-16 h-16 rounded-2xl bg-violet-950 border border-violet-600/50 p-2 flex items-center justify-center shadow-lg shadow-violet-900/50 overflow-hidden">
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-700/60 flex flex-col items-center justify-center text-center space-y-2">
+            <span class="text-[10px] uppercase font-bold text-slate-400 font-mono">Live Logo Preview</span>
+            <div class="w-16 h-16 rounded-2xl bg-slate-950 border border-slate-700 p-2 flex items-center justify-center shadow-lg shadow-slate-950/40 overflow-hidden">
               <img
                 v-if="settingsForm.branding.logoType === 'custom' && settingsForm.branding.logoBase64"
                 :src="settingsForm.branding.logoBase64"
@@ -819,27 +819,27 @@
                 class="w-full h-full object-contain"
                 alt="Preview"
               />
-              <div v-else-if="settingsForm.branding.presetLogo === 'shield'" class="w-full h-full bg-gradient-to-tr from-violet-600 to-cyan-400 rounded-xl flex items-center justify-center">
+              <div v-else-if="settingsForm.branding.presetLogo === 'shield'" class="w-full h-full bg-gradient-to-tr from-cyan-600 to-teal-500 rounded-xl flex items-center justify-center">
                 <Shield class="w-8 h-8 text-cyan-200" />
               </div>
               <div v-else-if="settingsForm.branding.presetLogo === 'cyber'" class="w-full h-full bg-gradient-to-tr from-emerald-600 to-cyan-500 rounded-xl flex items-center justify-center">
                 <Cpu class="w-8 h-8 text-emerald-300" />
               </div>
-              <div v-else-if="settingsForm.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center">
+              <div v-else-if="settingsForm.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-cyan-600 to-teal-500 rounded-xl flex items-center justify-center">
                 <Globe class="w-8 h-8 text-blue-200" />
               </div>
               <div v-else class="text-2xl">🇮🇳</div>
             </div>
-            <span class="text-[10px] text-violet-300 font-mono truncate max-w-[140px]">{{ settingsForm.branding.orgName || 'Organization' }}</span>
+            <span class="text-[10px] text-slate-300 font-mono truncate max-w-[140px]">{{ settingsForm.branding.orgName || 'Organization' }}</span>
           </div>
         </div>
       </div>
 
-      <div class="pt-4 border-t border-violet-800/40 flex justify-end">
+      <div class="pt-4 border-t border-slate-800 flex justify-end">
         <button
           @click="saveAllSettings"
           :disabled="isSaving"
-          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30"
+          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-950/40"
         >
           <Save class="w-4 h-4" />
           <span>Save Branding & Labels</span>
@@ -853,15 +853,15 @@
     <div v-if="activeTab === 'notifications'" class="space-y-6">
       
       <!-- Top Overview Card -->
-      <div class="p-6 rounded-2xl bg-gradient-to-br from-violet-950/80 via-purple-950/70 to-indigo-950/80 border border-violet-700/50 backdrop-blur-xl shadow-xl space-y-3">
+      <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-700/60 backdrop-blur-xl shadow-xl space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-fuchsia-600/20 border border-fuchsia-500/40 flex items-center justify-center">
-              <Bell class="w-5 h-5 text-fuchsia-400" />
+            <div class="w-10 h-10 rounded-xl bg-cyan-600/20 border border-cyan-500/40 flex items-center justify-center">
+              <Bell class="w-5 h-5 text-cyan-400" />
             </div>
             <div>
               <h3 class="text-base font-bold text-white">Multi-Channel Security Alerting Subsystem</h3>
-              <p class="text-xs text-violet-300/80">Configure automated dispatches for critical threats, DDoS floods, firewall downtime, and low bandwidth.</p>
+              <p class="text-xs text-slate-400">Configure automated dispatches for critical threats, DDoS floods, firewall downtime, and low bandwidth.</p>
             </div>
           </div>
 
@@ -883,16 +883,16 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- SMTP Email Settings -->
-        <div class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-4">
-          <div class="flex items-center justify-between border-b border-violet-800/40 pb-3">
+        <div class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
             <div class="flex items-center gap-2.5">
               <Mail class="w-5 h-5 text-cyan-400" />
               <h4 class="text-sm font-bold text-white font-sans">SMTP Email Gateway</h4>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" v-model="settingsForm.notifications.smtp.enabled" class="sr-only peer" />
-              <div class="w-10 h-5 bg-violet-900 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-violet-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-violet-500 peer-checked:to-cyan-400"></div>
-              <span class="ml-2 text-xs font-mono font-bold" :class="settingsForm.notifications.smtp.enabled ? 'text-cyan-300' : 'text-violet-400'">
+              <div class="w-10 h-5 bg-slate-900 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+              <span class="ml-2 text-xs font-mono font-bold" :class="settingsForm.notifications.smtp.enabled ? 'text-cyan-300' : 'text-slate-400'">
                 {{ settingsForm.notifications.smtp.enabled ? 'ENABLED' : 'DISABLED' }}
               </span>
             </label>
@@ -901,20 +901,20 @@
           <div class="space-y-3 font-mono text-xs">
             <div class="grid grid-cols-3 gap-3">
               <div class="col-span-2">
-                <label class="text-violet-300 block mb-1">SMTP Server Host / IP</label>
+                <label class="text-slate-300 block mb-1">SMTP Server Host / IP</label>
                 <input
                   v-model="settingsForm.notifications.smtp.host"
                   type="text"
-                  class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
                   placeholder="smtp.csir.res.in or 10.10.1.25"
                 />
               </div>
               <div>
-                <label class="text-violet-300 block mb-1">Port</label>
+                <label class="text-slate-300 block mb-1">Port</label>
                 <input
                   v-model.number="settingsForm.notifications.smtp.port"
                   type="number"
-                  class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
                   placeholder="587"
                 />
               </div>
@@ -925,50 +925,50 @@
                 id="smtpSecure"
                 type="checkbox"
                 v-model="settingsForm.notifications.smtp.secure"
-                class="w-4 h-4 rounded text-violet-600 bg-violet-900 border-violet-700"
+                class="w-4 h-4 rounded text-slate-600 bg-slate-900 border-slate-700/60"
               />
-              <label for="smtpSecure" class="text-violet-300 cursor-pointer">
+              <label for="smtpSecure" class="text-slate-300 cursor-pointer">
                 Use SSL / TLS direct encryption (typically Port 465)
               </label>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="text-violet-300 block mb-1">SMTP Username</label>
+                <label class="text-slate-300 block mb-1">SMTP Username</label>
                 <input
                   v-model="settingsForm.notifications.smtp.user"
                   type="text"
-                  class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
                   placeholder="soc-alerts"
                 />
               </div>
               <div>
-                <label class="text-violet-300 block mb-1">SMTP Password</label>
+                <label class="text-slate-300 block mb-1">SMTP Password</label>
                 <input
                   v-model="settingsForm.notifications.smtp.password"
                   type="password"
-                  class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
             <div>
-              <label class="text-violet-300 block mb-1">Sender Email Address (From)</label>
+              <label class="text-slate-300 block mb-1">Sender Email Address (From)</label>
               <input
                 v-model="settingsForm.notifications.smtp.fromEmail"
                 type="email"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
                 placeholder="soc-alerts@serc.res.in"
               />
             </div>
 
             <div>
-              <label class="text-violet-300 block mb-1">Alert Recipients (Comma Separated)</label>
+              <label class="text-slate-300 block mb-1">Alert Recipients (Comma Separated)</label>
               <input
                 v-model="settingsForm.notifications.smtp.toEmails"
                 type="text"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
                 placeholder="admin@serc.res.in, soc@serc.res.in"
               />
             </div>
@@ -992,16 +992,16 @@
         </div>
 
         <!-- Telegram Bot Settings -->
-        <div class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-4">
-          <div class="flex items-center justify-between border-b border-violet-800/40 pb-3">
+        <div class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
             <div class="flex items-center gap-2.5">
-              <Send class="w-5 h-5 text-fuchsia-400" />
+              <Send class="w-5 h-5 text-cyan-400" />
               <h4 class="text-sm font-bold text-white font-sans">Telegram Push Alerts Bot</h4>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" v-model="settingsForm.notifications.telegram.enabled" class="sr-only peer" />
-              <div class="w-10 h-5 bg-violet-900 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-violet-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-violet-500 peer-checked:to-fuchsia-400"></div>
-              <span class="ml-2 text-xs font-mono font-bold" :class="settingsForm.notifications.telegram.enabled ? 'text-fuchsia-300' : 'text-violet-400'">
+              <div class="w-10 h-5 bg-slate-900 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+              <span class="ml-2 text-xs font-mono font-bold" :class="settingsForm.notifications.telegram.enabled ? 'text-cyan-300' : 'text-slate-400'">
                 {{ settingsForm.notifications.telegram.enabled ? 'ENABLED' : 'DISABLED' }}
               </span>
             </label>
@@ -1009,28 +1009,28 @@
 
           <div class="space-y-3 font-mono text-xs">
             <div>
-              <label class="text-violet-300 block mb-1">Telegram Bot API Token</label>
+              <label class="text-slate-300 block mb-1">Telegram Bot API Token</label>
               <input
                 v-model="settingsForm.notifications.telegram.botToken"
                 type="text"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
                 placeholder="e.g. 123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ"
               />
-              <span class="text-[11px] text-violet-400 mt-1 block">Acquired from @BotFather on Telegram</span>
+              <span class="text-[11px] text-slate-400 mt-1 block">Acquired from @BotFather on Telegram</span>
             </div>
 
             <div>
-              <label class="text-violet-300 block mb-1">Target Chat ID or Group/Channel ID</label>
+              <label class="text-slate-300 block mb-1">Target Chat ID or Group/Channel ID</label>
               <input
                 v-model="settingsForm.notifications.telegram.chatId"
                 type="text"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
                 placeholder="e.g. -1001234567890 or @csir_serc_soc"
               />
-              <span class="text-[11px] text-violet-400 mt-1 block">Target private chat or security operations channel</span>
+              <span class="text-[11px] text-slate-400 mt-1 block">Target private chat or security operations channel</span>
             </div>
 
-            <div class="p-3 rounded-xl bg-violet-900/20 border border-violet-800/40 text-violet-300/80 leading-relaxed text-[11px]">
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 leading-relaxed text-[11px]">
               <strong class="text-white">Note:</strong> Make sure the bot is added as an administrator with post privileges if routing notifications to a private Telegram channel.
             </div>
           </div>
@@ -1039,7 +1039,7 @@
             <button
               @click="handleTestTelegram"
               :disabled="isTestingTelegram"
-              class="w-full py-2 rounded-xl bg-fuchsia-500/15 hover:bg-fuchsia-500/25 border border-fuchsia-500/40 text-fuchsia-300 hover:text-white text-xs font-bold transition flex items-center justify-center gap-2"
+              class="w-full py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 hover:text-white text-xs font-bold transition flex items-center justify-center gap-2"
             >
               <Loader2 v-if="isTestingTelegram" class="w-3.5 h-3.5 animate-spin" />
               <Send v-else class="w-3.5 h-3.5" />
@@ -1055,13 +1055,13 @@
       </div>
 
       <!-- Specific Alert Trigger Policies & Thresholds -->
-      <div class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-4">
-        <div class="border-b border-violet-800/40 pb-3">
+      <div class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-4">
+        <div class="border-b border-slate-800 pb-3">
           <h4 class="text-sm font-bold text-white flex items-center gap-2 font-sans">
             <ShieldAlert class="w-5 h-5 text-amber-400" />
             Automatic Event Trigger Subscriptions
           </h4>
-          <p class="text-xs text-violet-300/80 mt-1">
+          <p class="text-xs text-slate-400 mt-1">
             Choose specific network and firewall anomalies that immediately fire SMTP emails and Telegram broadcasts.
           </p>
         </div>
@@ -1069,94 +1069,94 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           
           <!-- Serious Cyber Attacks -->
-          <div class="p-4 rounded-xl bg-violet-900/20 border border-rose-500/30 flex items-start justify-between gap-3">
+          <div class="p-4 rounded-xl bg-slate-950 border border-rose-500/30 flex items-start justify-between gap-3">
             <div>
               <div class="text-xs font-bold text-rose-300 flex items-center gap-1.5">
                 <AlertOctagon class="w-4 h-4 text-rose-400" />
                 Serious Attacks & Critical Exploits
               </div>
-              <p class="text-[11px] text-violet-300/80 mt-1">
+              <p class="text-[11px] text-slate-400 mt-1">
                 Trigger immediately on high/critical severity threats: RCE, Log4j, SQLi, brute force, and zero-day signatures.
               </p>
             </div>
             <input
               type="checkbox"
               v-model="settingsForm.notifications.triggers.seriousAttackEnabled"
-              class="w-5 h-5 mt-0.5 rounded text-rose-600 bg-violet-900 border-violet-700"
+              class="w-5 h-5 mt-0.5 rounded text-rose-600 bg-slate-900 border-slate-700/60"
             />
           </div>
 
           <!-- DDoS Floods -->
-          <div class="p-4 rounded-xl bg-violet-900/20 border border-amber-500/30 flex flex-col justify-between gap-2">
+          <div class="p-4 rounded-xl bg-slate-950 border border-amber-500/30 flex flex-col justify-between gap-2">
             <div class="flex items-start justify-between gap-3">
               <div>
                 <div class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                   <Flame class="w-4 h-4 text-amber-400" />
                   DDoS Floods & Volumetric Anomalies
                 </div>
-                <p class="text-[11px] text-violet-300/80 mt-1">
+                <p class="text-[11px] text-slate-400 mt-1">
                   Trigger when sudden traffic spikes exceed normal baseline.
                 </p>
               </div>
               <input
                 type="checkbox"
                 v-model="settingsForm.notifications.triggers.ddosEnabled"
-                class="w-5 h-5 mt-0.5 rounded text-amber-600 bg-violet-900 border-violet-700"
+                class="w-5 h-5 mt-0.5 rounded text-amber-600 bg-slate-900 border-slate-700/60"
               />
             </div>
-            <div class="flex items-center gap-2 pt-2 border-t border-violet-800/40 text-xs font-mono">
-              <span class="text-violet-400">Trigger Threshold:</span>
+            <div class="flex items-center gap-2 pt-2 border-t border-slate-800 text-xs font-mono">
+              <span class="text-slate-400">Trigger Threshold:</span>
               <input
                 type="number"
                 v-model.number="settingsForm.notifications.triggers.ddosThresholdMbps"
-                class="w-20 px-2 py-1 bg-violet-900/60 border border-violet-700 rounded text-white text-right"
+                class="w-20 px-2 py-1 bg-slate-950 border border-slate-700/60 rounded text-white text-right"
               />
               <span class="text-white">Mbps</span>
             </div>
           </div>
 
           <!-- Firewall Down -->
-          <div class="p-4 rounded-xl bg-violet-900/20 border border-red-500/30 flex items-start justify-between gap-3">
+          <div class="p-4 rounded-xl bg-slate-950 border border-red-500/30 flex items-start justify-between gap-3">
             <div>
               <div class="text-xs font-bold text-red-400 flex items-center gap-1.5">
                 <PowerOff class="w-4 h-4 text-red-400" />
                 Firewall Down / Unreachable Alert
               </div>
-              <p class="text-[11px] text-violet-300/80 mt-1">
+              <p class="text-[11px] text-slate-400 mt-1">
                 Trigger immediately if FortiGate 10.10.3.15 fails consecutive SNMP diagnostic probes or ping heartbeats.
               </p>
             </div>
             <input
               type="checkbox"
               v-model="settingsForm.notifications.triggers.firewallDownEnabled"
-              class="w-5 h-5 mt-0.5 rounded text-red-600 bg-violet-900 border-violet-700"
+              class="w-5 h-5 mt-0.5 rounded text-red-600 bg-slate-900 border-slate-700/60"
             />
           </div>
 
           <!-- Firewall Bandwidth Low -->
-          <div class="p-4 rounded-xl bg-violet-900/20 border border-cyan-500/30 flex flex-col justify-between gap-2">
+          <div class="p-4 rounded-xl bg-slate-950 border border-cyan-500/30 flex flex-col justify-between gap-2">
             <div class="flex items-start justify-between gap-3">
               <div>
                 <div class="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
                   <Activity class="w-4 h-4 text-cyan-400" />
                   Firewall Bandwidth Low / Interface Drops
                 </div>
-                <p class="text-[11px] text-violet-300/80 mt-1">
+                <p class="text-[11px] text-slate-400 mt-1">
                   Trigger if operational interface throughput drops abnormally below minimum floor.
                 </p>
               </div>
               <input
                 type="checkbox"
                 v-model="settingsForm.notifications.triggers.bandwidthLowEnabled"
-                class="w-5 h-5 mt-0.5 rounded text-cyan-600 bg-violet-900 border-violet-700"
+                class="w-5 h-5 mt-0.5 rounded text-cyan-600 bg-slate-900 border-slate-700/60"
               />
             </div>
-            <div class="flex items-center gap-2 pt-2 border-t border-violet-800/40 text-xs font-mono">
-              <span class="text-violet-400">Minimum Floor:</span>
+            <div class="flex items-center gap-2 pt-2 border-t border-slate-800 text-xs font-mono">
+              <span class="text-slate-400">Minimum Floor:</span>
               <input
                 type="number"
                 v-model.number="settingsForm.notifications.triggers.bandwidthLowThresholdMbps"
-                class="w-20 px-2 py-1 bg-violet-900/60 border border-violet-700 rounded text-white text-right"
+                class="w-20 px-2 py-1 bg-slate-950 border border-slate-700/60 rounded text-white text-right"
               />
               <span class="text-white">Mbps</span>
             </div>
@@ -1164,11 +1164,11 @@
 
         </div>
 
-        <div class="pt-4 border-t border-violet-800/40 flex justify-end">
+        <div class="pt-4 border-t border-slate-800 flex justify-end">
           <button
             @click="saveAllSettings"
             :disabled="isSaving"
-            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30"
+            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-950/40"
           >
             <Save class="w-4 h-4" />
             <span>Save Notification Settings</span>
@@ -1184,13 +1184,13 @@
     <div v-if="activeTab === 'snmp'" class="space-y-6">
       
       <!-- FEATURED HERO: Live FortiGate 10.10.3.15 Configuration Card -->
-      <div class="p-6 rounded-2xl bg-gradient-to-br from-violet-950/90 via-purple-950/80 to-rose-950/40 border-2 border-rose-500/40 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+      <div class="p-6 rounded-2xl bg-slate-900/90 border-2 border-rose-500/40 backdrop-blur-xl shadow-2xl relative overflow-hidden">
         <div class="absolute -right-16 -top-16 w-56 h-56 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
           <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-rose-600 via-pink-600 to-amber-500 p-0.5 shadow-lg shadow-rose-600/30 flex items-center justify-center flex-shrink-0">
-              <div class="w-full h-full bg-violet-950 rounded-[10px] flex items-center justify-center">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 p-0.5 shadow-lg shadow-rose-600/30 flex items-center justify-center flex-shrink-0">
+              <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
                 <Shield class="w-6 h-6 text-rose-400" />
               </div>
             </div>
@@ -1204,13 +1204,13 @@
                   CONNECTED LIVE HARDWARE
                 </span>
               </div>
-              <div class="text-xs text-violet-300/80 font-mono flex items-center gap-2 mt-0.5">
+              <div class="text-xs text-slate-400 font-mono flex items-center gap-2 mt-0.5">
                 <span>IP: <strong class="text-white">10.10.3.15</strong></span>
-                <span class="text-violet-600">•</span>
+                <span class="text-slate-600">•</span>
                 <span>SNMP Community: <strong class="text-cyan-300 font-mono">fortinet</strong></span>
-                <span class="text-violet-600">•</span>
+                <span class="text-slate-600">•</span>
                 <span>Port: <strong>161 (UDP)</strong></span>
-                <span class="text-violet-600">•</span>
+                <span class="text-slate-600">•</span>
                 <span>Version: <strong class="text-amber-300 font-mono">v2c</strong></span>
               </div>
             </div>
@@ -1228,7 +1228,7 @@
             
             <button
               @click="openEditModal(liveFortigateDevice)"
-              class="px-3.5 py-2 rounded-xl bg-violet-900/60 hover:bg-violet-800 border border-violet-700/50 text-violet-200 hover:text-white text-xs font-semibold transition flex items-center gap-1.5"
+              class="px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-700 border border-slate-700/60 text-slate-200 hover:text-white text-xs font-semibold transition flex items-center gap-1.5"
             >
               <Edit3 class="w-3.5 h-3.5" />
               <span>Edit Configuration</span>
@@ -1237,60 +1237,60 @@
         </div>
 
         <!-- Live FortiGate Real-Time Probed Metrics Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-violet-950/60 border border-violet-800/40 font-mono">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-slate-900/90 border border-slate-800 font-mono">
           <div>
-            <div class="text-[10px] text-violet-400 uppercase tracking-wider font-semibold">Live System UpTime</div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Live System UpTime</div>
             <div class="text-base font-bold text-white mt-0.5">85 days, 15 hrs</div>
             <div class="text-[9px] text-emerald-400 mt-0.5">7,399,570 ticks</div>
           </div>
 
           <div>
-            <div class="text-[10px] text-violet-400 uppercase tracking-wider font-semibold">Active Session Table</div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Active Session Table</div>
             <div class="text-base font-bold text-cyan-300 mt-0.5">
               {{ liveFortigateDevice?.snmpMetrics?.concurrentConnections || 5412 }}
             </div>
-            <div class="text-[9px] text-violet-400 mt-0.5">fgSysSesCount OID</div>
+            <div class="text-[9px] text-slate-400 mt-0.5">fgSysSesCount OID</div>
           </div>
 
           <div>
-            <div class="text-[10px] text-violet-400 uppercase tracking-wider font-semibold">CPU Utilization</div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">CPU Utilization</div>
             <div class="text-base font-bold text-emerald-400 mt-0.5">
               {{ liveFortigateDevice?.snmpMetrics?.cpuUtilPercent ?? 0 }}%
             </div>
-            <div class="text-[9px] text-violet-400 mt-0.5">fgSysCpuUsage OID</div>
+            <div class="text-[9px] text-slate-400 mt-0.5">fgSysCpuUsage OID</div>
           </div>
 
           <div>
-            <div class="text-[10px] text-violet-400 uppercase tracking-wider font-semibold">Memory Usage</div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Memory Usage</div>
             <div class="text-base font-bold text-amber-300 mt-0.5">
               {{ liveFortigateDevice?.snmpMetrics?.memoryUtilPercent ?? 39 }}%
             </div>
-            <div class="text-[9px] text-violet-400 mt-0.5">16.3 GB Total Memory</div>
+            <div class="text-[9px] text-slate-400 mt-0.5">16.3 GB Total Memory</div>
           </div>
         </div>
 
-        <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-violet-300/80 font-mono">
-          <div>Hardware Model: <strong>FortiGate 600F Enterprise NGFW</strong> (OS: <span class="text-violet-300">v7.4.12,build2902 GA.M</span>)</div>
+        <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 font-mono">
+          <div>Hardware Model: <strong>FortiGate 600F Enterprise NGFW</strong> (OS: <span class="text-slate-300">v7.4.12,build2902 GA.M</span>)</div>
           <div>Datacenter Location: <span class="text-amber-400 font-bold">CSIR-SERC (CHENNAI, INDIA)</span></div>
         </div>
       </div>
 
       <!-- Single Active Gateway Architecture Notice -->
-      <div v-if="otherDevices.length === 0" class="p-5 rounded-2xl bg-violet-950/40 border border-violet-800/40 flex items-center justify-between gap-4">
+      <div v-if="otherDevices.length === 0" class="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-violet-900/60 border border-violet-700/50 flex items-center justify-center flex-shrink-0">
+          <div class="w-9 h-9 rounded-xl bg-slate-950 border border-slate-700/60 flex items-center justify-center flex-shrink-0">
             <ShieldCheck class="w-5 h-5 text-emerald-400" />
           </div>
           <div>
             <div class="text-xs font-bold text-white">Single Active Gateway Topology Active</div>
-            <p class="text-[11px] text-violet-300/80 mt-0.5">
+            <p class="text-[11px] text-slate-400 mt-0.5">
               FortiGate-CSIR-SERC (10.10.3.15) is designated as the sole active firewall in this deployment. All simulated secondary firewall entries have been removed.
             </p>
           </div>
         </div>
         <button
           @click="openAddModal"
-          class="px-3 py-1.5 rounded-lg bg-violet-900/60 hover:bg-violet-800 text-cyan-300 text-xs font-medium border border-violet-700/50 transition flex items-center gap-1.5 flex-shrink-0"
+          class="px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-700 text-cyan-300 text-xs font-medium border border-slate-700/60 transition flex items-center gap-1.5 flex-shrink-0"
         >
           <Plus class="w-3.5 h-3.5" />
           <span>Add Gateway Profile</span>
@@ -1302,47 +1302,47 @@
         <div
           v-for="fw in otherDevices"
           :key="fw.id"
-          class="p-5 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 hover:border-violet-600/60 transition shadow-lg flex flex-col justify-between"
+          class="p-5 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 hover:border-slate-700 transition shadow-lg flex flex-col justify-between"
         >
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">
                 {{ fw.vendor }}
               </span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-violet-900/60 text-violet-300 border border-violet-700/50">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-950 text-slate-300 border border-slate-700/60">
                 SNMP {{ fw.snmpVersion }}
               </span>
             </div>
 
             <h4 class="text-sm font-bold text-white font-mono">{{ fw.name }}</h4>
-            <div class="text-xs text-violet-400 mt-0.5">{{ fw.model }}</div>
+            <div class="text-xs text-slate-400 mt-0.5">{{ fw.model }}</div>
 
-            <div class="mt-3 space-y-1.5 text-xs font-mono text-violet-300/90 pt-3 border-t border-violet-800/40">
+            <div class="mt-3 space-y-1.5 text-xs font-mono text-slate-400 pt-3 border-t border-slate-800">
               <div class="flex justify-between">
-                <span class="text-violet-400">Target IP:</span>
+                <span class="text-slate-400">Target IP:</span>
                 <span class="text-white font-bold">{{ fw.ipAddress }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-violet-400">Community:</span>
+                <span class="text-slate-400">Community:</span>
                 <span class="text-cyan-300">{{ fw.snmpCommunity }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-violet-400">Status:</span>
+                <span class="text-slate-400">Status:</span>
                 <span class="text-emerald-400 font-bold capitalize">{{ fw.status }}</span>
               </div>
             </div>
           </div>
 
-          <div class="mt-4 pt-3 border-t border-violet-800/40 flex items-center justify-between gap-2">
+          <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
             <button
               @click="runQuickTest(fw.ipAddress, fw.snmpVersion, fw.snmpCommunity, fw.snmpPort || 161)"
-              class="flex-1 py-1.5 px-2 rounded-lg bg-violet-900/60 hover:bg-violet-800 text-cyan-300 text-xs font-medium transition text-center"
+              class="flex-1 py-1.5 px-2 rounded-lg bg-slate-950 hover:bg-slate-700 text-cyan-300 text-xs font-medium transition text-center"
             >
               Test Probe
             </button>
             <button
               @click="openEditModal(fw)"
-              class="py-1.5 px-2.5 rounded-lg bg-violet-800/50 hover:bg-violet-700 text-white text-xs font-medium transition"
+              class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium transition"
             >
               Edit
             </button>
@@ -1354,13 +1354,13 @@
     <!-- ========================================================================= -->
     <!-- TAB 4: TELEMETRY COLLECTORS & INGESTION SETTINGS                          -->
     <!-- ========================================================================= -->
-    <div v-if="activeTab === 'collectors'" class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-6">
-      <div class="border-b border-violet-800/40 pb-4">
+    <div v-if="activeTab === 'collectors'" class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-6">
+      <div class="border-b border-slate-800 pb-4">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <Terminal class="w-5 h-5 text-neon-cyan" />
+          <Terminal class="w-5 h-5 text-cyan-400" />
           Native Syslog & NetFlow Ingestion Listeners
         </h3>
-        <p class="text-xs text-violet-300/80 mt-1">
+        <p class="text-xs text-slate-400 mt-1">
           Configure native node UDP collector ports and CERT-In Direction 2022 compliant 180-day retention policies.
         </p>
       </div>
@@ -1368,57 +1368,57 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Primary Syslog Listener Port (UDP)
             </label>
             <input
               v-model.number="settingsForm.collectors.syslogPort"
               type="number"
-              class="w-full px-3.5 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
             />
-            <span class="text-[11px] text-violet-400 mt-1 block">Default: 1514 (FortiGate, syslog collector)</span>
+            <span class="text-[11px] text-slate-400 mt-1 block">Default: 1514 (FortiGate, syslog collector)</span>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Legacy Syslog Port (UDP)
             </label>
             <input
               v-model.number="settingsForm.collectors.syslogAltPort"
               type="number"
-              class="w-full px-3.5 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
             />
-            <span class="text-[11px] text-violet-400 mt-1 block">Standard RFC 5424 UDP port 514</span>
+            <span class="text-[11px] text-slate-400 mt-1 block">Standard RFC 5424 UDP port 514</span>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               NetFlow v5 / v9 & IPFIX Listener Port (UDP)
             </label>
             <input
               v-model.number="settingsForm.collectors.netflowPort"
               type="number"
-              class="w-full px-3.5 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
             />
-            <span class="text-[11px] text-violet-400 mt-1 block">Standard flow export port 2055</span>
+            <span class="text-[11px] text-slate-400 mt-1 block">Standard flow export port 2055</span>
           </div>
         </div>
 
         <div class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Internal Packet Ring Buffer Queue Size
             </label>
             <input
               v-model.number="settingsForm.collectors.bufferQueueSize"
               type="number"
-              class="w-full px-3.5 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
             />
-            <span class="text-[11px] text-violet-400 mt-1 block">Maximum in-memory telemetry queue depth</span>
+            <span class="text-[11px] text-slate-400 mt-1 block">Maximum in-memory telemetry queue depth</span>
           </div>
 
           <!-- CERT-In Mandated Retention -->
-          <div class="p-4 rounded-xl bg-violet-900/30 border border-amber-500/30 space-y-2">
+          <div class="p-4 rounded-xl bg-slate-950 border border-amber-500/30 space-y-2">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                 <ShieldCheck class="w-4 h-4 text-amber-400" />
@@ -1428,7 +1428,7 @@
                 SECTION 70B
               </span>
             </div>
-            <p class="text-xs text-violet-300/80 leading-relaxed">
+            <p class="text-xs text-slate-400 leading-relaxed">
               Section 70B requires mandatory logging and maintenance of all firewall audit records for a rolling window of at least 180 days within the Indian jurisdiction.
             </p>
             <div class="flex items-center gap-3 pt-2">
@@ -1441,11 +1441,11 @@
         </div>
       </div>
 
-      <div class="pt-4 border-t border-violet-800/40 flex justify-end">
+      <div class="pt-4 border-t border-slate-800 flex justify-end">
         <button
           @click="saveAllSettings"
           :disabled="isSaving"
-          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30"
+          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-950/40"
         >
           <Save class="w-4 h-4" />
           <span>Save Collector Settings</span>
@@ -1456,13 +1456,13 @@
     <!-- ========================================================================= -->
     <!-- TAB 5: 15-MINUTE AUTOMATED SPEED TEST CONFIGURATION                       -->
     <!-- ========================================================================= -->
-    <div v-if="activeTab === 'speedtest'" class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-6">
-      <div class="border-b border-violet-800/40 pb-4">
+    <div v-if="activeTab === 'speedtest'" class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-6">
+      <div class="border-b border-slate-800 pb-4">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <Gauge class="w-5 h-5 text-neon-cyan" />
+          <Gauge class="w-5 h-5 text-cyan-400" />
           15-Minute Automated Internet Speed Test Engine
         </h3>
-        <p class="text-xs text-violet-300/80 mt-1">
+        <p class="text-xs text-slate-400 mt-1">
           Measures WAN latency, jitter, download speed, and upload throughput across National Knowledge Network (NKN) & NIXI Gateways.
         </p>
       </div>
@@ -1470,12 +1470,12 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Speed Test Interval (Minutes)
             </label>
             <select
               v-model.number="settingsForm.speedtest.intervalMinutes"
-              class="w-full px-3.5 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
             >
               <option :value="15">Every 15 Minutes (Mandated Default)</option>
               <option :value="30">Every 30 Minutes</option>
@@ -1484,13 +1484,13 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Primary Indian WAN Target Server
             </label>
             <input
               v-model="settingsForm.speedtest.primaryServer"
               type="text"
-              class="w-full px-3.5 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
             />
           </div>
 
@@ -1499,34 +1499,34 @@
               id="autoSchedule"
               v-model="settingsForm.speedtest.autoSchedule"
               type="checkbox"
-              class="w-4 h-4 rounded text-violet-600 bg-violet-900 border-violet-700 focus:ring-0"
+              class="w-4 h-4 rounded text-slate-600 bg-slate-900 border-slate-700/60 focus:ring-0"
             />
-            <label for="autoSchedule" class="text-xs text-violet-200 font-medium cursor-pointer">
+            <label for="autoSchedule" class="text-xs text-slate-200 font-medium cursor-pointer">
               Enable continuous background speed test scheduler
             </label>
           </div>
         </div>
 
-        <div class="p-4 rounded-xl bg-violet-900/30 border border-violet-800/40 flex flex-col justify-between">
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
           <div>
             <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
               Latest Live Speed Measurement
             </div>
-            <div class="space-y-2 text-xs font-mono text-violet-200">
+            <div class="space-y-2 text-xs font-mono text-slate-200">
               <div class="flex justify-between">
-                <span class="text-violet-400">Download Rate:</span>
+                <span class="text-slate-400">Download Rate:</span>
                 <span class="text-white font-bold">{{ telemetryStore.speedtest.downloadMbps }} Mbps</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-violet-400">Upload Rate:</span>
-                <span class="text-fuchsia-300 font-bold">{{ telemetryStore.speedtest.uploadMbps }} Mbps</span>
+                <span class="text-slate-400">Upload Rate:</span>
+                <span class="text-cyan-300 font-bold">{{ telemetryStore.speedtest.uploadMbps }} Mbps</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-violet-400">Latency / Jitter:</span>
+                <span class="text-slate-400">Latency / Jitter:</span>
                 <span class="text-emerald-400">{{ telemetryStore.speedtest.pingMs }} ms (±{{ telemetryStore.speedtest.jitterMs }} ms)</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-violet-400">ISP / Gateway:</span>
+                <span class="text-slate-400">ISP / Gateway:</span>
                 <span class="text-white truncate">{{ telemetryStore.speedtest.isp }}</span>
               </div>
             </div>
@@ -1545,11 +1545,11 @@
         </div>
       </div>
 
-      <div class="pt-4 border-t border-violet-800/40 flex justify-end">
+      <div class="pt-4 border-t border-slate-800 flex justify-end">
         <button
           @click="saveAllSettings"
           :disabled="isSaving"
-          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30"
+          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-950/40"
         >
           <Save class="w-4 h-4" />
           <span>Save Speed Test Settings</span>
@@ -1560,13 +1560,13 @@
     <!-- ========================================================================= -->
     <!-- TAB 6: ALERTS & HEALTH THRESHOLDS                                         -->
     <!-- ========================================================================= -->
-    <div v-if="activeTab === 'thresholds'" class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-6">
-      <div class="border-b border-violet-800/40 pb-4">
+    <div v-if="activeTab === 'thresholds'" class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-6">
+      <div class="border-b border-slate-800 pb-4">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
           <AlertTriangle class="w-5 h-5 text-amber-400" />
           Firewall Health & Alerting Thresholds
         </h3>
-        <p class="text-xs text-violet-300/80 mt-1">
+        <p class="text-xs text-slate-400 mt-1">
           Configure real-time warning and critical thresholds for hardware SNMP metrics.
         </p>
       </div>
@@ -1575,7 +1575,7 @@
         <div class="space-y-4">
           <div>
             <div class="flex justify-between text-xs font-mono mb-1">
-              <span class="text-violet-300 font-semibold">CPU Warning Threshold:</span>
+              <span class="text-slate-300 font-semibold">CPU Warning Threshold:</span>
               <span class="text-amber-400 font-bold">{{ settingsForm.thresholds.cpuWarningPercent }}%</span>
             </div>
             <input
@@ -1589,7 +1589,7 @@
 
           <div>
             <div class="flex justify-between text-xs font-mono mb-1">
-              <span class="text-violet-300 font-semibold">CPU Critical Alert Threshold:</span>
+              <span class="text-slate-300 font-semibold">CPU Critical Alert Threshold:</span>
               <span class="text-rose-400 font-bold">{{ settingsForm.thresholds.cpuCriticalPercent }}%</span>
             </div>
             <input
@@ -1603,7 +1603,7 @@
 
           <div>
             <div class="flex justify-between text-xs font-mono mb-1">
-              <span class="text-violet-300 font-semibold">Memory Warning Threshold:</span>
+              <span class="text-slate-300 font-semibold">Memory Warning Threshold:</span>
               <span class="text-amber-400 font-bold">{{ settingsForm.thresholds.memWarningPercent }}%</span>
             </div>
             <input
@@ -1619,7 +1619,7 @@
         <div class="space-y-4">
           <div>
             <div class="flex justify-between text-xs font-mono mb-1">
-              <span class="text-violet-300 font-semibold">Memory Critical Alert Threshold:</span>
+              <span class="text-slate-300 font-semibold">Memory Critical Alert Threshold:</span>
               <span class="text-rose-400 font-bold">{{ settingsForm.thresholds.memCriticalPercent }}%</span>
             </div>
             <input
@@ -1632,24 +1632,24 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-violet-300 mb-1 font-mono">
+            <label class="block text-xs font-semibold text-slate-300 mb-1 font-mono">
               Concurrent Connection Spike Alarm (Sessions)
             </label>
             <input
               v-model.number="settingsForm.thresholds.concurrentConnAlert"
               type="number"
-              class="w-full px-3.5 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
+              class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700/60 rounded-xl text-sm text-white font-mono focus:outline-none focus:border-cyan-400"
             />
-            <span class="text-[11px] text-violet-400 mt-1 block">Trigger threshold for connection table exhaustion alert</span>
+            <span class="text-[11px] text-slate-400 mt-1 block">Trigger threshold for connection table exhaustion alert</span>
           </div>
         </div>
       </div>
 
-      <div class="pt-4 border-t border-violet-800/40 flex justify-end">
+      <div class="pt-4 border-t border-slate-800 flex justify-end">
         <button
           @click="saveAllSettings"
           :disabled="isSaving"
-          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30"
+          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-950/40"
         >
           <Save class="w-4 h-4" />
           <span>Save Alert Thresholds</span>
@@ -1664,13 +1664,13 @@
       v-if="showTestModal"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
     >
-      <div class="w-full max-w-xl bg-violet-950 border border-violet-700/60 rounded-3xl p-6 shadow-2xl shadow-violet-950/90 relative overflow-hidden">
-        <div class="flex items-center justify-between mb-4 border-b border-violet-800/40 pb-3">
+      <div class="w-full max-w-xl bg-slate-950 border border-slate-700/60 rounded-3xl p-6 shadow-2xl shadow-slate-950/40 relative overflow-hidden">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
           <div class="flex items-center gap-2">
-            <Zap class="w-5 h-5 text-neon-cyan" />
+            <Zap class="w-5 h-5 text-cyan-400" />
             <h3 class="text-base font-bold text-white">Live SNMP Diagnostic Probe</h3>
           </div>
-          <button @click="showTestModal = false" class="text-violet-400 hover:text-white">
+          <button @click="showTestModal = false" class="text-slate-400 hover:text-white">
             <X class="w-5 h-5" />
           </button>
         </div>
@@ -1678,37 +1678,37 @@
         <!-- Target Parameters Form -->
         <div class="grid grid-cols-2 gap-3 mb-4 font-mono text-xs">
           <div>
-            <label class="text-violet-400">Target IP:</label>
+            <label class="text-slate-400">Target IP:</label>
             <input
               v-model="testProbeForm.ipAddress"
               type="text"
-              class="w-full mt-1 px-3 py-1.5 bg-violet-900/50 border border-violet-700/50 rounded-lg text-white"
+              class="w-full mt-1 px-3 py-1.5 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
             />
           </div>
           <div>
-            <label class="text-violet-400">SNMP Version:</label>
+            <label class="text-slate-400">SNMP Version:</label>
             <select
               v-model="testProbeForm.version"
-              class="w-full mt-1 px-3 py-1.5 bg-violet-900/50 border border-violet-700/50 rounded-lg text-white"
+              class="w-full mt-1 px-3 py-1.5 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
             >
               <option value="v2c">v2c (Community String)</option>
               <option value="v3">v3 (USM Secure Auth/Priv)</option>
             </select>
           </div>
           <div>
-            <label class="text-violet-400">Community String:</label>
+            <label class="text-slate-400">Community String:</label>
             <input
               v-model="testProbeForm.community"
               type="text"
-              class="w-full mt-1 px-3 py-1.5 bg-violet-900/50 border border-violet-700/50 rounded-lg text-white"
+              class="w-full mt-1 px-3 py-1.5 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
             />
           </div>
           <div>
-            <label class="text-violet-400">UDP Port:</label>
+            <label class="text-slate-400">UDP Port:</label>
             <input
               v-model.number="testProbeForm.port"
               type="number"
-              class="w-full mt-1 px-3 py-1.5 bg-violet-900/50 border border-violet-700/50 rounded-lg text-white"
+              class="w-full mt-1 px-3 py-1.5 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
             />
           </div>
         </div>
@@ -1716,7 +1716,7 @@
         <button
           @click="executeSnmpTest"
           :disabled="fwStore.isTestingSnmp"
-          class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-95 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-violet-600/30 disabled:opacity-50"
+          class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/40 disabled:opacity-50"
         >
           <Loader2 v-if="fwStore.isTestingSnmp" class="w-4 h-4 animate-spin" />
           <Radio v-else class="w-4 h-4" />
@@ -1734,7 +1734,7 @@
             </span>
           </div>
 
-          <div v-if="fwStore.snmpTestResult.success" class="space-y-1.5 text-xs font-mono text-violet-200">
+          <div v-if="fwStore.snmpTestResult.success" class="space-y-1.5 text-xs font-mono text-slate-200">
             <div>Device Name: <strong class="text-white">{{ fwStore.snmpTestResult.sysName }}</strong></div>
             <div>Location: <strong class="text-amber-300">{{ fwStore.snmpTestResult.sysLocation }}</strong></div>
             <div>Identified: <span class="text-emerald-400 font-bold">{{ fwStore.snmpTestResult.vendorIdentified }}</span></div>
@@ -1752,14 +1752,14 @@
     <!-- ========================================================================= -->
     <!-- TAB 7: APPLIANCE & OVER-THE-AIR (OTA) UPDATES                             -->
     <!-- ========================================================================= -->
-    <div v-if="activeTab === 'system'" class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-6">
-      <div class="border-b border-violet-800/40 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div v-if="activeTab === 'system'" class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-6">
+      <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 class="text-base font-bold text-white flex items-center gap-2 font-sans">
-            <DownloadCloud class="w-5 h-5 text-neon-cyan" />
+            <DownloadCloud class="w-5 h-5 text-cyan-400" />
             <span>Appliance Information & Over-The-Air (OTA) Updates</span>
           </h3>
-          <p class="text-xs text-violet-300/80 mt-1">
+          <p class="text-xs text-slate-400 mt-1">
             Maintain your standalone firewall monitoring appliance, check for new OTA feature releases without altering data, and create full disaster-recovery backups.
           </p>
         </div>
@@ -1774,7 +1774,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- CARD 1: Live Appliance System Status -->
-        <div class="p-5 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-4">
+        <div class="p-5 rounded-2xl bg-slate-950 border border-slate-700/60 space-y-4">
           <div class="flex items-center justify-between">
             <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono flex items-center gap-2">
               <HardDrive class="w-4 h-4 text-cyan-400" />
@@ -1786,41 +1786,41 @@
           </div>
 
           <div class="space-y-2 text-xs font-mono">
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/50">
-              <span class="text-violet-400">Software Build:</span>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <span class="text-slate-400">Software Build:</span>
               <span class="text-white font-bold">{{ systemVersion?.version || 'v2.4.0-OTA (Stable)' }}</span>
             </div>
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/50">
-              <span class="text-violet-400">Release Timestamp:</span>
-              <span class="text-violet-200">{{ systemVersion?.releaseDate || '2026-09-17 11:00 UTC' }}</span>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <span class="text-slate-400">Release Timestamp:</span>
+              <span class="text-slate-200">{{ systemVersion?.releaseDate || '2026-09-17 11:00 UTC' }}</span>
             </div>
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/50">
-              <span class="text-violet-400">Persistent Data Storage:</span>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <span class="text-slate-400">Persistent Data Storage:</span>
               <span class="text-emerald-400 font-bold">{{ systemVersion?.storagePath || '/app/data (Mounted Volume)' }}</span>
             </div>
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/50">
-              <span class="text-violet-400">OTA Protection Policy:</span>
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <span class="text-slate-400">OTA Protection Policy:</span>
               <span class="text-cyan-300 font-bold">Zero Data Disruption</span>
             </div>
           </div>
 
-          <div class="p-3 rounded-xl bg-violet-950/40 border border-violet-800/40 text-[11px] text-violet-300 leading-relaxed">
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] text-slate-300 leading-relaxed">
             <strong class="text-white">Safety Guarantee:</strong> Applying OTA updates pulls code packages without overwriting configuration files, credentials, custom branding, or historical SNMP/syslog metrics stored in the persistent data volume.
           </div>
         </div>
 
         <!-- CARD 2: OTA Update Trigger & Channel -->
-        <div class="p-5 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-4 flex flex-col justify-between">
+        <div class="p-5 rounded-2xl bg-slate-950 border border-slate-700/60 space-y-4 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-3">
               <h4 class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono flex items-center gap-2">
-                <ArrowUpCircle class="w-4 h-4 text-fuchsia-400" />
+                <ArrowUpCircle class="w-4 h-4 text-cyan-400" />
                 <span>Over-The-Air (OTA) Channel</span>
               </h4>
               <button
                 @click="handleCheckUpdates"
                 :disabled="isCheckingUpdates"
-                class="px-2.5 py-1 rounded-lg bg-violet-800 hover:bg-violet-700 text-xs text-white transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-white transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
                 <RefreshCw class="w-3 h-3" :class="{ 'animate-spin': isCheckingUpdates }" />
                 <span>{{ isCheckingUpdates ? 'Checking...' : 'Check Now' }}</span>
@@ -1834,13 +1834,13 @@
                 <AlertCircle v-else class="w-4 h-4 text-amber-400" />
                 <span>{{ updateCheck.hasUpdate ? 'New Update Available!' : 'Your Appliance is Up-to-Date' }}</span>
               </div>
-              <p class="text-[11px] font-mono text-violet-200">{{ updateCheck.message }}</p>
-              <div v-if="updateCheck.latestVersion" class="mt-2 text-[10px] font-mono text-violet-400">
+              <p class="text-[11px] font-mono text-slate-200">{{ updateCheck.message }}</p>
+              <div v-if="updateCheck.latestVersion" class="mt-2 text-[10px] font-mono text-slate-400">
                 Latest Available Version: <strong class="text-white">{{ updateCheck.latestVersion }}</strong>
               </div>
             </div>
 
-            <div v-else class="p-3.5 rounded-xl mb-4 bg-violet-950/50 border border-violet-800/50 text-xs text-violet-300 font-mono">
+            <div v-else class="p-3.5 rounded-xl mb-4 bg-slate-900/90 border border-slate-800 text-xs text-slate-300 font-mono">
               Ready to check for available hotfixes and feature updates from the central repository.
             </div>
           </div>
@@ -1849,13 +1849,13 @@
             <button
               @click="handleApplyOTAUpdate"
               :disabled="isApplyingUpdate || (updateCheck && !updateCheck.hasUpdate)"
-              class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-95 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-violet-600/30 disabled:opacity-50 cursor-pointer"
+              class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/40 disabled:opacity-50 cursor-pointer"
             >
               <Loader2 v-if="isApplyingUpdate" class="w-4 h-4 animate-spin" />
               <ArrowUpCircle v-else class="w-4 h-4" />
               <span>{{ isApplyingUpdate ? 'Applying Update in Background...' : 'Apply Live Over-The-Air Update' }}</span>
             </button>
-            <p class="text-[10px] text-center text-violet-400 font-mono">Zero-downtime hot-reload enabled</p>
+            <p class="text-[10px] text-center text-slate-400 font-mono">Zero-downtime hot-reload enabled</p>
           </div>
         </div>
 
@@ -1863,14 +1863,14 @@
 
       <!-- PostgreSQL Database Engine & Storage Architecture Section -->
       <!-- PostgreSQL Database Engine & Storage Architecture Section -->
-      <div class="p-5 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-violet-800/40 pb-3">
+      <div class="p-5 rounded-2xl bg-slate-950 border border-slate-700/60 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
           <div>
             <div class="flex items-center gap-2 mb-1">
               <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
                 DATA LAYER TRANSPARENCY
               </span>
-              <span class="text-xs text-violet-400">•</span>
+              <span class="text-xs text-slate-400">•</span>
               <span class="text-xs text-emerald-400 font-mono flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 PostgreSQL 18 Engine Active
@@ -1880,7 +1880,7 @@
               <Database class="w-4 h-4 text-cyan-400" />
               <span>PostgreSQL Database &amp; Log Storage Architecture</span>
             </h4>
-            <p class="text-[11px] text-violet-300/80 mt-1">
+            <p class="text-[11px] text-slate-400 mt-1">
               Real-time audit of physical storage locations for syslog events, SNMP interface telemetry, uploaded assets, and CERT-In 180-day compliance logs.
             </p>
           </div>
@@ -1895,8 +1895,8 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 font-mono">
           <!-- DB Host -->
-          <div class="p-3 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-1">
-            <div class="text-[10px] uppercase text-violet-400">Database Engine</div>
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+            <div class="text-[10px] uppercase text-slate-400">Database Engine</div>
             <div class="text-sm font-bold text-white flex items-center gap-1.5">
               <Database class="w-4 h-4 text-cyan-400" />
               <span>PostgreSQL 18</span>
@@ -1907,34 +1907,34 @@
           </div>
 
           <!-- Syslog Storage -->
-          <div class="p-3 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-1">
-            <div class="text-[10px] uppercase text-violet-400">Syslog Events Table</div>
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+            <div class="text-[10px] uppercase text-slate-400">Syslog Events Table</div>
             <div class="text-sm font-bold text-emerald-300">
               {{ telemetryStore.storageStats?.database?.tables?.syslog_events?.toLocaleString() || 'Active' }} rows
             </div>
-            <div class="text-[11px] text-violet-300 truncate" title="/app/data/syslog.log">
+            <div class="text-[11px] text-slate-300 truncate" title="/app/data/syslog.log">
               Raw: /app/data/syslog.log
             </div>
           </div>
 
           <!-- Uploads Root Storage -->
-          <div class="p-3 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-1">
-            <div class="text-[10px] uppercase text-violet-400">Direct Root Uploads</div>
-            <div class="text-sm font-bold text-fuchsia-300">
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+            <div class="text-[10px] uppercase text-slate-400">Direct Root Uploads</div>
+            <div class="text-sm font-bold text-cyan-300">
               {{ telemetryStore.storageStats?.files?.uploads?.count || 1 }} items
             </div>
-            <div class="text-[11px] text-violet-300 truncate" title="/app/uploads/">
+            <div class="text-[11px] text-slate-300 truncate" title="/app/uploads/">
               Path: /app/uploads/
             </div>
           </div>
 
           <!-- Retention Policy -->
-          <div class="p-3 rounded-xl bg-violet-950/60 border border-violet-800/50 space-y-1">
-            <div class="text-[10px] uppercase text-violet-400">CERT-In Retention</div>
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+            <div class="text-[10px] uppercase text-slate-400">CERT-In Retention</div>
             <div class="text-sm font-bold text-amber-300">
               {{ telemetryStore.storageStats?.compliance?.retentionDays || 180 }} Days
             </div>
-            <div class="text-[11px] text-violet-300 truncate">
+            <div class="text-[11px] text-slate-300 truncate">
               Immutable Hash Verified
             </div>
           </div>
@@ -1942,15 +1942,15 @@
       </div>
 
       <!-- Automated Settings & Log Backup Operations Suite -->
-      <div class="p-6 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-6">
+      <div class="p-6 rounded-2xl bg-slate-950 border border-slate-700/60 space-y-6">
         <!-- Top Title Strip -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-violet-800/40 pb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
           <div>
             <div class="flex items-center gap-2 mb-1">
               <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
                 DISASTER RECOVERY &amp; CONTINUOUS AUDIT
               </span>
-              <span class="text-xs text-violet-400">•</span>
+              <span class="text-xs text-slate-400">•</span>
               <span
                 class="text-xs font-mono font-bold flex items-center gap-1.5"
                 :class="autoBackupForm.enabled ? 'text-emerald-400' : 'text-amber-400'"
@@ -1960,10 +1960,10 @@
               </span>
             </div>
             <h4 class="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
-              <Archive class="w-4 h-4 text-neon-cyan" />
+              <Archive class="w-4 h-4 text-cyan-400" />
               <span>Automated Settings &amp; Log Backup Suite</span>
             </h4>
-            <p class="text-[11px] text-violet-300/80 mt-1">
+            <p class="text-[11px] text-slate-400 mt-1">
               Continuous background archiving of PostgreSQL 18 database tables, appliance configuration, user accounts, raw syslog streams, and uploaded insignia to persistent storage (<code>/app/backups</code>).
             </p>
           </div>
@@ -1972,7 +1972,7 @@
             <button
               @click="handleTriggerInstantBackup"
               :disabled="fwStore.isCreatingBackup"
-              class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-500 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30 disabled:opacity-50 cursor-pointer"
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-950/40 disabled:opacity-50 cursor-pointer"
             >
               <RefreshCw v-if="fwStore.isCreatingBackup" class="w-3.5 h-3.5 animate-spin" />
               <Archive v-else class="w-3.5 h-3.5" />
@@ -1984,25 +1984,25 @@
         <!-- Two Column Control Grid: Scheduler Config + Live Status -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
           <!-- Left: Automated Schedule Controls (7 cols) -->
-          <div class="lg:col-span-7 p-5 rounded-2xl bg-violet-950/70 border border-violet-800/60 space-y-4 font-mono text-xs">
-            <div class="flex items-center justify-between border-b border-violet-800/40 pb-3">
+          <div class="lg:col-span-7 p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
               <span class="font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-2">
                 <Clock class="w-4 h-4 text-cyan-400" />
                 <span>Automated Schedule Policy</span>
               </span>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" v-model="autoBackupForm.enabled" class="sr-only peer" />
-                <div class="w-9 h-5 bg-violet-900 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-violet-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+                <div class="w-9 h-5 bg-slate-900 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
               </label>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <!-- Frequency -->
               <div>
-                <label class="text-violet-300 block mb-1.5 font-semibold">Backup Frequency</label>
+                <label class="text-slate-300 block mb-1.5 font-semibold">Backup Frequency</label>
                 <select
                   v-model="autoBackupForm.frequency"
-                  class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-white font-mono focus:border-cyan-400 focus:outline-none"
+                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-white font-mono focus:border-cyan-400 focus:outline-none"
                 >
                   <option value="hourly">Hourly (Every 60 Minutes)</option>
                   <option value="every_6_hours">Every 6 Hours</option>
@@ -2014,11 +2014,11 @@
 
               <!-- Time of Day (if daily) -->
               <div>
-                <label class="text-violet-300 block mb-1.5 font-semibold">Execution Time (Daily)</label>
+                <label class="text-slate-300 block mb-1.5 font-semibold">Execution Time (Daily)</label>
                 <input
                   type="time"
                   v-model="autoBackupForm.timeOfDay"
-                  class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-xl text-white font-mono focus:border-cyan-400 focus:outline-none"
+                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-xl text-white font-mono focus:border-cyan-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -2026,7 +2026,7 @@
             <!-- Retention & Pruning -->
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <label class="text-violet-300 font-semibold">Retention &amp; Auto-Pruning Limit</label>
+                <label class="text-slate-300 font-semibold">Retention &amp; Auto-Pruning Limit</label>
                 <span class="text-cyan-300 font-bold">Keep latest {{ autoBackupForm.retentionCount }} backups</span>
               </div>
               <input
@@ -2037,7 +2037,7 @@
                 step="1"
                 class="w-full accent-cyan-400 cursor-pointer"
               />
-              <div class="flex justify-between text-[10px] text-violet-400 mt-1">
+              <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                 <span>3 archives</span>
                 <span>14 archives (Recommended)</span>
                 <span>60 archives</span>
@@ -2045,17 +2045,17 @@
             </div>
 
             <!-- Scope Checklist -->
-            <div class="p-3.5 rounded-xl bg-violet-900/30 border border-violet-800/50 space-y-2">
-              <span class="text-[11px] text-violet-300 font-bold block mb-1">Archived Artifacts &amp; Telemetry Scope:</span>
-              <label class="flex items-center gap-2 cursor-pointer text-violet-200 hover:text-white">
+            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <span class="text-[11px] text-slate-300 font-bold block mb-1">Archived Artifacts &amp; Telemetry Scope:</span>
+              <label class="flex items-center gap-2 cursor-pointer text-slate-200 hover:text-white">
                 <input type="checkbox" v-model="autoBackupForm.includeDatabase" class="accent-cyan-400 rounded" />
                 <span>PostgreSQL 18 Database Tables (Settings, Alerts, Metrics, Syslog)</span>
               </label>
-              <label class="flex items-center gap-2 cursor-pointer text-violet-200 hover:text-white">
+              <label class="flex items-center gap-2 cursor-pointer text-slate-200 hover:text-white">
                 <input type="checkbox" v-model="autoBackupForm.includeLogs" class="accent-cyan-400 rounded" />
                 <span>Raw UDP Syslog Event Stream Log (<code>/app/data/syslog.log</code>)</span>
               </label>
-              <label class="flex items-center gap-2 cursor-pointer text-violet-200 hover:text-white">
+              <label class="flex items-center gap-2 cursor-pointer text-slate-200 hover:text-white">
                 <input type="checkbox" v-model="autoBackupForm.includeUploads" class="accent-cyan-400 rounded" />
                 <span>Uploaded Logos, Insignia &amp; Visual Media (<code>/app/uploads/</code>)</span>
               </label>
@@ -2076,55 +2076,55 @@
           <!-- Right: Status Readout & External Restore (5 cols) -->
           <div class="lg:col-span-5 space-y-4">
             <!-- Schedule Status Card -->
-            <div class="p-5 rounded-2xl bg-violet-950/70 border border-violet-800/60 space-y-3 font-mono text-xs">
+            <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 font-mono text-xs">
               <span class="font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-2">
                 <Calendar class="w-4 h-4 text-emerald-400" />
                 <span>Execution Timeline</span>
               </span>
 
               <div class="space-y-2">
-                <div class="p-2.5 rounded-xl bg-violet-900/30 border border-violet-800/40 flex items-center justify-between">
-                  <span class="text-violet-400">Next Scheduled Run:</span>
+                <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <span class="text-slate-400">Next Scheduled Run:</span>
                   <span class="text-emerald-300 font-bold">
                     {{ fwStore.backupConfig?.nextRun ? new Date(fwStore.backupConfig.nextRun).toLocaleString() : 'Ready' }}
                   </span>
                 </div>
-                <div class="p-2.5 rounded-xl bg-violet-900/30 border border-violet-800/40 flex items-center justify-between">
-                  <span class="text-violet-400">Last Execution:</span>
-                  <span class="text-violet-200">
+                <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <span class="text-slate-400">Last Execution:</span>
+                  <span class="text-slate-200">
                     {{ fwStore.backupConfig?.lastRun ? new Date(fwStore.backupConfig.lastRun).toLocaleString() : 'Never' }}
                   </span>
                 </div>
-                <div class="p-2.5 rounded-xl bg-violet-900/30 border border-violet-800/40 flex items-center justify-between">
-                  <span class="text-violet-400">Status:</span>
+                <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <span class="text-slate-400">Status:</span>
                   <span
                     class="px-2 py-0.5 rounded text-[10px] font-bold"
-                    :class="fwStore.backupConfig?.lastStatus === 'success' ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40' : 'bg-violet-900/60 text-violet-300'"
+                    :class="fwStore.backupConfig?.lastStatus === 'success' ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40' : 'bg-slate-950 text-slate-300'"
                   >
                     {{ fwStore.backupConfig?.lastStatus || 'IDLE' }}
                   </span>
                 </div>
-                <div class="p-2.5 rounded-xl bg-violet-900/30 border border-violet-800/40 flex items-center justify-between">
-                  <span class="text-violet-400">Physical Path:</span>
+                <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <span class="text-slate-400">Physical Path:</span>
                   <span class="text-cyan-300 font-bold"><code>/app/backups/</code></span>
                 </div>
               </div>
             </div>
 
             <!-- External File Restore Box -->
-            <div class="p-5 rounded-2xl bg-violet-950/70 border border-violet-800/60 space-y-3 font-mono text-xs">
+            <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 font-mono text-xs">
               <span class="font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <UploadCloud class="w-4 h-4 text-fuchsia-400" />
+                <UploadCloud class="w-4 h-4 text-cyan-400" />
                 <span>Restore External Backup File</span>
               </span>
-              <p class="text-[11px] text-violet-300/80 font-sans leading-relaxed">
+              <p class="text-[11px] text-slate-400 font-sans leading-relaxed">
                 Import an existing backup JSON file from your workstation to recover appliance state and PostgreSQL 18 tables.
               </p>
               <div>
                 <input type="file" accept=".json" @change="handleRestoreBackupFile" class="hidden" id="restoreBackupInput" />
                 <label
                   for="restoreBackupInput"
-                  class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-violet-900/50 hover:bg-violet-800 text-cyan-300 border border-violet-700/60 text-xs font-bold transition cursor-pointer"
+                  class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-700 text-cyan-300 border border-slate-700/60 text-xs font-bold transition cursor-pointer"
                 >
                   <UploadCloud class="w-4 h-4" />
                   <span>Choose Backup File (.json)</span>
@@ -2135,20 +2135,20 @@
         </div>
 
         <!-- Bottom: Backup Archives History Table -->
-        <div class="p-5 rounded-2xl bg-violet-950/70 border border-violet-800/60 space-y-4">
-          <div class="flex items-center justify-between border-b border-violet-800/40 pb-3">
+        <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
             <div>
               <h5 class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono flex items-center gap-2">
                 <FileArchive class="w-4 h-4 text-cyan-400" />
                 <span>Available Backup Archives ({{ fwStore.backups.length }})</span>
               </h5>
-              <p class="text-[10px] text-violet-400 mt-0.5 font-mono">
+              <p class="text-[10px] text-slate-400 mt-0.5 font-mono">
                 Stored in persistent volume mount <code>/app/backups/</code> with SHA-256 integrity verification.
               </p>
             </div>
             <button
               @click="fwStore.fetchBackups"
-              class="px-2.5 py-1 rounded-lg bg-violet-900/60 hover:bg-violet-800 text-violet-300 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
+              class="px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-700 text-slate-300 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
             >
               <RefreshCw class="w-3 h-3" />
               <span>Refresh List</span>
@@ -2156,10 +2156,10 @@
           </div>
 
           <!-- Empty State -->
-          <div v-if="fwStore.backups.length === 0" class="p-8 rounded-xl bg-violet-900/20 border border-violet-800/30 text-center space-y-2">
-            <Archive class="w-8 h-8 text-violet-400/60 mx-auto" />
+          <div v-if="fwStore.backups.length === 0" class="p-8 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-2">
+            <Archive class="w-8 h-8 text-slate-400 mx-auto" />
             <div class="text-xs font-bold text-white font-mono">No Backup Archives Found</div>
-            <p class="text-[11px] text-violet-400 max-w-sm mx-auto font-sans">
+            <p class="text-[11px] text-slate-400 max-w-sm mx-auto font-sans">
               No backups have been created yet. Click "Backup Now" above to generate your first automated snapshot.
             </p>
           </div>
@@ -2168,7 +2168,7 @@
           <div v-else class="overflow-x-auto">
             <table class="w-full text-left font-mono text-xs border-collapse">
               <thead>
-                <tr class="border-b border-violet-800/60 text-[10px] text-violet-400 uppercase tracking-wider">
+                <tr class="border-b border-slate-800 text-[10px] text-slate-400 uppercase tracking-wider">
                   <th class="pb-2.5 font-bold">Archive File</th>
                   <th class="pb-2.5 font-bold">Created At</th>
                   <th class="pb-2.5 font-bold">Trigger</th>
@@ -2177,18 +2177,18 @@
                   <th class="pb-2.5 font-bold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-violet-900/40 text-violet-200">
-                <tr v-for="b in fwStore.backups" :key="b.filename" class="hover:bg-violet-900/20 transition">
+              <tbody class="divide-y divide-slate-800/60 text-slate-200">
+                <tr v-for="b in fwStore.backups" :key="b.filename" class="hover:bg-slate-800 transition">
                   <td class="py-3 pr-2 font-bold text-white truncate max-w-xs" :title="b.filename">
                     {{ b.filename }}
                   </td>
-                  <td class="py-3 pr-2 whitespace-nowrap text-violet-300">
+                  <td class="py-3 pr-2 whitespace-nowrap text-slate-300">
                     {{ new Date(b.timestamp).toLocaleString() }}
                   </td>
                   <td class="py-3 pr-2 whitespace-nowrap">
                     <span
                       class="px-2 py-0.5 rounded text-[10px] font-bold"
-                      :class="b.trigger === 'scheduled' ? 'bg-cyan-950 text-cyan-300 border border-cyan-700/40' : 'bg-purple-950 text-purple-300 border border-purple-700/40'"
+                      :class="b.trigger === 'scheduled' ? 'bg-cyan-950 text-cyan-300 border border-cyan-700/40' : 'bg-slate-950 text-cyan-300 border border-slate-700'"
                     >
                       {{ b.trigger.toUpperCase() }}
                     </span>
@@ -2196,13 +2196,13 @@
                   <td class="py-3 pr-2 whitespace-nowrap text-emerald-400 font-bold">
                     {{ (b.sizeBytes / 1024).toFixed(1) }} KB
                   </td>
-                  <td class="py-3 pr-2 text-violet-400 font-mono text-[10px] truncate max-w-[140px]" :title="b.sha256">
+                  <td class="py-3 pr-2 text-slate-400 font-mono text-[10px] truncate max-w-[140px]" :title="b.sha256">
                     {{ b.sha256.slice(0, 16) }}...
                   </td>
                   <td class="py-3 text-right whitespace-nowrap space-x-1.5">
                     <a
                       :href="`/api/system/backups/${encodeURIComponent(b.filename)}/download`"
-                      class="px-2.5 py-1 rounded-lg bg-violet-800 hover:bg-violet-700 text-cyan-300 text-xs font-semibold inline-flex items-center gap-1 transition"
+                      class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold inline-flex items-center gap-1 transition"
                       title="Download Archive to Workstation"
                     >
                       <DownloadCloud class="w-3 h-3" />
@@ -2237,22 +2237,22 @@
     <!-- ========================================================================= -->
     <!-- TAB 8: CSIR-SERC FREE COMMUNITY & INSTITUTIONAL LICENSE (v1.0)           -->
     <!-- ========================================================================= -->
-    <div v-if="activeTab === 'license'" class="p-6 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-800/40 space-y-6 animate-fadeIn">
+    <div v-if="activeTab === 'license'" class="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 space-y-6 animate-fadeIn">
       <!-- Top Header -->
-      <div class="border-b border-violet-800/40 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div class="flex items-center gap-2 mb-1">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-950 text-purple-300 border border-purple-500/40">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-950 text-cyan-300 border border-cyan-500/40">
               LEGAL & LICENSING STRUCTURE
             </span>
-            <span class="text-xs text-violet-400">•</span>
+            <span class="text-xs text-slate-400">•</span>
             <span class="text-xs text-emerald-400 font-mono font-bold">Version 1.0 (2024–2026)</span>
           </div>
           <h3 class="text-xl font-bold text-white flex items-center gap-2.5 font-sans">
             <Award class="w-6 h-6 text-amber-400" />
             CSIR-SERC Free Community & Institutional License
           </h3>
-          <p class="text-xs text-violet-300/80 mt-1 max-w-3xl leading-relaxed">
+          <p class="text-xs text-slate-400 mt-1 max-w-3xl leading-relaxed">
             Universal Free Usage & Institutional Source Code Ownership Framework developed by Information and Communication Technology Division (ICTD), CSIR-SERC, Government of India.
           </p>
         </div>
@@ -2260,7 +2260,7 @@
         <div class="flex items-center gap-2 self-start sm:self-auto">
           <button
             @click="copyLicenseText"
-            class="px-3.5 py-2 rounded-xl bg-violet-900/60 hover:bg-violet-800/80 text-cyan-300 hover:text-white text-xs font-semibold transition flex items-center gap-2 border border-violet-700/50 shadow-sm"
+            class="px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-700 text-cyan-300 hover:text-white text-xs font-semibold transition flex items-center gap-2 border border-slate-700/60 shadow-sm"
           >
             <Check v-if="licenseCopied" class="w-3.5 h-3.5 text-emerald-400" />
             <Copy v-else class="w-3.5 h-3.5" />
@@ -2269,7 +2269,7 @@
 
           <button
             @click="downloadLicenseFile"
-            class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-violet-600/30"
+            class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-cyan-950/40"
           >
             <DownloadCloud class="w-3.5 h-3.5" />
             <span>Download LICENSE</span>
@@ -2281,7 +2281,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         <!-- Principle 1: Strict IP Protection -->
-        <div class="p-5 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-3">
+        <div class="p-5 rounded-2xl bg-slate-950 border border-slate-700/60 space-y-3">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-300 flex items-center justify-center flex-shrink-0">
               <ShieldAlert class="w-5 h-5" />
@@ -2291,7 +2291,7 @@
               <h4 class="text-sm font-bold text-white">Strict Source Code Ownership & IP Protection</h4>
             </div>
           </div>
-          <div class="space-y-2 text-xs text-violet-300/90 leading-relaxed font-sans pt-1">
+          <div class="space-y-2 text-xs text-slate-400 leading-relaxed font-sans pt-1">
             <p>
               <strong class="text-white">Copyright © 2024–2026 CSIR-SERC:</strong> Council of Scientific and Industrial Research (CSIR), Ministry of Science & Technology, Government of India. All Rights Reserved.
             </p>
@@ -2308,7 +2308,7 @@
         </div>
 
         <!-- Principle 2: Universal Free Usage -->
-        <div class="p-5 rounded-2xl bg-violet-900/30 border border-violet-700/50 space-y-3">
+        <div class="p-5 rounded-2xl bg-slate-950 border border-slate-700/60 space-y-3">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center flex-shrink-0">
               <Globe class="w-5 h-5" />
@@ -2318,7 +2318,7 @@
               <h4 class="text-sm font-bold text-white">Universal Free Usage & Free Redistribution</h4>
             </div>
           </div>
-          <div class="space-y-2 text-xs text-violet-300/90 leading-relaxed font-sans pt-1">
+          <div class="space-y-2 text-xs text-slate-400 leading-relaxed font-sans pt-1">
             <p>
               <strong class="text-white">Worldwide Free Use:</strong> Permission is granted free of charge to any person, research lab, government agency, university, defense unit, PSU, or private enterprise worldwide to install, run, execute, test, and benchmark for any lawful purpose.
             </p>
@@ -2337,7 +2337,7 @@
       </div>
 
       <!-- Mandatory Attribution Callout Box -->
-      <div class="p-5 rounded-2xl bg-gradient-to-r from-violet-950/90 via-purple-950/80 to-indigo-950/90 border border-cyan-500/40 shadow-xl space-y-3">
+      <div class="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/40 shadow-xl space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-lg">❤️</span>
@@ -2350,17 +2350,17 @@
           </span>
         </div>
 
-        <p class="text-xs text-violet-200 leading-relaxed">
+        <p class="text-xs text-slate-200 leading-relaxed">
           All redistributions, user interfaces, console banners, deployment footers, and documentation must prominently retain this verbatim institutional attribution notice:
         </p>
 
-        <div class="p-4 rounded-xl bg-violet-950 border border-violet-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono">
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono">
           <span class="text-sm font-extrabold text-white text-center sm:text-left">
             "Made by ICTD CSIR-SERC for CSIR with ❤️"
           </span>
           <button
             @click="copyAttributionText"
-            class="px-3 py-1.5 rounded-lg bg-violet-800 hover:bg-violet-700 text-xs font-semibold text-cyan-300 transition flex items-center justify-center gap-1.5 self-center sm:self-auto"
+            class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-cyan-300 transition flex items-center justify-center gap-1.5 self-center sm:self-auto"
           >
             <Check v-if="attributionCopied" class="w-3.5 h-3.5 text-emerald-400" />
             <Copy v-else class="w-3.5 h-3.5" />
@@ -2370,16 +2370,16 @@
       </div>
 
       <!-- Interactive Full License Text Viewer -->
-      <div class="p-5 rounded-2xl bg-violet-950/80 border border-violet-800/60 space-y-3">
+      <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
         <div class="flex items-center justify-between">
           <div class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono flex items-center gap-2">
-            <FileText class="w-4 h-4 text-neon-cyan" />
+            <FileText class="w-4 h-4 text-cyan-400" />
             <span>Full Legal License Text (LICENSE)</span>
           </div>
-          <span class="text-[11px] text-violet-400 font-mono">96 Lines • Legal Specification</span>
+          <span class="text-[11px] text-slate-400 font-mono">96 Lines • Legal Specification</span>
         </div>
 
-        <pre class="p-4 rounded-xl bg-slate-950/90 border border-violet-900/60 text-violet-300 text-[11px] font-mono leading-relaxed overflow-x-auto max-h-96 select-text whitespace-pre-wrap">{{ fullLicenseText }}</pre>
+        <pre class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 text-slate-300 text-[11px] font-mono leading-relaxed overflow-x-auto max-h-96 select-text whitespace-pre-wrap">{{ fullLicenseText }}</pre>
       </div>
 
     </div>
@@ -2391,85 +2391,85 @@
       v-if="showEditModal"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
     >
-      <div class="w-full max-w-lg bg-violet-950 border border-violet-700/60 rounded-3xl p-6 shadow-2xl relative">
-        <div class="flex items-center justify-between mb-4 border-b border-violet-800/40 pb-3">
+      <div class="w-full max-w-lg bg-slate-950 border border-slate-700/60 rounded-3xl p-6 shadow-2xl relative">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
           <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <Edit3 class="w-4 h-4 text-neon-cyan" />
+            <Edit3 class="w-4 h-4 text-cyan-400" />
             <span>Configure Firewall SNMP Profile</span>
           </h3>
-          <button @click="showEditModal = false" class="text-violet-400 hover:text-white">
+          <button @click="showEditModal = false" class="text-slate-400 hover:text-white">
             <X class="w-5 h-5" />
           </button>
         </div>
 
         <form @submit.prevent="saveFirewallProfile" class="space-y-3 font-mono text-xs">
           <div>
-            <label class="text-violet-300 block mb-1">Firewall Name</label>
+            <label class="text-slate-300 block mb-1">Firewall Name</label>
             <input
               v-model="editForm.name"
               required
-              class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
             />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-violet-300 block mb-1">IP Address</label>
+              <label class="text-slate-300 block mb-1">IP Address</label>
               <input
                 v-model="editForm.ipAddress"
                 required
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
               />
             </div>
             <div>
-              <label class="text-violet-300 block mb-1">SNMP Port</label>
+              <label class="text-slate-300 block mb-1">SNMP Port</label>
               <input
                 v-model.number="editForm.snmpPort"
                 type="number"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
               />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-violet-300 block mb-1">SNMP Version</label>
+              <label class="text-slate-300 block mb-1">SNMP Version</label>
               <select
                 v-model="editForm.snmpVersion"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
               >
                 <option value="v2c">v2c</option>
                 <option value="v3">v3</option>
               </select>
             </div>
             <div>
-              <label class="text-violet-300 block mb-1">Community String</label>
+              <label class="text-slate-300 block mb-1">Community String</label>
               <input
                 v-model="editForm.snmpCommunity"
-                class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+                class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
               />
             </div>
           </div>
 
           <div>
-            <label class="text-violet-300 block mb-1">Location / Data Center</label>
+            <label class="text-slate-300 block mb-1">Location / Data Center</label>
             <input
               v-model="editForm.location"
-              class="w-full px-3 py-2 bg-violet-900/40 border border-violet-700/50 rounded-lg text-white"
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-700/60 rounded-lg text-white"
             />
           </div>
 
-          <div class="pt-4 flex items-center justify-end gap-3 border-t border-violet-800/40">
+          <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
             <button
               type="button"
               @click="showEditModal = false"
-              class="px-4 py-2 rounded-xl bg-violet-900/50 text-violet-300 hover:text-white"
+              class="px-4 py-2 rounded-xl bg-slate-950 text-slate-300 hover:text-white"
             >
               Cancel
             </button>
             <button
               type="submit"
-              class="px-5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold"
+              class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-bold"
             >
               Save Profile
             </button>

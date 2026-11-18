@@ -173,7 +173,7 @@
             </div>
 
             <!-- Stat Card 4: Core Network Interfaces -->
-            <div class="p-4 rounded-2xl bg-slate-900/65 backdrop-blur-xl border border-slate-800/90 shadow-xl shadow-black/40 hover:border-indigo-500/40 transition">
+            <div class="p-4 rounded-2xl bg-slate-900/65 backdrop-blur-xl border border-slate-800/90 shadow-xl shadow-black/40 hover:border-cyan-500/40 transition">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-xs font-medium text-slate-300 flex items-center gap-2 font-body">
                   <Server class="w-4 h-4 text-cyan-400" />

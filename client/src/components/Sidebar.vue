@@ -21,9 +21,9 @@
             <Cpu class="w-5 h-5 text-emerald-400" />
           </div>
         </div>
-        <div v-else-if="fwStore.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 flex items-center justify-center">
+        <div v-else-if="fwStore.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-cyan-600 to-teal-500 p-0.5 flex items-center justify-center">
           <div class="w-full h-full bg-slate-950 rounded-[8px] flex items-center justify-center">
-            <Globe class="w-5 h-5 text-blue-300" />
+            <Globe class="w-5 h-5 text-cyan-300" />
           </div>
         </div>
         <div v-else-if="fwStore.branding.presetLogo === 'emblem'" class="w-full h-full rounded-xl bg-gradient-to-tr from-amber-500 to-slate-700 p-0.5 flex items-center justify-center">
@@ -79,7 +79,7 @@
           <div class="text-center px-1 py-0.5 rounded truncate bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
             port10 (QTM)
           </div>
-          <div class="text-center px-1 py-0.5 rounded truncate bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+          <div class="text-center px-1 py-0.5 rounded truncate bg-sky-500/10 text-sky-300 border border-sky-500/20">
             port1 (LAN)
           </div>
         </div>

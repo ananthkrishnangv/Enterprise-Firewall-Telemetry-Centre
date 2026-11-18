@@ -1,21 +1,21 @@
 <template>
   <div class="space-y-6 pb-12 select-none">
     <!-- Top Operations Control Toolbar -->
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl bg-violet-950/70 border border-violet-800/50 backdrop-blur-md shadow-lg shadow-violet-950/40">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl bg-slate-900/90 border border-slate-800 backdrop-blur-md shadow-lg">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-violet-900/60 border border-violet-700/50 flex items-center justify-center text-cyan-300 shadow-md">
-          <Activity class="w-5 h-5 text-neon-cyan animate-pulse" />
+        <div class="w-10 h-10 rounded-xl bg-slate-950 border border-slate-700/60 flex items-center justify-center text-cyan-300 shadow-md">
+          <Activity class="w-5 h-5 text-cyan-400 animate-pulse" />
         </div>
         <div>
-          <div class="text-sm font-bold text-white flex items-center gap-2 font-sans">
+          <div class="text-sm font-bold text-white flex items-center gap-2 font-heading">
             <span>Overall Firewall Traffic &amp; Log Analyzer</span>
-            <span class="text-violet-500">•</span>
+            <span class="text-slate-600">•</span>
             <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
               InfluxDB 180-Day TSDB Active
             </span>
           </div>
-          <div class="text-[10px] text-violet-300/80 font-mono">
+          <div class="text-[10px] text-slate-400 font-mono">
             Continuous Full-Spectrum Ingress, Egress &amp; Security Drop Inspection
           </div>
         </div>
@@ -23,11 +23,11 @@
 
       <!-- Toolbar Actions: View Switcher, Auto-Refresh, Export -->
       <div class="flex flex-wrap items-center gap-2">
-        <div class="flex items-center rounded-xl bg-violet-900/50 p-1 border border-violet-700/40 text-xs font-bold">
+        <div class="flex items-center rounded-xl bg-slate-950 p-1 border border-slate-800 text-xs font-bold font-heading">
           <button
             @click="activeTab = 'analytics'"
             class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer"
-            :class="activeTab === 'analytics' ? 'bg-violet-600 text-white shadow-md' : 'text-violet-300 hover:text-white'"
+            :class="activeTab === 'analytics' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md' : 'text-slate-400 hover:text-white'"
           >
             <Layers class="w-3.5 h-3.5 text-cyan-300" />
             <span>Traffic Analytics</span>
@@ -35,7 +35,7 @@
           <button
             @click="activeTab = 'explorer'"
             class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer"
-            :class="activeTab === 'explorer' ? 'bg-violet-600 text-white shadow-md' : 'text-violet-300 hover:text-white'"
+            :class="activeTab === 'explorer' ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md' : 'text-slate-400 hover:text-white'"
           >
             <Database class="w-3.5 h-3.5 text-emerald-400" />
             <span>Log Explorer &amp; Live Stream</span>
@@ -44,10 +44,10 @@
 
         <button
           @click="exportCsv"
-          class="px-3 py-1.5 rounded-xl bg-violet-900/40 hover:bg-violet-800/80 border border-violet-700/50 text-cyan-300 hover:text-white text-xs font-mono font-bold flex items-center gap-1.5 transition cursor-pointer"
+          class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-cyan-300 hover:text-white text-xs font-mono font-bold flex items-center gap-1.5 transition cursor-pointer"
           title="Download Filtered Logs as CSV"
         >
-          <Download class="w-3.5 h-3.5 text-neon-cyan" />
+          <Download class="w-3.5 h-3.5 text-cyan-400" />
           <span class="hidden sm:inline">Export CSV</span>
         </button>
 
@@ -63,37 +63,37 @@
     <!-- KPI Summary Metric Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
       <!-- Total Analyzed Events -->
-      <div class="ux4g-glass rounded-2xl p-4 relative overflow-hidden border border-violet-800/40">
-        <div class="flex items-center justify-between text-xs text-violet-400 mb-1">
+      <div class="rounded-2xl p-4 relative overflow-hidden bg-slate-900/90 border border-slate-800 backdrop-blur-md">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
           <span>Analyzed Events</span>
-          <Database class="w-4 h-4 text-violet-400" />
+          <Database class="w-4 h-4 text-cyan-400" />
         </div>
         <div class="text-xl font-mono font-extrabold text-white">{{ stats.totalLogs.toLocaleString() }}</div>
-        <div class="text-[10px] text-violet-300/70 mt-1 font-mono">Window: {{ selectedTimeRangeText }}</div>
+        <div class="text-[10px] text-slate-400 mt-1 font-mono">Window: {{ selectedTimeRangeText }}</div>
       </div>
 
       <!-- Inbound WAN Volume -->
-      <div class="ux4g-glass rounded-2xl p-4 relative overflow-hidden border border-cyan-500/20">
+      <div class="rounded-2xl p-4 relative overflow-hidden bg-slate-900/90 border border-slate-800 backdrop-blur-md">
         <div class="flex items-center justify-between text-xs text-cyan-300 mb-1">
           <span>Inbound Traffic</span>
-          <ArrowDownLeft class="w-4 h-4 text-neon-cyan" />
+          <ArrowDownLeft class="w-4 h-4 text-cyan-400" />
         </div>
         <div class="text-xl font-mono font-extrabold text-cyan-300">{{ formatBytes(stats.totalBytesIn) }}</div>
         <div class="text-[10px] text-cyan-400/80 mt-1 font-mono">External WAN Ingress</div>
       </div>
 
       <!-- Outbound Volume -->
-      <div class="ux4g-glass rounded-2xl p-4 relative overflow-hidden border border-indigo-500/20">
-        <div class="flex items-center justify-between text-xs text-indigo-300 mb-1">
+      <div class="rounded-2xl p-4 relative overflow-hidden bg-slate-900/90 border border-slate-800 backdrop-blur-md">
+        <div class="flex items-center justify-between text-xs text-sky-300 mb-1">
           <span>Outbound Traffic</span>
-          <ArrowUpRight class="w-4 h-4 text-indigo-400" />
+          <ArrowUpRight class="w-4 h-4 text-sky-400" />
         </div>
-        <div class="text-xl font-mono font-extrabold text-indigo-300">{{ formatBytes(stats.totalBytesOut) }}</div>
-        <div class="text-[10px] text-indigo-400/80 mt-1 font-mono">Campus &amp; HPC Egress</div>
+        <div class="text-xl font-mono font-extrabold text-sky-300">{{ formatBytes(stats.totalBytesOut) }}</div>
+        <div class="text-[10px] text-sky-400/80 mt-1 font-mono">Campus &amp; HPC Egress</div>
       </div>
 
       <!-- Blocked / Dropped Traffic -->
-      <div class="ux4g-glass rounded-2xl p-4 relative overflow-hidden border border-rose-500/30 bg-rose-950/10">
+      <div class="rounded-2xl p-4 relative overflow-hidden bg-slate-900/90 border border-slate-800 backdrop-blur-md bg-rose-950/10">
         <div class="flex items-center justify-between text-xs text-rose-300 mb-1">
           <span>Blocked Traffic</span>
           <Shield class="w-4 h-4 text-rose-400" />
@@ -103,26 +103,26 @@
       </div>
 
       <!-- Block Rate % -->
-      <div class="ux4g-glass rounded-2xl p-4 relative overflow-hidden border border-amber-500/20 col-span-2 lg:col-span-1">
+      <div class="rounded-2xl p-4 relative overflow-hidden bg-slate-900/90 border border-slate-800 backdrop-blur-md col-span-2 lg:col-span-1">
         <div class="flex items-center justify-between text-xs text-amber-300 mb-1">
           <span>Threat Interception</span>
-          <AlertTriangle class="w-4 h-4 text-neon-amber" />
+          <AlertTriangle class="w-4 h-4 text-amber-400" />
         </div>
-        <div class="text-xl font-mono font-extrabold text-neon-amber">{{ stats.blockRatePercent }}%</div>
+        <div class="text-xl font-mono font-extrabold text-amber-400">{{ stats.blockRatePercent }}%</div>
         <div class="text-[10px] text-amber-400/80 mt-1 font-mono">Overall Firewall Drop Rate</div>
       </div>
     </div>
 
     <!-- Multi-Parameter Filter Toolbar -->
-    <div class="p-4 rounded-2xl bg-slate-900/90 border border-violet-800/40 space-y-3">
+    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
       <div class="flex flex-wrap items-center gap-3">
         <!-- Time Range Selector -->
         <div class="w-40">
-          <label class="block text-[10px] uppercase font-bold text-violet-400 mb-1">Time Range</label>
+          <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Time Range</label>
           <select
             v-model="filters.timeRangeMinutes"
             @change="applyFilters"
-            class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
+            class="w-full bg-slate-950/80 border border-slate-700/60 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
           >
             <option :value="15">Last 15 Minutes</option>
             <option :value="60">Last 1 Hour</option>
@@ -134,11 +134,11 @@
 
         <!-- Direction Filter -->
         <div class="w-44">
-          <label class="block text-[10px] uppercase font-bold text-violet-400 mb-1">Traffic Direction</label>
+          <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Traffic Direction</label>
           <select
             v-model="filters.direction"
             @change="applyFilters"
-            class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
+            class="w-full bg-slate-950/80 border border-slate-700/60 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
           >
             <option value="all">All Directions (In &amp; Out)</option>
             <option value="inbound">Inbound (WAN &rarr; LAN)</option>
@@ -149,11 +149,11 @@
 
         <!-- Action Filter -->
         <div class="w-44">
-          <label class="block text-[10px] uppercase font-bold text-violet-400 mb-1">Enforcement Action</label>
+          <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Enforcement Action</label>
           <select
             v-model="filters.action"
             @change="applyFilters"
-            class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
+            class="w-full bg-slate-950/80 border border-slate-700/60 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
           >
             <option value="all">All Traffic (Allowed + Blocked)</option>
             <option value="allow">Allowed (Permitted Pass)</option>
@@ -163,11 +163,11 @@
 
         <!-- Protocol Filter -->
         <div class="w-28">
-          <label class="block text-[10px] uppercase font-bold text-violet-400 mb-1">Protocol</label>
+          <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Protocol</label>
           <select
             v-model="filters.protocol"
             @change="applyFilters"
-            class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
+            class="w-full bg-slate-950/80 border border-slate-700/60 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
           >
             <option value="all">All Protocols</option>
             <option value="TCP">TCP</option>
@@ -179,13 +179,13 @@
         <!-- Network Segment Filter -->
         <div class="w-48">
           <label class="block text-[10px] uppercase font-bold text-cyan-400 mb-1 flex items-center gap-1">
-            <Network class="w-3 h-3 text-neon-cyan" />
+            <Network class="w-3 h-3 text-cyan-400" />
             <span>Subnet Segment</span>
           </label>
           <select
             v-model="filters.segment"
             @change="applyFilters"
-            class="w-full bg-violet-950/80 border border-cyan-500/40 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
+            class="w-full bg-slate-950/80 border border-cyan-500/40 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
           >
             <option value="all">All Segments (Full Spectrum)</option>
             <option value="172.17.0.0/16">172.17.0.0/16 (Departmental VLANs)</option>
@@ -197,14 +197,14 @@
 
         <!-- 802.1Q VLAN Filter -->
         <div class="w-48">
-          <label class="block text-[10px] uppercase font-bold text-violet-400 mb-1 flex items-center gap-1">
-            <GitBranch class="w-3 h-3 text-violet-400" />
+          <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center gap-1">
+            <GitBranch class="w-3 h-3 text-cyan-400" />
             <span>802.1Q VLAN</span>
           </label>
           <select
             v-model="filters.vlan"
             @change="applyFilters"
-            class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
+            class="w-full bg-slate-950/80 border border-slate-700/60 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
           >
             <option value="all">All VLANs (Trunks &amp; Access)</option>
             <option v-for="v in availableVlans" :key="v.vlanId" :value="v.vlanId">
@@ -215,16 +215,16 @@
 
         <!-- Free Text IP / Hostname / Subnet / App Search -->
         <div class="flex-1 min-w-[200px]">
-          <label class="block text-[10px] uppercase font-bold text-violet-400 mb-1">Search IP / Subnet / Host / App</label>
+          <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Search IP / Subnet / Host / App</label>
           <div class="relative">
             <input
               v-model="filters.search"
               @input="handleSearchDebounced"
               type="text"
               placeholder="e.g. 172.17.11.14, 10.10.3.15, Ansys, BitTorrent..."
-              class="w-full bg-violet-950/80 border border-violet-700/50 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-violet-500 focus:outline-none focus:border-cyan-400 font-mono"
+              class="w-full bg-slate-950/80 border border-slate-700/60 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
             />
-            <Search class="w-3.5 h-3.5 text-violet-400 absolute left-2.5 top-2.5" />
+            <Search class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
           </div>
         </div>
 
@@ -232,7 +232,7 @@
         <div class="pt-4">
           <button
             @click="resetFilters"
-            class="px-3 py-1.5 rounded-lg bg-violet-900/60 hover:bg-violet-800 text-violet-300 text-xs font-medium border border-violet-700/50 transition cursor-pointer"
+            class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition cursor-pointer"
           >
             Reset
           </button>
@@ -243,15 +243,15 @@
     <!-- TAB 1: TRAFFIC ANALYTICS VIEW -->
     <div v-if="activeTab === 'analytics'" class="space-y-6">
       <!-- Inbound vs Outbound vs Blocked Volume Timeline Chart -->
-      <div class="ux4g-glass rounded-2xl p-5 border border-violet-800/40 relative overflow-hidden">
+      <div class="rounded-2xl p-5 border border-slate-800 bg-slate-900/90 backdrop-blur-md relative overflow-hidden">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-neon-cyan animate-pulse"></span>
-            <h2 class="text-sm font-bold text-white font-sans">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <h2 class="text-sm font-bold text-white font-heading">
               Overall Firewall Traffic &amp; Threat Ingestion Velocity (Allowed vs Blocked)
             </h2>
           </div>
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-violet-900/60 text-cyan-300 border border-violet-700/40">
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-cyan-300 border border-slate-700">
             Time-Series Resolution: Auto-Bucketed
           </span>
         </div>
@@ -264,54 +264,54 @@
       <!-- 4 Analytics Breakdown Cards (Top Sources, Top Blocked, Top Destinations, App Breakdown) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <!-- Top Source Talkers (Entire Institution) -->
-        <div class="ux4g-glass rounded-2xl p-5 border border-violet-800/40 flex flex-col justify-between">
+        <div class="rounded-2xl p-5 border border-slate-800 bg-slate-900/90 backdrop-blur-md flex flex-col justify-between">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <Server class="w-4 h-4 text-neon-cyan" />
-              <h3 class="text-xs font-bold uppercase tracking-wider text-violet-200">
+              <Server class="w-4 h-4 text-cyan-400" />
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-heading">
                 Top Source Talkers (All VLANs &amp; Subnets)
               </h3>
             </div>
-            <span class="text-[10px] font-mono text-violet-400">By Transferred Bytes</span>
+            <span class="text-[10px] font-mono text-slate-400">By Transferred Bytes</span>
           </div>
 
           <div class="space-y-2 overflow-y-auto max-h-72">
             <div
               v-for="(src, idx) in stats.topSources"
               :key="src.ip"
-              class="p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/40 flex items-center justify-between text-xs"
+              class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 flex items-center justify-between text-xs"
             >
               <div class="flex items-center gap-2.5 min-w-0">
-                <span class="w-5 h-5 rounded-lg bg-violet-900/80 flex items-center justify-center font-mono font-bold text-[10px] text-cyan-300">
+                <span class="w-5 h-5 rounded-lg bg-slate-800 flex items-center justify-center font-mono font-bold text-[10px] text-cyan-300 border border-slate-700">
                   {{ idx + 1 }}
                 </span>
                 <div class="min-w-0">
                   <div class="font-mono font-bold text-white flex items-center gap-2 truncate">
                     <span>{{ src.ip }}</span>
-                    <span class="text-[10px] text-violet-400 truncate hidden sm:inline">({{ src.name }})</span>
+                    <span class="text-[10px] text-slate-400 truncate hidden sm:inline">({{ src.name }})</span>
                   </div>
-                  <div class="text-[10px] text-violet-400/80 truncate">{{ src.dept }}</div>
+                  <div class="text-[10px] text-slate-400/80 truncate">{{ src.dept }}</div>
                 </div>
               </div>
 
               <div class="text-right flex-shrink-0 ml-3">
                 <div class="font-mono font-bold text-cyan-300">{{ formatBytes(src.bytes) }}</div>
-                <div class="text-[10px] text-violet-400 font-mono">{{ src.count }} sessions</div>
+                <div class="text-[10px] text-slate-400 font-mono">{{ src.count }} sessions</div>
               </div>
             </div>
 
-            <div v-if="stats.topSources.length === 0" class="py-8 text-center text-xs text-violet-400">
+            <div v-if="stats.topSources.length === 0" class="py-8 text-center text-xs text-slate-400">
               No traffic records found matching selected filter.
             </div>
           </div>
         </div>
 
         <!-- Top Blocked Security Threats & Attack Sources -->
-        <div class="ux4g-glass rounded-2xl p-5 border border-rose-500/30 bg-rose-950/10 flex flex-col justify-between">
+        <div class="rounded-2xl p-5 border border-rose-500/30 bg-rose-950/10 backdrop-blur-md flex flex-col justify-between">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
               <Shield class="w-4 h-4 text-rose-400" />
-              <h3 class="text-xs font-bold uppercase tracking-wider text-rose-200">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-rose-200 font-heading">
                 Top Blocked Threats &amp; Dropped Connections
               </h3>
             </div>
@@ -322,14 +322,14 @@
             <div
               v-for="threat in stats.topBlockedThreats"
               :key="threat.ip + threat.threat"
-              class="p-2.5 rounded-xl bg-violet-950/70 border border-rose-500/30 flex items-center justify-between text-xs"
+              class="p-2.5 rounded-xl bg-slate-950/70 border border-rose-500/30 flex items-center justify-between text-xs"
             >
               <div class="min-w-0">
                 <div class="font-mono font-bold text-rose-300 flex items-center gap-1.5 truncate">
                   <XCircle class="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
                   <span class="truncate">{{ threat.threat }}</span>
                 </div>
-                <div class="text-[10px] font-mono text-violet-400 truncate">
+                <div class="text-[10px] font-mono text-slate-400 truncate">
                   Source: <span class="text-white">{{ threat.ip }}</span> • Last seen: {{ formatRelativeTime(threat.lastSeen) }}
                 </div>
               </div>
@@ -348,54 +348,54 @@
         </div>
 
         <!-- Top External Destinations & Cloud Services -->
-        <div class="ux4g-glass rounded-2xl p-5 border border-violet-800/40 flex flex-col justify-between">
+        <div class="rounded-2xl p-5 border border-slate-800 bg-slate-900/90 backdrop-blur-md flex flex-col justify-between">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <Globe class="w-4 h-4 text-indigo-400" />
-              <h3 class="text-xs font-bold uppercase tracking-wider text-violet-200">
+              <Globe class="w-4 h-4 text-sky-400" />
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-heading">
                 Top External Targets &amp; Cloud Services
               </h3>
             </div>
-            <span class="text-[10px] font-mono text-violet-400">Destination Endpoints</span>
+            <span class="text-[10px] font-mono text-slate-400">Destination Endpoints</span>
           </div>
 
           <div class="space-y-2 overflow-y-auto max-h-72">
             <div
               v-for="(dst, idx) in stats.topDestinations"
               :key="dst.ip"
-              class="p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/40 flex items-center justify-between text-xs"
+              class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 flex items-center justify-between text-xs"
             >
               <div class="flex items-center gap-2.5 min-w-0">
-                <span class="w-5 h-5 rounded-lg bg-violet-900/80 flex items-center justify-center font-mono font-bold text-[10px] text-indigo-300">
+                <span class="w-5 h-5 rounded-lg bg-slate-800 flex items-center justify-center font-mono font-bold text-[10px] text-sky-300 border border-slate-700">
                   {{ idx + 1 }}
                 </span>
                 <div class="min-w-0">
                   <div class="font-mono font-bold text-white truncate flex items-center gap-1.5">
                     <span>{{ dst.ip }}</span>
-                    <span class="text-[10px] font-sans text-indigo-300 truncate hidden sm:inline">({{ dst.name }})</span>
+                    <span class="text-[10px] font-sans text-sky-300 truncate hidden sm:inline">({{ dst.name }})</span>
                   </div>
-                  <div class="text-[10px] text-violet-400 font-mono">Geo Location: {{ dst.country }}</div>
+                  <div class="text-[10px] text-slate-400 font-mono">Geo Location: {{ dst.country }}</div>
                 </div>
               </div>
 
               <div class="text-right flex-shrink-0 ml-3">
-                <div class="font-mono font-bold text-indigo-300">{{ formatBytes(dst.bytes) }}</div>
-                <div class="text-[10px] text-violet-400 font-mono">{{ dst.count }} flows</div>
+                <div class="font-mono font-bold text-sky-300">{{ formatBytes(dst.bytes) }}</div>
+                <div class="text-[10px] text-slate-400 font-mono">{{ dst.count }} flows</div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Top Applications (App-ID Distribution) -->
-        <div class="ux4g-glass rounded-2xl p-5 border border-violet-800/40 flex flex-col justify-between">
+        <div class="rounded-2xl p-5 border border-slate-800 bg-slate-900/90 backdrop-blur-md flex flex-col justify-between">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
               <Layers class="w-4 h-4 text-cyan-300" />
-              <h3 class="text-xs font-bold uppercase tracking-wider text-violet-200">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-heading">
                 Application (App-ID) Traffic Share
               </h3>
             </div>
-            <span class="text-[10px] font-mono text-violet-400">Layer-7 Signatures</span>
+            <span class="text-[10px] font-mono text-slate-400">Layer-7 Signatures</span>
           </div>
 
           <div class="space-y-2.5 overflow-y-auto max-h-72">
@@ -411,9 +411,9 @@
                 </span>
                 <span class="font-mono text-cyan-300 font-bold ml-2">{{ formatBytes(app.bytes) }}</span>
               </div>
-              <div class="w-full h-1.5 rounded-full bg-violet-900/60 overflow-hidden">
+              <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
                 <div
-                  class="h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400"
+                  class="h-full rounded-full bg-gradient-to-r from-teal-500 to-cyan-400"
                   :style="{ width: `${Math.min(100, Math.max(5, (app.bytes / (stats.totalBytes || 1)) * 100))}%` }"
                 ></div>
               </div>
@@ -425,11 +425,11 @@
       <!-- 802.1Q VLAN & Subnet Segment Volume Matrix (FortiGate Discovered Scopes) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <!-- Per-VLAN Traffic & Threat Ingestion Matrix -->
-        <div class="ux4g-glass rounded-2xl p-5 border border-violet-800/40 flex flex-col justify-between">
+        <div class="rounded-2xl p-5 border border-slate-800 bg-slate-900/90 backdrop-blur-md flex flex-col justify-between">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <GitBranch class="w-4 h-4 text-neon-cyan" />
-              <h3 class="text-xs font-bold uppercase tracking-wider text-violet-200">
+              <GitBranch class="w-4 h-4 text-cyan-400" />
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-heading">
                 802.1Q VLAN Traffic &amp; Threat Volume Breakdown
               </h3>
             </div>
@@ -441,11 +441,11 @@
               v-for="vItem in (stats.vlanDistribution || [])"
               :key="vItem.vlanId"
               @click="filterByVlan(vItem.vlanId)"
-              class="p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/40 hover:border-cyan-500/60 transition cursor-pointer flex flex-col gap-1.5"
+              class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 hover:border-cyan-500/60 transition cursor-pointer flex flex-col gap-1.5"
             >
               <div class="flex items-center justify-between text-xs">
                 <div class="flex items-center gap-2 min-w-0">
-                  <span class="px-2 py-0.5 rounded font-mono font-bold text-[10px] bg-violet-800/80 text-cyan-300 border border-violet-600/50">
+                  <span class="px-2 py-0.5 rounded font-mono font-bold text-[10px] bg-slate-800 text-cyan-300 border border-slate-700">
                     VLAN {{ vItem.vlanId }}
                   </span>
                   <span class="font-bold text-white truncate">{{ vItem.vlanName }}</span>
@@ -457,29 +457,29 @@
                   <span class="font-mono text-cyan-300 font-bold text-xs">{{ formatBytes(vItem.bytes) }}</span>
                 </div>
               </div>
-              <div class="w-full h-1.5 rounded-full bg-violet-900/60 overflow-hidden">
+              <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
                 <div
-                  class="h-full rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-cyan-400"
+                  class="h-full rounded-full bg-gradient-to-r from-teal-500 via-emerald-400 to-cyan-400"
                   :style="{ width: `${Math.min(100, Math.max(4, (vItem.bytes / (stats.totalBytes || 1)) * 100))}%` }"
                 ></div>
               </div>
             </div>
-            <div v-if="!stats.vlanDistribution || stats.vlanDistribution.length === 0" class="py-8 text-center text-xs text-violet-400 font-mono">
+            <div v-if="!stats.vlanDistribution || stats.vlanDistribution.length === 0" class="py-8 text-center text-xs text-slate-400 font-mono">
               Collecting per-VLAN telemetry across FortiGate subinterfaces...
             </div>
           </div>
         </div>
 
         <!-- Subnet Segment Distribution Matrix -->
-        <div class="ux4g-glass rounded-2xl p-5 border border-violet-800/40 flex flex-col justify-between">
+        <div class="rounded-2xl p-5 border border-slate-800 bg-slate-900/90 backdrop-blur-md flex flex-col justify-between">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <Network class="w-4 h-4 text-indigo-400" />
-              <h3 class="text-xs font-bold uppercase tracking-wider text-violet-200">
+              <Network class="w-4 h-4 text-sky-400" />
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-heading">
                 Network Subnet Segment Distribution
               </h3>
             </div>
-            <span class="text-[10px] font-mono text-indigo-300">RFC 1918 Scopes</span>
+            <span class="text-[10px] font-mono text-sky-300">RFC 1918 Scopes</span>
           </div>
 
           <div class="space-y-2.5 overflow-y-auto max-h-72 pr-1">
@@ -487,29 +487,29 @@
               v-for="sItem in (stats.segmentDistribution || [])"
               :key="sItem.segment"
               @click="filterBySegment(sItem.segment)"
-              class="p-2.5 rounded-xl bg-violet-950/60 border border-violet-800/40 hover:border-indigo-500/60 transition cursor-pointer flex flex-col gap-1.5"
+              class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 hover:border-cyan-500/60 transition cursor-pointer flex flex-col gap-1.5"
             >
               <div class="flex items-center justify-between text-xs">
                 <div class="flex items-center gap-2 min-w-0">
-                  <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                  <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
                   <span class="font-mono font-bold text-white">{{ sItem.segment }}</span>
-                  <span class="text-[10px] text-violet-400">({{ sItem.count }} flows)</span>
+                  <span class="text-[10px] text-slate-400">({{ sItem.count }} flows)</span>
                 </div>
                 <div class="flex items-center gap-2 text-right">
                   <span v-if="sItem.blockedCount > 0" class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
                     {{ sItem.blockedCount }} drops
                   </span>
-                  <span class="font-mono text-indigo-300 font-bold text-xs">{{ formatBytes(sItem.bytes) }}</span>
+                  <span class="font-mono text-sky-300 font-bold text-xs">{{ formatBytes(sItem.bytes) }}</span>
                 </div>
               </div>
-              <div class="w-full h-1.5 rounded-full bg-violet-900/60 overflow-hidden">
+              <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
                 <div
-                  class="h-full rounded-full bg-gradient-to-r from-purple-500 to-indigo-400"
+                  class="h-full rounded-full bg-gradient-to-r from-cyan-600 to-teal-400"
                   :style="{ width: `${Math.min(100, Math.max(5, (sItem.bytes / (stats.totalBytes || 1)) * 100))}%` }"
                 ></div>
               </div>
             </div>
-            <div v-if="!stats.segmentDistribution || stats.segmentDistribution.length === 0" class="py-8 text-center text-xs text-violet-400 font-mono">
+            <div v-if="!stats.segmentDistribution || stats.segmentDistribution.length === 0" class="py-8 text-center text-xs text-slate-400 font-mono">
               Aggregating multi-subnet institutional segments...
             </div>
           </div>
@@ -520,7 +520,7 @@
     <!-- TAB 2: DEEP LOG EXPLORER & LIVE STREAM -->
     <div v-else class="space-y-4">
       <!-- Live Stream Status Bar -->
-      <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-violet-950/80 border border-violet-800/40 text-xs font-mono text-violet-300">
+      <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full" :class="isPaused ? 'bg-amber-400' : 'bg-emerald-400 animate-ping'"></span>
           <span>{{ isPaused ? 'Stream Paused (Historical Review)' : 'Live WebSocket Telemetry Ingest Active' }}</span>
@@ -530,7 +530,7 @@
           <span>Displaying {{ logsList.length }} of {{ totalLogsCount }} Total Filtered Records</span>
           <button
             @click="isPaused = !isPaused"
-            class="px-2.5 py-1 rounded bg-violet-900/60 hover:bg-violet-800 text-cyan-300 transition cursor-pointer"
+            class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-300 transition cursor-pointer"
           >
             {{ isPaused ? 'Resume Stream' : 'Pause Stream' }}
           </button>
@@ -538,10 +538,10 @@
       </div>
 
       <!-- Log Explorer Table -->
-      <div class="ux4g-glass rounded-2xl border border-violet-800/40 overflow-hidden">
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/90 backdrop-blur-md overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-violet-950 border-b border-violet-800/50 text-[10px] uppercase font-bold text-violet-400 tracking-wider font-mono">
+            <thead class="bg-slate-950/90 border-b border-slate-800 text-[10px] uppercase font-bold text-slate-400 tracking-wider font-mono">
               <tr>
                 <th class="py-3 px-4">Timestamp</th>
                 <th class="py-3 px-3">Direction</th>
@@ -554,15 +554,15 @@
                 <th class="py-3 px-3 text-center">Details</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-violet-900/30 font-mono">
+            <tbody class="divide-y divide-slate-800/60 font-mono">
               <tr
                 v-for="log in logsList"
                 :key="log.id"
-                class="hover:bg-violet-900/30 transition-colors"
+                class="hover:bg-slate-800/40 transition-colors"
                 :class="log.action === 'drop' || log.action === 'block' ? 'bg-rose-950/10' : ''"
               >
                 <!-- Timestamp -->
-                <td class="py-2.5 px-4 text-violet-300/80 whitespace-nowrap text-[11px]">
+                <td class="py-2.5 px-4 text-slate-400 whitespace-nowrap text-[11px]">
                   {{ formatTimestamp(log.timestamp) }}
                 </td>
 
@@ -572,8 +572,8 @@
                     class="px-2 py-0.5 rounded text-[9px] font-bold uppercase"
                     :class="[
                       log.direction === 'inbound' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' :
-                      log.direction === 'outbound' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40' :
-                      'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                      log.direction === 'outbound' ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40' :
+                      'bg-slate-800 text-slate-300 border border-slate-700'
                     ]"
                   >
                     {{ log.direction }}
@@ -603,23 +603,23 @@
                   <div v-if="log.vlanId !== undefined && log.vlanId !== null" class="flex flex-col gap-0.5">
                     <span
                       @click="filterByVlan(log.vlanId)"
-                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-violet-800/80 text-cyan-300 border border-violet-600/50 hover:bg-violet-700 cursor-pointer w-fit transition shadow-sm"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-cyan-300 border border-slate-700 hover:bg-slate-700 cursor-pointer w-fit transition shadow-sm"
                       :title="`Filter logs by VLAN ${log.vlanId}`"
                     >
                       <GitBranch class="w-2.5 h-2.5 text-cyan-400" />
                       <span>VLAN {{ log.vlanId }}</span>
                     </span>
-                    <span class="text-[9px] text-violet-400 truncate max-w-[130px]" :title="log.vlanName || log.subnetSegment">
+                    <span class="text-[9px] text-slate-400 truncate max-w-[130px]" :title="log.vlanName || log.subnetSegment">
                       {{ log.vlanName || log.subnetSegment || 'Access' }}
                     </span>
                   </div>
-                  <span v-else class="text-[10px] text-violet-500 font-mono">Trunk / WAN</span>
+                  <span v-else class="text-[10px] text-slate-500 font-mono">Trunk / WAN</span>
                 </td>
 
                 <!-- Source Host & Department -->
                 <td class="py-2.5 px-4">
                   <div class="text-white font-bold text-xs">{{ log.sourceIp }}:{{ log.sourcePort }}</div>
-                  <div class="text-[10px] text-violet-400 truncate max-w-[200px]" :title="log.sourceDept || log.sourceName">
+                  <div class="text-[10px] text-slate-400 truncate max-w-[200px]" :title="log.sourceDept || log.sourceName">
                     {{ log.sourceDept || log.sourceName || 'General Network' }}
                   </div>
                 </td>
@@ -628,9 +628,9 @@
                 <td class="py-2.5 px-4">
                   <div class="text-cyan-300 font-bold text-xs flex items-center gap-1">
                     <span>{{ log.destIp }}:{{ log.destPort }}</span>
-                    <span v-if="log.destCountry" class="text-[9px] px-1 rounded bg-violet-900 text-violet-300">{{ log.destCountry }}</span>
+                    <span v-if="log.destCountry" class="text-[9px] px-1 rounded bg-slate-800 text-slate-300 border border-slate-700">{{ log.destCountry }}</span>
                   </div>
-                  <div class="text-[10px] text-violet-400 truncate max-w-[200px]" :title="log.destName">
+                  <div class="text-[10px] text-slate-400 truncate max-w-[200px]" :title="log.destName">
                     {{ log.destName || 'Public Transit' }}
                   </div>
                 </td>
@@ -638,20 +638,20 @@
                 <!-- App-ID / Protocol -->
                 <td class="py-2.5 px-3 whitespace-nowrap">
                   <div class="text-white text-xs font-semibold">{{ log.application }}</div>
-                  <div class="text-[10px] text-violet-400">{{ log.protocol }} • {{ log.policyName || 'Policy Rule' }}</div>
+                  <div class="text-[10px] text-slate-400">{{ log.protocol }} • {{ log.policyName || 'Policy Rule' }}</div>
                 </td>
 
                 <!-- Volume -->
                 <td class="py-2.5 px-3 text-right whitespace-nowrap">
                   <div class="font-bold text-xs text-white">{{ formatBytes((log.bytesIn || 0) + (log.bytesOut || 0)) }}</div>
-                  <div class="text-[9px] text-violet-400">{{ (log.packetsIn || 1) + (log.packetsOut || 1) }} pkts</div>
+                  <div class="text-[9px] text-slate-400">{{ (log.packetsIn || 1) + (log.packetsOut || 1) }} pkts</div>
                 </td>
 
                 <!-- View Detail Button -->
                 <td class="py-2.5 px-3 text-center whitespace-nowrap">
                   <button
                     @click="openLogModal(log)"
-                    class="p-1 rounded hover:bg-violet-800 text-cyan-300 transition cursor-pointer"
+                    class="p-1 rounded hover:bg-slate-800 text-cyan-300 transition cursor-pointer"
                     title="View Raw Log Details"
                   >
                     <Eye class="w-3.5 h-3.5" />
@@ -660,7 +660,7 @@
               </tr>
 
               <tr v-if="logsList.length === 0">
-                <td colspan="9" class="py-12 text-center text-xs text-violet-400 font-sans">
+                <td colspan="9" class="py-12 text-center text-xs text-slate-400 font-sans">
                   No log events found matching the active filters.
                 </td>
               </tr>
@@ -669,15 +669,15 @@
         </div>
 
         <!-- Pagination Controls -->
-        <div class="p-4 border-t border-violet-800/40 flex items-center justify-between text-xs font-mono">
-          <div class="text-violet-400">
+        <div class="p-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono">
+          <div class="text-slate-400">
             Page {{ currentPage }} of {{ totalPages }}
           </div>
           <div class="flex items-center gap-2">
             <button
               @click="prevPage"
               :disabled="currentPage <= 1"
-              class="px-3 py-1.5 rounded-lg bg-violet-900/60 hover:bg-violet-800 disabled:opacity-40 text-cyan-300 transition cursor-pointer flex items-center gap-1"
+              class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-cyan-300 border border-slate-700 transition cursor-pointer flex items-center gap-1"
             >
               <ChevronLeft class="w-3.5 h-3.5" />
               <span>Previous</span>
@@ -685,7 +685,7 @@
             <button
               @click="nextPage"
               :disabled="currentPage >= totalPages"
-              class="px-3 py-1.5 rounded-lg bg-violet-900/60 hover:bg-violet-800 disabled:opacity-40 text-cyan-300 transition cursor-pointer flex items-center gap-1"
+              class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-cyan-300 border border-slate-700 transition cursor-pointer flex items-center gap-1"
             >
               <span>Next</span>
               <ChevronRight class="w-3.5 h-3.5" />
@@ -701,45 +701,45 @@
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
       @click.self="selectedModalLog = null"
     >
-      <div class="w-full max-w-2xl rounded-2xl bg-slate-950 border border-violet-700/60 p-6 space-y-4 shadow-2xl">
-        <div class="flex items-center justify-between border-b border-violet-800/40 pb-3">
+      <div class="w-full max-w-2xl rounded-2xl bg-slate-950 border border-slate-800 p-6 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <div class="flex items-center gap-2">
-            <Shield class="w-5 h-5 text-neon-cyan" />
-            <h3 class="text-sm font-bold text-white font-sans">Packet &amp; Security Log Details</h3>
+            <Shield class="w-5 h-5 text-cyan-400" />
+            <h3 class="text-sm font-bold text-white font-heading">Packet &amp; Security Log Details</h3>
           </div>
           <button
             @click="selectedModalLog = null"
-            class="p-1 rounded text-violet-400 hover:text-white cursor-pointer"
+            class="p-1 rounded text-slate-400 hover:text-white cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         <div class="space-y-3 font-mono text-xs">
-          <div class="grid grid-cols-2 gap-3 p-3 rounded-xl bg-violet-950/60 border border-violet-800/40">
-            <div><span class="text-violet-400">Timestamp:</span> <span class="text-white">{{ selectedModalLog.timestamp }}</span></div>
-            <div><span class="text-violet-400">Action:</span> <span :class="selectedModalLog.action === 'allow' ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'">{{ selectedModalLog.action.toUpperCase() }}</span></div>
-            <div><span class="text-violet-400">Source:</span> <span class="text-cyan-300">{{ selectedModalLog.sourceIp }}:{{ selectedModalLog.sourcePort }}</span></div>
-            <div><span class="text-violet-400">Destination:</span> <span class="text-indigo-300">{{ selectedModalLog.destIp }}:{{ selectedModalLog.destPort }}</span></div>
-            <div><span class="text-violet-400">Application:</span> <span class="text-white">{{ selectedModalLog.application }}</span></div>
-            <div><span class="text-violet-400">Protocol:</span> <span class="text-white">{{ selectedModalLog.protocol }}</span></div>
-            <div><span class="text-violet-400">Department:</span> <span class="text-white">{{ selectedModalLog.sourceDept || 'General' }}</span></div>
-            <div><span class="text-violet-400">Policy:</span> <span class="text-white">{{ selectedModalLog.policyName || 'Default' }}</span></div>
+          <div class="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800">
+            <div><span class="text-slate-400">Timestamp:</span> <span class="text-white">{{ selectedModalLog.timestamp }}</span></div>
+            <div><span class="text-slate-400">Action:</span> <span :class="selectedModalLog.action === 'allow' ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'">{{ selectedModalLog.action.toUpperCase() }}</span></div>
+            <div><span class="text-slate-400">Source:</span> <span class="text-cyan-300">{{ selectedModalLog.sourceIp }}:{{ selectedModalLog.sourcePort }}</span></div>
+            <div><span class="text-slate-400">Destination:</span> <span class="text-sky-300">{{ selectedModalLog.destIp }}:{{ selectedModalLog.destPort }}</span></div>
+            <div><span class="text-slate-400">Application:</span> <span class="text-white">{{ selectedModalLog.application }}</span></div>
+            <div><span class="text-slate-400">Protocol:</span> <span class="text-white">{{ selectedModalLog.protocol }}</span></div>
+            <div><span class="text-slate-400">Department:</span> <span class="text-white">{{ selectedModalLog.sourceDept || 'General' }}</span></div>
+            <div><span class="text-slate-400">Policy:</span> <span class="text-white">{{ selectedModalLog.policyName || 'Default' }}</span></div>
             <div v-if="selectedModalLog.threatCategory" class="col-span-2 text-rose-300">
-              <span class="text-violet-400">Threat Classification:</span> {{ selectedModalLog.threatCategory }}
+              <span class="text-slate-400">Threat Classification:</span> {{ selectedModalLog.threatCategory }}
             </div>
           </div>
 
           <div>
-            <div class="text-[10px] uppercase font-bold text-violet-400 mb-1">FortiOS Raw Hardware Syslog:</div>
-            <pre class="p-3 rounded-xl bg-slate-900 border border-violet-800/40 text-[11px] text-cyan-200 overflow-x-auto whitespace-pre-wrap">{{ selectedModalLog.rawLog || 'Raw hardware log stream record' }}</pre>
+            <div class="text-[10px] uppercase font-bold text-slate-400 mb-1 font-heading">FortiOS Raw Hardware Syslog:</div>
+            <pre class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-[11px] text-cyan-200 overflow-x-auto whitespace-pre-wrap">{{ selectedModalLog.rawLog || 'Raw hardware log stream record' }}</pre>
           </div>
         </div>
 
         <div class="flex justify-end pt-2">
           <button
             @click="selectedModalLog = null"
-            class="px-4 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition cursor-pointer"
+            class="px-4 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white text-xs font-bold font-heading transition cursor-pointer"
           >
             Close
           </button>

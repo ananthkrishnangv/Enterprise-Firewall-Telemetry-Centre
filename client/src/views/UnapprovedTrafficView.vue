@@ -67,7 +67,7 @@
       <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 backdrop-blur-md shadow-lg flex items-center justify-between">
         <div>
           <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Wasted Bandwidth</div>
-          <div class="text-2xl font-black font-mono text-neon-magenta mt-1">
+          <div class="text-2xl font-black font-mono text-rose-400 mt-1">
             {{ formatBytes(totals?.totalBytesWasted || 0) }}
           </div>
           <div class="text-[10px] text-slate-400 flex items-center gap-1 mt-1 font-sans font-medium">
@@ -75,7 +75,7 @@
             <span>P2P, Movies &amp; Leechers</span>
           </div>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center text-fuchsia-400">
+        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
           <ArrowDownToLine class="w-6 h-6" />
         </div>
       </div>
@@ -170,7 +170,7 @@
               </div>
               <div>
                 <span class="text-slate-500 block">Volume:</span>
-                <span class="font-bold text-neon-magenta">{{ formatBytes(device.totalBytesWasted) }}</span>
+                <span class="font-bold text-rose-400">{{ formatBytes(device.totalBytesWasted) }}</span>
               </div>
             </div>
 
@@ -369,7 +369,7 @@
                     :class="[
                       v.action === 'blocked' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' :
                       v.action === 'dropped' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' :
-                      'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                      'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                     ]"
                   >
                     {{ v.action }}
@@ -382,7 +382,7 @@
 
               <!-- Volume -->
               <td class="py-3 px-3 text-right">
-                <div class="text-neon-magenta font-extrabold text-xs">
+                <div class="text-rose-400 font-extrabold text-xs">
                   {{ formatBytes(v.totalBytes) }}
                 </div>
                 <div class="text-[10px] text-slate-400 font-mono">
@@ -473,7 +473,7 @@
             </div>
             <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
               <span class="text-[10px] text-slate-500 uppercase block font-sans">Total Transferred</span>
-              <span class="text-neon-magenta font-extrabold block">{{ formatBytes(selectedDossier.totalBytesWasted) }}</span>
+              <span class="text-rose-400 font-extrabold block">{{ formatBytes(selectedDossier.totalBytesWasted) }}</span>
             </div>
           </div>
 
@@ -691,7 +691,7 @@ function getCategoryBadgeClass(category: string): string {
     case 'download_manager':
       return 'bg-amber-500/20 text-amber-300 border border-amber-500/40';
     case 'movies':
-      return 'bg-purple-500/20 text-purple-300 border border-purple-500/40';
+      return 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40';
     case 'unofficial_media':
       return 'bg-blue-500/20 text-blue-300 border border-blue-500/40';
     case 'botnet_spam':
@@ -718,14 +718,3 @@ onUnmounted(() => {
   if (pollTimer) clearInterval(pollTimer);
 });
 </script>
-
-<style scoped>
-.text-neon-cyan {
-  color: #06b6d4;
-  text-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
-}
-.text-neon-magenta {
-  color: #f43f5e;
-  text-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
-}
-</style>

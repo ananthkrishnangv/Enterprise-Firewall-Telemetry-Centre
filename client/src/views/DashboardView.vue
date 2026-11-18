@@ -177,10 +177,10 @@
         <div>
           <div class="flex items-center justify-between text-xs text-slate-300 mb-1">
             <span class="uppercase font-bold tracking-wider flex items-center gap-1.5 font-mono text-[11px]">
-              <Activity class="w-3.5 h-3.5 text-indigo-400" />
+              <Activity class="w-3.5 h-3.5 text-sky-400" />
               Active State Sessions
             </span>
-            <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-bold">
+            <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-500/30 font-bold">
               2.0M LIMIT
             </span>
           </div>
@@ -194,7 +194,7 @@
           <div class="text-center font-mono text-[11px] text-slate-400 mt-1">
             <span>TABLE LOAD: <strong class="text-slate-200">{{ sessionLoadPercent }}%</strong></span>
             <span class="mx-1.5 text-slate-600">•</span>
-            <span class="text-indigo-400">~124/sec Rate</span>
+            <span class="text-sky-400">~124/sec Rate</span>
           </div>
         </div>
 
@@ -203,7 +203,7 @@
           <div class="h-8 -mx-4">
             <v-chart :option="sessionsSparklineOption" autoresize />
           </div>
-          <div class="mt-2 py-1 px-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-mono font-bold text-indigo-300 flex items-center justify-between">
+          <div class="mt-2 py-1 px-2.5 rounded-lg bg-sky-500/10 border border-sky-500/20 text-[10px] font-mono font-bold text-sky-300 flex items-center justify-between">
             <span>✔ FLOW TRACKING ACTIVE</span>
             <span>Clean State</span>
           </div>
@@ -738,7 +738,7 @@ const memoryDialOption = computed(() => {
 const sessionsDialOption = computed(() => {
   const conns = activeMetrics.value?.concurrentConnections || 10702;
   const pct = Math.round((conns / 2000000) * 100) || 1;
-  return createMarsDialGauge(pct, 100, '#6366f1', '%');
+  return createMarsDialGauge(pct, 100, '#0ea5e9', '%');
 });
 
 // -------------------------------------------------------------
@@ -777,7 +777,7 @@ const sessionsSparklineOption = computed(() => {
     ? history.slice(-15).map(h => h.conns)
     : [10480, 10510, 10560, 10580, 10620, 10690, 10702, 10720, 10740, 10760];
 
-  return createMiniAreaSparkline(vals, '#6366f1', 'rgba(99, 102, 241, 0.35)');
+  return createMiniAreaSparkline(vals, '#0ea5e9', 'rgba(14, 165, 233, 0.35)');
 });
 
 function createMiniAreaSparkline(data: number[], lineColor: string, areaStart: string) {

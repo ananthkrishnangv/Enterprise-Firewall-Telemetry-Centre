@@ -27,7 +27,7 @@ const label = computed(() => {
 
 const badgeClass = computed(() => {
   switch (props.vendor) {
-    case 'checkpoint': return 'bg-pink-500/10 text-pink-300 border-pink-500/30';
+    case 'checkpoint': return 'bg-rose-500/10 text-rose-300 border-rose-500/30';
     case 'paloalto': return 'bg-orange-500/10 text-orange-300 border-orange-500/30';
     case 'fortinet': return 'bg-red-500/10 text-red-300 border-red-500/30';
     case 'pfsense': return 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30';
@@ -37,7 +37,7 @@ const badgeClass = computed(() => {
 
 const dotClass = computed(() => {
   switch (props.vendor) {
-    case 'checkpoint': return 'bg-pink-400';
+    case 'checkpoint': return 'bg-rose-400';
     case 'paloalto': return 'bg-orange-400';
     case 'fortinet': return 'bg-red-400';
     case 'pfsense': return 'bg-cyan-400';
