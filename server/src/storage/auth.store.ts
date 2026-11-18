@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,20 +22,77 @@ class AuthStore {
   }
 
   private initDefaultUsers() {
-    // Default system users if not already persisted
-    const superAdminHash = bcrypt.hashSync('SuperAdmin@2026!', 10);
-    const adminHash = bcrypt.hashSync('NcccAdmin@2026!', 10);
-    const auditorHash = bcrypt.hashSync('CertInAudit@2026!', 10);
+    if (persistence.exists('users.json')) {
+      const loaded = persistence.loadJSON<StoredUser[]>('users.json', []);
+      if (loaded && loaded.length > 0) {
+        for (const u of loaded) {
+          this.users.set(u.username.toLowerCase(), u);
+        }
+        return;
+      }
+    }
+
+    // Attempt to load external credentials from isolated file (NEVER COMMITTED TO GIT)
+    const credCandidatePaths = [
+      process.env.CREDENTIALS_FILE,
+      path.resolve(process.cwd(), 'config', 'credentials.json'),
+      path.resolve(process.cwd(), 'data', 'credentials.json'),
+      path.resolve(persistence.getDataDir(), 'credentials.json')
+    ].filter(Boolean) as string[];
+
+    let superadminPass = process.env.SUPERADMIN_PASSWORD || process.env.ADMIN_PASSWORD || '';
+    let cisoPass = process.env.CISO_PASSWORD || '';
+    let auditorPass = process.env.AUDITOR_PASSWORD || '';
+
+    for (const p of credCandidatePaths) {
+      if (fs.existsSync(p)) {
+        try {
+          const raw = fs.readFileSync(p, 'utf-8');
+          const parsed = JSON.parse(raw);
+          if (parsed.auth?.superadmin?.password) superadminPass = parsed.auth.superadmin.password;
+          else if (parsed.superadmin?.password) superadminPass = parsed.superadmin.password;
+
+          if (parsed.auth?.admin?.password) cisoPass = parsed.auth.admin.password;
+          else if (parsed.admin?.password) cisoPass = parsed.admin.password;
+
+          if (parsed.auth?.auditor?.password) auditorPass = parsed.auth.auditor.password;
+          else if (parsed.auditor?.password) auditorPass = parsed.auditor.password;
+
+          console.log(`[Auth] Loaded initial identity credentials from ${p}`);
+          break;
+        } catch (e: any) {
+          console.warn(`[Auth] Failed to parse credentials from ${p}: ${e.message}`);
+        }
+      }
+    }
+
+    // If still empty on cold start, generate secure bootstrap credentials
+    const needPersistCreds = !superadminPass || !cisoPass || !auditorPass;
+    if (!superadminPass) superadminPass = `Admin@${crypto.randomBytes(4).toString('hex')}!26`;
+    if (!cisoPass) cisoPass = `Ciso@${crypto.randomBytes(4).toString('hex')}!26`;
+    if (!auditorPass) auditorPass = `Audit@${crypto.randomBytes(4).toString('hex')}!26`;
+
+    if (needPersistCreds) {
+      this.writeCredentialsFile({
+        superadmin: superadminPass,
+        admin: cisoPass,
+        auditor: auditorPass
+      });
+    }
+
+    const superAdminHash = bcrypt.hashSync(superadminPass, 10);
+    const adminHash = bcrypt.hashSync(cisoPass, 10);
+    const auditorHash = bcrypt.hashSync(auditorPass, 10);
 
     const defaultUsers: StoredUser[] = [
       {
         id: 'usr-serc-superadmin',
         username: 'superadmin',
         name: 'Super Administrator',
-        email: 'superadmin@serc.res.in',
+        email: 'superadmin@domain.local',
         role: 'super_admin',
-        department: 'CSIR-SERC ICT & Cyber Security Command',
-        badgeNumber: 'CSIR-SERC-SUPERADMIN-01',
+        department: 'ICT & Cyber Security Command',
+        badgeNumber: 'SUPERADMIN-01',
         telegramChatId: '',
         telegramEnabled: true,
         status: 'active',
@@ -44,11 +104,11 @@ class AuthStore {
       {
         id: 'usr-nccc-001',
         username: 'admin',
-        name: 'Shri Rajesh Kumar',
-        email: 'ciso.nccc@meity.gov.in',
+        name: 'CISO Administrator',
+        email: 'ciso@domain.local',
         role: 'admin',
-        department: 'National Cyber Coordination Centre (NCCC) / MeitY',
-        badgeNumber: 'GOI-NCCC-CISO-01',
+        department: 'National Cyber Security Directorate',
+        badgeNumber: 'CISO-01',
         telegramChatId: '',
         telegramEnabled: false,
         status: 'active',
@@ -60,11 +120,11 @@ class AuthStore {
       {
         id: 'usr-certin-044',
         username: 'auditor',
-        name: 'Dr. Sunita Sharma',
-        email: 'audit.lead@cert-in.org.in',
+        name: 'Compliance Auditor',
+        email: 'auditor@domain.local',
         role: 'auditor',
         department: 'CERT-In Compliance & Incident Response Division',
-        badgeNumber: 'CERT-IN-AUDIT-44',
+        badgeNumber: 'AUDIT-44',
         telegramChatId: '',
         telegramEnabled: false,
         status: 'active',
@@ -75,11 +135,42 @@ class AuthStore {
       }
     ];
 
-    const loaded = persistence.loadJSON<StoredUser[]>('users.json', defaultUsers);
-    for (const u of loaded) {
+    for (const u of defaultUsers) {
       this.users.set(u.username.toLowerCase(), u);
     }
     persistence.saveJSON('users.json', Array.from(this.users.values()));
+  }
+
+  public writeCredentialsFile(passwords: { superadmin?: string; admin?: string; auditor?: string }) {
+    try {
+      const dataDir = persistence.getDataDir();
+      const target = path.join(dataDir, 'credentials.json');
+      const payload = {
+        notice: 'CONFIDENTIAL: Local identity credentials file. DO NOT COMMIT TO GIT.',
+        updatedAt: new Date().toISOString(),
+        auth: {
+          superadmin: {
+            username: 'superadmin',
+            password: passwords.superadmin || 'UNCHANGED',
+            role: 'super_admin'
+          },
+          admin: {
+            username: 'admin',
+            password: passwords.admin || 'UNCHANGED',
+            role: 'admin'
+          },
+          auditor: {
+            username: 'auditor',
+            password: passwords.auditor || 'UNCHANGED',
+            role: 'auditor'
+          }
+        }
+      };
+      fs.writeFileSync(target, JSON.stringify(payload, null, 2), { encoding: 'utf-8', mode: 0o600 });
+      console.log(`[Auth] Credentials synced to isolated file: ${target} (mode 0600)`);
+    } catch (err: any) {
+      console.warn(`[Auth] Could not write isolated credentials file: ${err.message}`);
+    }
   }
 
   private toSafeUser(user: StoredUser): User {

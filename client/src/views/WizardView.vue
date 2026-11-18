@@ -322,25 +322,36 @@
             </p>
           </div>
 
-          <!-- Super Admin Password -->
+          <!-- Super Admin & CISO Passwords -->
           <div class="p-4 rounded-2xl bg-violet-900/30 border border-violet-800/60 space-y-3">
             <div class="flex items-center gap-2 text-xs font-bold text-white">
               <Crown class="w-4 h-4 text-amber-400" />
-              <span>Super Administrator Password (`superadmin`)</span>
+              <span>Administrative & Security Credentials</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                <label class="block text-violet-300 text-[11px] mb-1">Set Password (Min 6 chars)</label>
+                <label class="block text-violet-300 text-[11px] mb-1">Super Admin Password (`superadmin`)</label>
                 <input
                   v-model="wizardData.adminPassword"
                   type="password"
-                  placeholder="Leave default: SuperAdmin@2026!"
+                  placeholder="Set Superadmin Password"
+                  autocomplete="new-password"
                   class="w-full px-3.5 py-2 bg-violet-950 border border-violet-700/60 rounded-xl text-white font-mono placeholder-violet-500 focus:outline-none focus:border-cyan-400"
                 />
               </div>
-              <div class="flex items-center text-[10px] text-violet-400 font-mono leading-relaxed pt-3">
-                Default password is <code>SuperAdmin@2026!</code>. You can change it now or keep it and update later in User Management.
+              <div>
+                <label class="block text-violet-300 text-[11px] mb-1">CISO Admin Password (`admin`)</label>
+                <input
+                  v-model="wizardData.cisoPassword"
+                  type="password"
+                  placeholder="Set CISO Admin Password"
+                  autocomplete="new-password"
+                  class="w-full px-3.5 py-2 bg-violet-950 border border-violet-700/60 rounded-xl text-white font-mono placeholder-violet-500 focus:outline-none focus:border-cyan-400"
+                />
               </div>
+            </div>
+            <div class="text-[10px] text-violet-400 font-mono leading-relaxed">
+              Passwords are saved to persistent local credentials storage (isolated from Git).
             </div>
           </div>
 
@@ -544,6 +555,7 @@ const wizardData = ref({
     location: 'Central Datacenter'
   },
   adminPassword: '',
+  cisoPassword: '',
   telegram: {
     enabled: false,
     botToken: '',

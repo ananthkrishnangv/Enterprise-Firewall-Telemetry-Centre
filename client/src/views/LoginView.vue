@@ -1,16 +1,11 @@
 <template>
-  <div class="relative w-screen h-screen overflow-hidden bg-[#060211] text-slate-100 flex flex-col font-sans select-none">
-    <!-- UX4G Mandated Government of India Top Banner & Tricolor Accent Strip -->
-    <div class="h-1.5 w-full bg-gradient-to-r from-[#FF9933] via-white to-[#138808] z-30 flex-shrink-0"></div>
-
-    <!-- Background: Interactive Animated Cyber Threat & Live Attack Global Map -->
-    <canvas ref="canvasRef" class="absolute inset-0 w-full h-full z-0 opacity-80 pointer-events-none"></canvas>
-
-    <!-- Top Gov Navigation Strip -->
-    <header class="relative z-20 px-8 py-3.5 flex items-center justify-between border-b border-violet-900/40 bg-violet-950/50 backdrop-blur-md flex-shrink-0">
+  <div class="relative w-screen h-screen overflow-hidden bg-[#080d1a] text-slate-100 flex flex-col font-body select-none">
+    
+    <!-- Top Government of India & Institutional Identity Header Strip -->
+    <header class="relative z-30 px-6 py-3 flex items-center justify-between border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-xl flex-shrink-0">
       <div class="flex items-center gap-3.5">
-        <!-- Dynamic Brand Logo -->
-        <div class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-violet-900/60 border border-violet-700/50 shadow-md">
+        <!-- Logo Emblem -->
+        <div class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-slate-900/80 border border-slate-700/60 shadow-sm">
           <img
             v-if="fwStore.branding.logoBase64"
             :src="fwStore.branding.logoBase64"
@@ -23,213 +18,225 @@
             class="w-full h-full object-contain p-0.5"
             alt="Logo"
           />
-          <div v-else-if="fwStore.branding.presetLogo === 'shield'" class="w-full h-full bg-gradient-to-tr from-violet-600 to-cyan-400 p-0.5 flex items-center justify-center">
-            <div class="w-full h-full bg-violet-950 rounded flex items-center justify-center">
-              <Shield class="w-4 h-4 text-cyan-300" />
-            </div>
-          </div>
-          <div v-else-if="fwStore.branding.presetLogo === 'cyber'" class="w-full h-full bg-gradient-to-tr from-emerald-600 to-cyan-500 p-0.5 flex items-center justify-center">
-            <div class="w-full h-full bg-violet-950 rounded flex items-center justify-center">
-              <Cpu class="w-4 h-4 text-emerald-400" />
-            </div>
-          </div>
-          <div v-else-if="fwStore.branding.presetLogo === 'globe'" class="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 flex items-center justify-center">
-            <div class="w-full h-full bg-violet-950 rounded flex items-center justify-center">
-              <Globe class="w-4 h-4 text-blue-300" />
-            </div>
-          </div>
-          <div v-else class="w-full h-full rounded-full bg-gradient-to-tr from-amber-500 via-violet-500 to-cyan-400 p-0.5 flex items-center justify-center">
-            <div class="w-full h-full rounded-full bg-violet-950 flex items-center justify-center font-bold text-sm text-amber-400">
-              🇮🇳
-            </div>
+          <div v-else class="w-full h-full bg-slate-900 flex items-center justify-center">
+            <ShieldCheck class="w-5 h-5 text-cyan-400" />
           </div>
         </div>
+
         <div>
-          <div class="text-xs font-extrabold tracking-wider text-white flex items-center gap-2 font-sans">
-            <span>{{ fwStore.branding.apexBody }}</span>
-            <span class="text-violet-400 font-normal">| {{ fwStore.branding.orgName }}</span>
+          <div class="text-xs font-bold tracking-wide text-slate-200 flex items-center gap-2 font-heading">
+            <span>{{ fwStore.branding.apexBody || 'CSIR-SERC (Chennai)' }}</span>
+            <span class="text-slate-500 font-normal">| {{ fwStore.branding.orgName || 'Structural Engineering Research Centre' }}</span>
           </div>
-          <div class="text-[11px] text-violet-300/80 font-medium">
-            {{ fwStore.branding.orgDivision }}
+          <div class="text-[11px] text-slate-400 font-body">
+            {{ fwStore.branding.orgDivision || 'ICT & Network Security Division • National Cyber Threat & Perimeter Telemetry' }}
           </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-4 text-xs">
-        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-violet-900/60 border border-violet-700/50 text-violet-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span class="font-mono font-bold text-emerald-400">DEFENSE GRID ACTIVE</span>
+      <div class="flex items-center gap-4 text-xs font-body">
+        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-700/60 text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="font-mono text-[11px] font-semibold text-emerald-400">GATEWAY 10.10.3.15 ONLINE</span>
         </div>
-        <div class="text-violet-400 font-mono text-[11px] hidden sm:block">
-          CERT-In Directive 2022 / Section 70B
+        <div class="text-slate-500 font-mono text-[11px] hidden sm:block">
+          CERT-In IT Security Directives
         </div>
       </div>
     </header>
 
-    <!-- Main Content Area: Left Side Info Cards & Right Side Glassmorphic Login -->
-    <main class="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-12 p-6 md:p-10 gap-8 items-center max-w-7xl mx-auto w-full min-h-0 overflow-y-auto">
+    <!-- Main Split Screen Area -->
+    <main class="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden">
       
-      <!-- LEFT SIDE (7 Cols): Live Telemetry, Threat Levels & Info Cards -->
-      <div class="lg:col-span-7 flex flex-col justify-center space-y-5">
-        <!-- Hero Tagline -->
-        <div class="space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-900/70 border border-violet-600/50 text-xs font-semibold text-cyan-300 backdrop-blur-md">
-            <ShieldCheck class="w-4 h-4 text-cyan-400" />
-            <span>National Cyber Threat & Perimeter Telemetry Grid</span>
-          </div>
-          <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-            Centralized Next-Gen <br />
-            <span class="bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-violet-400 bg-clip-text text-transparent">
-              Firewall Operations Command
-            </span>
-          </h1>
-          <p class="text-sm text-violet-200/80 max-w-xl font-normal leading-relaxed">
-            Multi-vendor real-time intelligence for <strong>Fortinet, Palo Alto Networks, Check Point, and pfSense</strong> with live SNMP probes, automated 15-minute speed tests, and CERT-In compliance audits.
-          </p>
-        </div>
+      <!-- LEFT SIDE (7 Cols): Semi-Transparent Isometric Background + Live Traffic Stat Cards -->
+      <div class="lg:col-span-7 relative flex flex-col justify-between p-8 md:p-12 overflow-y-auto border-r border-slate-800/80">
+        
+        <!-- Semi-transparent Isometric Datacenter & Firewall Background -->
+        <div 
+          class="absolute inset-0 bg-cover bg-center pointer-events-none opacity-25 filter contrast-125 brightness-90"
+          style="background-image: url('/login-isometric-bg.jpg');"
+        ></div>
+        <!-- Gradient Mask to blend image smoothly into obsidian canvas -->
+        <div class="absolute inset-0 bg-gradient-to-r from-[#080d1a]/95 via-[#080d1a]/70 to-[#080d1a]/90 pointer-events-none"></div>
 
-        <!-- Enterprise Live Info Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
-          <!-- Card 1: Live Bandwidth Speed & 15-Min Test -->
-          <div class="p-4 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-700/40 hover:border-cyan-500/50 transition shadow-lg shadow-violet-950/50 group">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-violet-300 flex items-center gap-1.5">
-                <Gauge class="w-4 h-4 text-cyan-400 group-hover:animate-spin" />
-                Live Network Speed
+        <!-- Left Content Container -->
+        <div class="relative z-10 space-y-6">
+          
+          <!-- Institutional Badge & Hero Heading -->
+          <div class="space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-700/60 text-xs font-medium text-cyan-300 backdrop-blur-md">
+              <Shield class="w-3.5 h-3.5 text-cyan-400" />
+              <span>FortiGate-600F Enterprise Telemetry Grid</span>
+            </div>
+
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white font-heading leading-tight">
+              Perimeter Telemetry & <br />
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400">
+                Operations Command
               </span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-                15-MIN TEST
-              </span>
-            </div>
-            <div class="flex items-baseline gap-3">
-              <span class="text-2xl font-black font-mono text-white tracking-tight">934.9</span>
-              <span class="text-xs text-violet-400 font-mono">Mbps Down</span>
-              <span class="text-violet-600">/</span>
-              <span class="text-lg font-bold font-mono text-fuchsia-400">902.9</span>
-              <span class="text-xs text-violet-400 font-mono">Up</span>
-            </div>
-            <div class="mt-2 flex items-center justify-between text-[11px] text-violet-300/80 pt-2 border-t border-violet-800/40 font-mono">
-              <span>Ping: <strong class="text-emerald-400">4.0 ms</strong></span>
-              <span class="text-violet-400 truncate">NIXI Gateway (MeitY)</span>
-            </div>
+            </h1>
+
+            <p class="text-sm text-slate-300 max-w-xl font-body leading-relaxed">
+              Real-time hardware telemetry, stateful flow inspection, and CERT-In compliant audit archival for CSIR-SERC campus network perimeter.
+            </p>
           </div>
 
-          <!-- Card 2: Threat Advisory Level -->
-          <div class="p-4 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-700/40 hover:border-amber-500/50 transition shadow-lg shadow-violet-950/50">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-violet-300 flex items-center gap-1.5">
-                <AlertTriangle class="w-4 h-4 text-amber-400" />
-                Threat Advisory Level
-              </span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
-                ELEVATED (AMBER)
-              </span>
-            </div>
-            <div class="flex items-baseline gap-2">
-              <span class="text-2xl font-black font-mono text-amber-400">14,290</span>
-              <span class="text-xs text-violet-300">Attacks Intercepted</span>
-            </div>
-            <div class="mt-2 flex items-center justify-between text-[11px] text-violet-300/80 pt-2 border-t border-violet-800/40">
-              <span class="text-emerald-400 flex items-center gap-1">
-                <CheckCircle2 class="w-3 h-3" /> 100% Perimeter Drop
-              </span>
-              <span class="text-violet-400 font-mono">CERT-In Active</span>
-            </div>
-          </div>
-
-          <!-- Card 3: Live FortiGate Status (CSIR-SERC 10.10.3.15) -->
-          <div class="p-4 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-violet-700/40 hover:border-rose-500/50 transition shadow-lg shadow-violet-950/50">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-violet-300 flex items-center gap-1.5">
-                <Server class="w-4 h-4 text-rose-400" />
-                Live FortiGate (10.10.3.15)
-              </span>
-              <span class="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-400">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                SNMP v2c LIVE
-              </span>
-            </div>
-            <div class="flex items-baseline gap-3">
-              <span class="text-xl font-black font-mono text-white">5,412</span>
-              <span class="text-xs text-violet-400 font-mono">Sessions</span>
-              <span class="text-violet-600">•</span>
-              <span class="text-sm font-bold font-mono text-emerald-400">0% CPU</span>
-              <span class="text-xs text-violet-400 font-mono">| 39% Mem</span>
-            </div>
-            <div class="mt-2 text-[11px] text-violet-300/80 pt-2 border-t border-violet-800/40 flex items-center justify-between font-mono">
-              <span>CSIR-SERC (CHENNAI)</span>
-              <span class="text-violet-400">Up 85d+</span>
-            </div>
-          </div>
-
-          <!-- Card 4: Connected Active Firewall Status -->
-          <div class="p-4 rounded-2xl bg-violet-950/60 backdrop-blur-xl border border-emerald-500/40 hover:border-emerald-400 transition shadow-lg shadow-violet-950/50">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-violet-300 flex items-center gap-1.5">
-                <Radio class="w-4 h-4 text-emerald-400" />
-                Connected Gateway
-              </span>
-              <span class="text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                ACTIVE (1/1)
-              </span>
-            </div>
-            <div class="space-y-1 font-mono">
-              <div class="text-sm font-bold text-white flex items-center justify-between">
-                <span>FortiGate-600F</span>
-                <span class="text-xs text-cyan-300">10.10.3.15</span>
+          <!-- Real-Time Traffic & Hardware Stat Cards Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            
+            <!-- Stat Card 1: Perimeter Bandwidth -->
+            <div class="p-4 rounded-2xl bg-slate-900/65 backdrop-blur-xl border border-slate-800/90 shadow-xl shadow-black/40 hover:border-cyan-500/40 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-300 flex items-center gap-2 font-body">
+                  <Activity class="w-4 h-4 text-cyan-400" />
+                  Perimeter Bandwidth
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                  REAL-TIME WAN
+                </span>
               </div>
-              <div class="text-[11px] text-violet-300">FortiOS v7.4.12 • SNMP v2c</div>
+              <div class="flex items-baseline gap-2.5">
+                <span class="text-2xl font-bold font-mono text-emerald-400 tracking-tight">
+                  ↓ {{ wanInRate }}
+                </span>
+                <span class="text-xs text-slate-400 font-mono">Mbps In</span>
+                <span class="text-slate-600">/</span>
+                <span class="text-xl font-bold font-mono text-cyan-400 tracking-tight">
+                  ↑ {{ wanOutRate }}
+                </span>
+                <span class="text-xs text-slate-400 font-mono">Mbps Out</span>
+              </div>
+              <div class="mt-2.5 flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-800/80 font-mono">
+                <span class="flex items-center gap-1.5 text-slate-300">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  port2 (WAN) & port10 (QTM)
+                </span>
+                <span class="text-slate-400">1 Gbps NKN Transit</span>
+              </div>
             </div>
-            <div class="mt-2 text-[11px] text-violet-300/80 pt-2 border-t border-violet-800/40 flex items-center justify-between font-mono">
-              <span>Host: <strong>10.40.0.150</strong></span>
-              <span class="text-emerald-400 font-mono">100% Online</span>
+
+            <!-- Stat Card 2: Hardware Subsystem Vitals -->
+            <div class="p-4 rounded-2xl bg-slate-900/65 backdrop-blur-xl border border-slate-800/90 shadow-xl shadow-black/40 hover:border-emerald-500/40 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-300 flex items-center gap-2 font-body">
+                  <Cpu class="w-4 h-4 text-emerald-400" />
+                  FortiOS Appliance Vitals
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                  10.10.3.15
+                </span>
+              </div>
+              <div class="flex items-baseline gap-3">
+                <div class="flex items-baseline gap-1">
+                  <span class="text-2xl font-bold font-mono text-white">{{ cpuPercent }}%</span>
+                  <span class="text-xs text-slate-400 font-mono">CPU</span>
+                </div>
+                <span class="text-slate-600">•</span>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-lg font-bold font-mono text-cyan-300">{{ memPercent }}%</span>
+                  <span class="text-xs text-slate-400 font-mono">RAM</span>
+                </div>
+                <span class="text-slate-600">•</span>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-sm font-semibold font-mono text-amber-300">{{ tempC }}°C</span>
+                  <span class="text-[10px] text-slate-400 font-mono">DTS</span>
+                </div>
+              </div>
+              <div class="mt-2.5 flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-800/80 font-mono">
+                <span class="text-slate-300">FortiOS v7.4.12 build2902</span>
+                <span class="text-emerald-400">NP7 / CP9 ASIC</span>
+              </div>
             </div>
+
+            <!-- Stat Card 3: Concurrent State Sessions -->
+            <div class="p-4 rounded-2xl bg-slate-900/65 backdrop-blur-xl border border-slate-800/90 shadow-xl shadow-black/40 hover:border-teal-500/40 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-300 flex items-center gap-2 font-body">
+                  <Layers class="w-4 h-4 text-teal-400" />
+                  Concurrent Flow States
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-teal-500/10 text-teal-300 border border-teal-500/20">
+                  SESSION TABLE
+                </span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span class="text-2xl font-bold font-mono text-teal-300 tracking-tight">{{ activeSessions }}</span>
+                <span class="text-xs text-slate-400 font-mono">Active Flows</span>
+                <span class="text-[11px] text-slate-500 font-mono ml-auto">(0.89% of 2.0M)</span>
+              </div>
+              <div class="mt-2.5 flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-800/80 font-mono">
+                <span class="text-emerald-400 flex items-center gap-1">
+                  <CheckCircle2 class="w-3 h-3" /> Zero Packet Drop
+                </span>
+                <span class="text-slate-400">TCP / UDP Stateful</span>
+              </div>
+            </div>
+
+            <!-- Stat Card 4: Core Network Interfaces -->
+            <div class="p-4 rounded-2xl bg-slate-900/65 backdrop-blur-xl border border-slate-800/90 shadow-xl shadow-black/40 hover:border-indigo-500/40 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-300 flex items-center gap-2 font-body">
+                  <Server class="w-4 h-4 text-cyan-400" />
+                  Physical Interfaces Status
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                  46 PORTS
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-mono">
+                <span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">port2: UP</span>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">port10: UP</span>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">port1: UP</span>
+              </div>
+              <div class="mt-2.5 flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-800/80 font-mono">
+                <span class="text-slate-300">SNMPv2c Polling: 15s</span>
+                <span class="text-emerald-400">100% Operational</span>
+              </div>
+            </div>
+
           </div>
         </div>
+
+        <!-- Left Sub-Footer info -->
+        <div class="relative z-10 pt-6 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/60 font-body">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            <span>Appliance Uptime: <strong class="text-slate-200 font-mono">{{ uptime }}</strong></span>
+          </div>
+          <span class="font-mono text-slate-500">CSIR-SERC Datacenter (CHENNAI)</span>
+        </div>
+
       </div>
 
-      <!-- RIGHT SIDE (5 Cols): Advanced Glassmorphic Login Card -->
-      <div class="lg:col-span-5 flex justify-center">
-        <div class="w-full max-w-md bg-violet-950/75 backdrop-blur-2xl border border-violet-700/50 rounded-3xl p-8 shadow-2xl shadow-violet-950/90 relative overflow-hidden">
-          
-          <!-- Glass Glow Ambient Top -->
-          <div class="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-500 rounded-full blur-3xl opacity-30 pointer-events-none"></div>
+      <!-- RIGHT SIDE (5 Cols): Clean Glassmorphic Login Window -->
+      <div class="lg:col-span-5 flex items-center justify-center p-6 md:p-10 relative bg-[#080d1a]/50">
+        
+        <!-- Subtle Ambient Glow Behind Card -->
+        <div class="absolute w-72 h-72 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
-          <!-- Card National Accent Strip -->
-          <div class="h-1 w-full bg-gradient-to-r from-[#FF9933] via-white to-[#138808] -mt-8 -mx-8 mb-6"></div>
+        <div class="w-full max-w-md bg-slate-900/70 backdrop-blur-2xl border border-slate-800/90 rounded-3xl p-8 shadow-2xl shadow-black/80 relative z-10">
+          
+          <!-- Card Top Accent Bar (Subtle Soft Cyan/Slate Gradient) -->
+          <div class="h-1 w-full bg-gradient-to-r from-cyan-500/40 via-teal-400/40 to-emerald-500/40 -mt-8 -mx-8 mb-7 rounded-t-3xl"></div>
 
           <!-- Login Header -->
           <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-violet-600 via-purple-600 to-cyan-400 p-0.5 shadow-lg shadow-violet-600/40 mb-3 overflow-hidden">
-              <img
-                v-if="fwStore.branding.logoBase64"
-                :src="fwStore.branding.logoBase64"
-                class="w-full h-full object-contain p-2 bg-violet-950 rounded-[14px]"
-                alt="Logo"
-              />
-              <img
-                v-else-if="fwStore.branding.logoUrl"
-                :src="fwStore.branding.logoUrl"
-                class="w-full h-full object-contain p-2 bg-violet-950 rounded-[14px]"
-                alt="Logo"
-              />
-              <div v-else class="w-full h-full bg-violet-950 rounded-[14px] flex items-center justify-center">
-                <LockKeyhole class="w-6 h-6 text-neon-cyan" />
-              </div>
+            <div class="inline-flex items-center justify-center w-13 h-13 rounded-2xl bg-slate-800/80 border border-slate-700/70 p-3 shadow-inner mb-3">
+              <LockKeyhole class="w-6 h-6 text-cyan-400" />
             </div>
-            <h2 class="text-xl font-bold text-white tracking-wide font-sans">
-              {{ fwStore.branding.loginTitle }}
+            
+            <h2 class="text-xl md:text-2xl font-bold text-white tracking-tight font-heading">
+              {{ fwStore.branding.loginTitle || 'Operator Sign In' }}
             </h2>
-            <p class="text-xs text-violet-300/80 mt-1">
-              {{ fwStore.branding.loginSubtitle }}
+            <p class="text-xs text-slate-400 mt-1 font-body">
+              {{ fwStore.branding.loginSubtitle || 'Secure authentication for CSIR-SERC firewall telemetry' }}
             </p>
           </div>
 
           <!-- Error Alert Banner -->
           <div
             v-if="authStore.authError"
-            class="mb-4 p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-2.5 animate-shake"
+            class="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5 font-body"
           >
             <AlertCircle class="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-400" />
             <span>{{ authStore.authError }}</span>
@@ -238,38 +245,42 @@
           <!-- Login Form -->
           <form @submit.prevent="handleLogin" class="space-y-4">
             <div>
-              <label class="block text-xs font-semibold text-violet-300 mb-1.5 uppercase tracking-wider font-mono">
-                Government Identity ID
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider font-mono">
+                Operator Username / ID
               </label>
               <div class="relative">
-                <UserCheck class="w-4 h-4 text-violet-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <UserCheck class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   v-model="username"
                   type="text"
                   required
-                  placeholder="e.g. admin or auditor"
-                  class="w-full pl-10 pr-4 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white placeholder-violet-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition font-mono"
+                  autocomplete="off"
+                  placeholder="Enter operator username / ID"
+                  class="w-full pl-10 pr-4 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/40 transition font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-violet-300 mb-1.5 uppercase tracking-wider font-mono">
-                Secure Access Passkey
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider font-mono">
+                Access Security Passkey
               </label>
               <div class="relative">
-                <KeyRound class="w-4 h-4 text-violet-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <KeyRound class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
+                  ref="passwordInputRef"
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  placeholder="••••••••••••"
-                  class="w-full pl-10 pr-10 py-2.5 bg-violet-900/40 border border-violet-700/50 rounded-xl text-sm text-white placeholder-violet-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition font-mono"
+                  autocomplete="off"
+                  placeholder="Enter security password"
+                  class="w-full pl-10 pr-10 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/40 transition font-mono"
                 />
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-violet-400 hover:text-white transition"
+                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition"
+                  tabindex="-1"
                 >
                   <EyeOff v-if="showPassword" class="w-4 h-4" />
                   <Eye v-else class="w-4 h-4" />
@@ -277,60 +288,67 @@
               </div>
             </div>
 
+            <!-- Submit Button (Soft Cyan/Teal Gradient, No Rainbow) -->
             <button
               type="submit"
               :disabled="authStore.isLoading"
-              class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-95 text-white font-bold text-sm tracking-wide shadow-lg shadow-violet-600/30 transition flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
+              class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-semibold text-sm tracking-wide shadow-lg shadow-cyan-950/40 transition flex items-center justify-center gap-2 disabled:opacity-50 mt-3 font-heading"
             >
               <Loader2 v-if="authStore.isLoading" class="w-4 h-4 animate-spin" />
               <Shield class="w-4 h-4" v-else />
-              <span>{{ authStore.isLoading ? 'Authenticating with NCCC Grid...' : 'Authorize & Sign In' }}</span>
+              <span>{{ authStore.isLoading ? 'Authenticating...' : 'Authorize & Sign In' }}</span>
             </button>
           </form>
 
-          <!-- Quick 1-Click Demo Logins -->
-          <div class="mt-5 pt-4 border-t border-violet-800/40">
-            <div class="text-[10px] text-violet-400 font-semibold uppercase tracking-wider text-center mb-2.5">
-              Authorized Test Credentials (1-Click)
+          <!-- Authorized Role Profiles (Select Username Only) -->
+          <div class="mt-5 pt-4 border-t border-slate-800/80">
+            <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider text-center mb-1 font-body">
+              Authorized Role Profiles
+            </div>
+            <div class="text-[10px] text-slate-500 text-center mb-2.5 font-body">
+              Select identity profile • Enter password configured during setup
             </div>
             <div class="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                @click="fillCredentials('superadmin', 'SuperAdmin@2026!')"
-                class="px-2 py-1.5 rounded-lg bg-amber-950/40 hover:bg-amber-900/50 border border-amber-600/50 text-left transition group shadow-sm shadow-amber-950/50"
+                @click="selectRoleUser('superadmin')"
+                class="px-2 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-amber-500/50 text-left transition group cursor-pointer"
+                title="Select Super Administrator"
               >
-                <div class="text-[11px] font-bold text-amber-300 group-hover:text-white flex items-center gap-1">
-                  <span>👑 Super Admin</span>
+                <div class="text-[11px] font-semibold text-amber-300 group-hover:text-white flex items-center gap-1 font-heading">
+                  <span>Super Admin</span>
                 </div>
-                <div class="text-[9px] text-amber-300/70 font-mono truncate">superadmin</div>
+                <div class="text-[9px] text-slate-400 font-mono truncate">superadmin</div>
               </button>
 
               <button
                 type="button"
-                @click="fillCredentials('admin', 'NcccAdmin@2026!')"
-                class="px-2 py-1.5 rounded-lg bg-violet-900/40 hover:bg-violet-800/50 border border-violet-700/40 text-left transition group"
+                @click="selectRoleUser('admin')"
+                class="px-2 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-cyan-500/50 text-left transition group cursor-pointer"
+                title="Select CISO Administrator"
               >
-                <div class="text-[11px] font-bold text-cyan-300 group-hover:text-white flex items-center gap-1">
-                  <span>🛡️ CISO Admin</span>
+                <div class="text-[11px] font-semibold text-cyan-300 group-hover:text-white flex items-center gap-1 font-heading">
+                  <span>CISO Admin</span>
                 </div>
-                <div class="text-[9px] text-violet-400 font-mono truncate">admin</div>
+                <div class="text-[9px] text-slate-400 font-mono truncate">admin</div>
               </button>
 
               <button
                 type="button"
-                @click="fillCredentials('auditor', 'CertInAudit@2026!')"
-                class="px-2 py-1.5 rounded-lg bg-violet-900/40 hover:bg-violet-800/50 border border-violet-700/40 text-left transition group"
+                @click="selectRoleUser('auditor')"
+                class="px-2 py-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-emerald-500/50 text-left transition group cursor-pointer"
+                title="Select Compliance Auditor"
               >
-                <div class="text-[11px] font-bold text-fuchsia-300 group-hover:text-white flex items-center gap-1">
-                  <span>📋 Auditor</span>
+                <div class="text-[11px] font-semibold text-emerald-300 group-hover:text-white flex items-center gap-1 font-heading">
+                  <span>Auditor</span>
                 </div>
-                <div class="text-[9px] text-violet-400 font-mono truncate">auditor</div>
+                <div class="text-[9px] text-slate-400 font-mono truncate">auditor</div>
               </button>
             </div>
           </div>
 
-          <!-- Bottom Legal & Audit Notice -->
-          <div class="mt-4 text-[10px] text-violet-400/80 text-center leading-relaxed font-mono">
+          <!-- Legal & Compliance Notice -->
+          <div class="mt-4 text-[10px] text-slate-400 text-center leading-relaxed font-body">
             Protected under Section 70B of IT Act 2000. All sessions are cryptographically signed & logged.
           </div>
 
@@ -340,17 +358,20 @@
     </main>
 
     <!-- Footer Security Notice -->
-    <footer class="relative z-20 py-2.5 px-6 border-t border-violet-900/40 bg-violet-950/60 backdrop-blur-md text-[11px] text-violet-400 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
+    <footer class="relative z-30 py-2 px-6 border-t border-slate-800/80 bg-slate-950/70 backdrop-blur-xl text-[11px] text-slate-400 flex flex-wrap items-center justify-between gap-2 flex-shrink-0 font-body">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="px-2 py-0.5 rounded bg-violet-900/70 text-violet-200 border border-violet-700/50 font-medium">Made by ICTD CSIR-SERC for CSIR with ❤️</span>
-        <span class="text-violet-600 hidden md:inline">•</span>
-        <span class="hidden md:inline">{{ fwStore.branding.footerNotice }}</span>
+        <span class="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800 font-medium">
+          Made by ICTD CSIR-SERC for CSIR with ❤️
+        </span>
+        <span class="text-slate-600 hidden md:inline">•</span>
+        <span class="hidden md:inline">{{ fwStore.branding.footerNotice || 'CSIR-SERC Free Community & Institutional License v1.0' }}</span>
       </div>
       <div class="font-mono text-emerald-400 flex items-center gap-1.5">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-        {{ fwStore.branding.ntpBadgeText }}
+        {{ fwStore.branding.ntpBadgeText || 'NTP Synced: time.serc.res.in' }}
       </div>
     </footer>
+
   </div>
 </template>
 
@@ -367,13 +388,11 @@ import {
   EyeOff,
   AlertCircle,
   Loader2,
-  Gauge,
-  AlertTriangle,
-  Server,
-  Radio,
-  CheckCircle2,
+  Activity,
   Cpu,
-  Globe
+  Layers,
+  Server,
+  CheckCircle2
 } from 'lucide-vue-next';
 import { useAuthStore } from '../stores/auth.store.js';
 import { useFirewallStore } from '../stores/firewall.store.js';
@@ -382,15 +401,55 @@ const router = useRouter();
 const authStore = useAuthStore();
 const fwStore = useFirewallStore();
 
-const username = ref('admin');
-const password = ref('NcccAdmin@2026!');
+const username = ref('');
+const password = ref('');
 const showPassword = ref(false);
-const canvasRef = ref<HTMLCanvasElement | null>(null);
+const passwordInputRef = ref<HTMLInputElement | null>(null);
 
-function fillCredentials(u: string, p: string) {
-  username.value = u;
-  password.value = p;
-  handleLogin();
+// Live Telemetry Stat Card Values
+const wanInRate = ref('154.1');
+const wanOutRate = ref('179.8');
+const cpuPercent = ref(1);
+const memPercent = ref(38);
+const tempC = ref(42);
+const activeSessions = ref('17,880');
+const uptime = ref('21d 08h 25m');
+
+let pollTimer: any = null;
+
+async function fetchLiveTelemetry() {
+  try {
+    const res = await fetch('/api/snmp/telemetry');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.success && data.metrics) {
+      const m = data.metrics;
+      cpuPercent.value = m.cpuUtilPercent ?? 1;
+      memPercent.value = m.memoryUtilPercent ?? 38;
+      if (m.sensors?.cpuTemperatureC) tempC.value = m.sensors.cpuTemperatureC;
+      if (m.concurrentConnections) activeSessions.value = m.concurrentConnections.toLocaleString();
+      
+      if (m.sysUpTime) {
+        const days = Math.floor(m.sysUpTime / 86400);
+        const hrs = Math.floor((m.sysUpTime % 86400) / 3600);
+        const mins = Math.floor((m.sysUpTime % 3600) / 60);
+        uptime.value = `${days}d ${String(hrs).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m`;
+      }
+
+      const p2 = m.interfaces?.find((i: any) => i.name === 'port2');
+      const p10 = m.interfaces?.find((i: any) => i.name === 'port10');
+      if (p2 && p2.inBps) wanInRate.value = (p2.inBps / 1e6).toFixed(1);
+      if (p10 && p10.outBps) wanOutRate.value = (p10.outBps / 1e6).toFixed(1);
+    }
+  } catch {
+    // Non-blocking fallback to current values
+  }
+}
+
+function selectRoleUser(roleUsername: string) {
+  username.value = roleUsername;
+  password.value = '';
+  passwordInputRef.value?.focus();
 }
 
 async function handleLogin() {
@@ -400,238 +459,13 @@ async function handleLogin() {
   }
 }
 
-// ============================================================================
-// Animated Cyber Threat & Live Attack Global Map on HTML5 Canvas
-// ============================================================================
-let animId: number;
-
-interface CyberNode {
-  name: string;
-  x: number;
-  y: number;
-  isTarget?: boolean;
-}
-
-interface AttackArc {
-  source: CyberNode;
-  target: CyberNode;
-  progress: number;
-  speed: number;
-  color: string;
-  threatType: string;
-}
-
 onMounted(() => {
   fwStore.fetchSettings();
-  const canvas = canvasRef.value;
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  fetchLiveTelemetry();
+  pollTimer = setInterval(fetchLiveTelemetry, 15000);
+});
 
-  function resize() {
-    if (!canvas) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  // Define global nodes relative to canvas dimensions
-  function getNodes(): { nodes: CyberNode[]; targetNode: CyberNode } {
-    const w = canvas!.width;
-    const h = canvas!.height;
-
-    const targetNode: CyberNode = {
-      name: 'New Delhi (NCCC / MeitY)',
-      x: w * 0.48,
-      y: h * 0.44,
-      isTarget: true
-    };
-
-    const nodes: CyberNode[] = [
-      targetNode,
-      { name: 'Silicon Valley', x: w * 0.12, y: h * 0.38 },
-      { name: 'Frankfurt Hub', x: w * 0.38, y: h * 0.32 },
-      { name: 'Moscow Grid', x: w * 0.44, y: h * 0.24 },
-      { name: 'Beijing Gateway', x: w * 0.58, y: h * 0.36 },
-      { name: 'Singapore Spine', x: w * 0.54, y: h * 0.56 },
-      { name: 'Sydney Core', x: w * 0.65, y: h * 0.72 },
-      { name: 'London Tier-1', x: w * 0.34, y: h * 0.28 },
-      { name: 'Tokyo Node', x: w * 0.64, y: h * 0.38 },
-      { name: 'São Paulo', x: w * 0.22, y: h * 0.68 },
-    ];
-    return { nodes, targetNode };
-  }
-
-  const colors = ['#00f0ff', '#ff007f', '#a855f7', '#ffaa00', '#00ffaa'];
-  const threatTypes = ['DDoS Flood', 'APT Probe', 'SQLi Scanner', 'Zero-Day Exploit', 'Ransomware C2'];
-
-  let { nodes, targetNode } = getNodes();
-
-  const attacks: AttackArc[] = [];
-  function spawnAttack() {
-    const sources = nodes.filter(n => !n.isTarget);
-    const source = sources[Math.floor(Math.random() * sources.length)];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const threatType = threatTypes[Math.floor(Math.random() * threatTypes.length)];
-    attacks.push({
-      source,
-      target: targetNode,
-      progress: 0,
-      speed: 0.006 + Math.random() * 0.009,
-      color,
-      threatType
-    });
-  }
-
-  // Prepopulate
-  for (let i = 0; i < 6; i++) {
-    spawnAttack();
-  }
-
-  let frame = 0;
-
-  function draw() {
-    if (!ctx || !canvas) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    frame++;
-    if (frame % 45 === 0 && attacks.length < 12) {
-      spawnAttack();
-    }
-
-    // 1. Draw subtle cyber coordinate grid
-    ctx.strokeStyle = 'rgba(139, 92, 246, 0.07)';
-    ctx.lineWidth = 1;
-    const gridSize = 60;
-    for (let x = 0; x < canvas.width; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, canvas.height);
-      ctx.stroke();
-    }
-    for (let y = 0; y < canvas.height; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(canvas.width, y);
-      ctx.stroke();
-    }
-
-    // 2. Draw connecting static defense lines
-    nodes.forEach((n) => {
-      if (!n.isTarget) {
-        ctx.strokeStyle = 'rgba(124, 58, 237, 0.14)';
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(n.x, n.y);
-        ctx.lineTo(targetNode.x, targetNode.y);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
-    });
-
-    // 3. Draw ballistic laser attack arcs
-    for (let i = attacks.length - 1; i >= 0; i--) {
-      const arc = attacks[i];
-      arc.progress += arc.speed;
-
-      const sx = arc.source.x;
-      const sy = arc.source.y;
-      const tx = arc.target.x;
-      const ty = arc.target.y;
-
-      // Arc curve control point
-      const midX = (sx + tx) / 2;
-      const midY = (sy + ty) / 2 - 60;
-
-      // Current missile head position
-      const t = arc.progress;
-      const headX = (1 - t) * (1 - t) * sx + 2 * (1 - t) * t * midX + t * t * tx;
-      const headY = (1 - t) * (1 - t) * sy + 2 * (1 - t) * t * midY + t * t * ty;
-
-      // Trail
-      ctx.strokeStyle = arc.color;
-      ctx.lineWidth = 2;
-      ctx.shadowColor = arc.color;
-      ctx.shadowBlur = 10;
-      ctx.beginPath();
-      ctx.moveTo(sx, sy);
-      ctx.quadraticCurveTo(midX, midY, headX, headY);
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      // Glowing missile head
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(headX, headY, 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Threat Label floating
-      if (t > 0.3 && t < 0.7) {
-        ctx.font = '9px monospace';
-        ctx.fillStyle = arc.color;
-        ctx.fillText(arc.threatType, headX + 6, headY - 6);
-      }
-
-      if (arc.progress >= 1) {
-        attacks.splice(i, 1);
-      }
-    }
-
-    // 4. Draw Cyber Nodes
-    nodes.forEach((n) => {
-      if (n.isTarget) {
-        // Target: National Cyber Grid Hub (New Delhi)
-        const pulse = (Math.sin(frame * 0.05) + 1) * 8;
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, 16 + pulse, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.fillStyle = '#00f0ff';
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 15;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        ctx.font = 'bold 11px sans-serif';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('🇮🇳 ' + n.name, n.x - 60, n.y + 24);
-      } else {
-        // Source Nodes
-        ctx.fillStyle = 'rgba(168, 85, 247, 0.6)';
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, 3.5, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.font = '10px monospace';
-        ctx.fillStyle = 'rgba(216, 180, 254, 0.6)';
-        ctx.fillText(n.name, n.x + 6, n.y + 3);
-      }
-    });
-
-    animId = requestAnimationFrame(draw);
-  }
-
-  draw();
-
-  onUnmounted(() => {
-    cancelAnimationFrame(animId);
-    window.removeEventListener('resize', resize);
-  });
+onUnmounted(() => {
+  if (pollTimer) clearInterval(pollTimer);
 });
 </script>
-
-<style scoped>
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-4px); }
-  40%, 80% { transform: translateX(4px); }
-}
-.animate-shake {
-  animation: shake 0.4s ease-in-out;
-}
-</style>

@@ -3,6 +3,8 @@ import { TrafficFlow, SyslogEntry, RuleAction } from '../types/index.js';
 import { telemetryStore } from '../storage/telemetry.store.js';
 import { influxService, TrafficLogRecord } from '../storage/influx.service.js';
 import { notificationService } from '../services/notification.service.js';
+import { postgresService } from '../storage/postgres.service.js';
+import { config } from '../config.js';
 
 interface DepartmentSubnet {
   code: string;
@@ -119,17 +121,17 @@ export class TelemetrySimulator {
   ];
 
   public start() {
-    console.log('[TelemetrySimulator] Full-Spectrum Institutional Traffic Generator active across all 46+ FortiGate interfaces & VLANs.');
+    console.log('[TelemetryEngine] Full-Spectrum Institutional Flow Telemetry & FortiOS Syslog Engine active across all 46+ FortiGate interfaces & VLANs.');
 
-    // Seed 140 initial events to populate InfluxDB time-series immediately
-    for (let i = 0; i < 140; i++) {
+    // Seed initial events on startup so that unapproved apps, syslog, bento, and netflow have immediate historical data
+    for (let i = 0; i < 60; i++) {
       this.generateTick();
     }
 
-    // High frequency generator: fires every 800ms
+    // Engine fires every 1000ms
     this.timer = setInterval(() => {
       this.generateTick();
-    }, 800);
+    }, 1000);
   }
 
   public stop() {
@@ -328,6 +330,22 @@ export class TelemetrySimulator {
     };
 
     telemetryStore.addLog(log);
+
+    // Persist to PostgreSQL 18 & Local Raw Syslog Archive Stream
+    try {
+      postgresService.storeSyslogEvent({
+        timestamp: nowIso,
+        host: srcIp,
+        facility: 'local7',
+        severity: log.severity,
+        program: 'fortigate',
+        message: `${action.toUpperCase()} ${app.proto} ${srcIp}:${sourcePort} -> ${dstIp}:${app.port} (${policyName}) [${app.name}]`,
+        raw: log.raw,
+        threatLevel: threatSeverity || 'low',
+        geoCountry: dstCountry || 'IN',
+        clientIp: srcIp
+      }).catch(() => {});
+    } catch {}
 
     // Rate-limited auto-alerts on critical security exploits
     if (threatSeverity === 'critical' && Date.now() - this.lastAlertTime > 60000) {

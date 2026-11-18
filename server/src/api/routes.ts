@@ -174,6 +174,17 @@ apiRouter.get('/telemetry/flows', (req: Request, res: Response) => {
   res.json({ success: true, count: flows.length, flows });
 });
 
+apiRouter.get('/traffic/flows', (req: Request, res: Response) => {
+  const limit = parseInt(req.query.limit as string, 10) || 50;
+  const firewallId = req.query.firewallId as string | undefined;
+  const action = req.query.action as string | undefined;
+  const app = req.query.app as string | undefined;
+  const search = req.query.search as string | undefined;
+
+  const flows = telemetryStore.getRecentFlows(limit, { firewallId, action, app, search });
+  res.json({ success: true, count: flows.length, flows });
+});
+
 apiRouter.get('/telemetry/top-talkers', (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string, 10) || 10;
   const topTalkers = telemetryStore.getTopTalkers(limit);
@@ -410,9 +421,30 @@ apiRouter.get('/config/diff/:firewallId', (req: Request, res: Response) => {
 });
 
 // 6. Alerts
-apiRouter.get('/alerts', (req: Request, res: Response) => {
-  const alerts = telemetryStore.getAlerts();
-  res.json({ success: true, count: alerts.length, alerts });
+apiRouter.get('/alerts', async (req: Request, res: Response) => {
+  try {
+    let dbAlerts = await postgresService.getAlerts(50);
+    const memAlerts = telemetryStore.getAlerts();
+    const alertMap = new Map<string, any>();
+    for (const a of memAlerts) {
+      alertMap.set(a.id, a);
+    }
+    for (const a of dbAlerts) {
+      if (!alertMap.has(a.id)) {
+        alertMap.set(a.id, a);
+      }
+    }
+    const combined = Array.from(alertMap.values());
+    res.json({
+      success: true,
+      count: combined.length,
+      alerts: combined,
+      unacknowledgedCount: combined.filter(a => !a.acknowledged).length
+    });
+  } catch (err: any) {
+    const alerts = telemetryStore.getAlerts();
+    res.json({ success: true, count: alerts.length, alerts });
+  }
 });
 
 apiRouter.post('/alerts/:id/ack', (req: Request, res: Response) => {
@@ -435,6 +467,26 @@ apiRouter.get('/compliance', (req: Request, res: Response) => {
     summary: { total, passed, failed, warning },
     controls
   });
+});
+
+apiRouter.get('/compliance/export', (req: Request, res: Response) => {
+  const controls = metadataStore.getComplianceControls();
+  const headers = ['Framework', 'Control Code', 'Title', 'Status', 'Description', 'Audit Evidence', 'Remediation Action Plan', 'Affected Rules'];
+  const rows = controls.map(c => [
+    `"${c.framework}"`,
+    `"${c.controlCode}"`,
+    `"${c.title.replace(/"/g, '""')}"`,
+    `"${c.status.toUpperCase()}"`,
+    `"${c.description.replace(/"/g, '""')}"`,
+    `"${c.evidence.replace(/"/g, '""')}"`,
+    `"${c.remediation.replace(/"/g, '""')}"`,
+    `"${(c.affectedRules || []).join(', ')}"`
+  ].join(','));
+
+  const csv = [headers.join(','), ...rows].join('\n');
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="CERT-In_Audit_Compliance_Report.csv"');
+  res.send(csv);
 });
 
 // ==========================================
@@ -786,7 +838,7 @@ apiRouter.get('/system/license', (req: Request, res: Response) => {
 // 12. First-Time Setup Wizard & Logo Customization
 // ==========================================
 apiRouter.post('/settings/wizard/complete', async (req: Request, res: Response) => {
-  const { branding, firewall, adminPassword, telegram } = req.body || {};
+  const { branding, firewall, coreSwitch, adminPassword, cisoPassword, telegram } = req.body || {};
 
   try {
     // 1. Update branding & mark setup complete
@@ -843,9 +895,44 @@ apiRouter.post('/settings/wizard/complete', async (req: Request, res: Response) 
       snmpCollector.pollAllDevices().catch(() => {});
     }
 
-    // 3. Update Super Admin password if provided
+    // 2b. Configure optional core switch
+    if (coreSwitch && (coreSwitch.enabled || coreSwitch.ipAddress)) {
+      const switchPayload = {
+        id: 'switch-core-01',
+        name: coreSwitch.name || 'Core-Switch-01',
+        vendor: coreSwitch.vendor || 'cisco',
+        model: `${(coreSwitch.vendor || 'Enterprise').toUpperCase()} L3 Core Switch`,
+        ipAddress: coreSwitch.ipAddress || '10.10.3.1',
+        version: 'Enterprise Switch OS',
+        status: 'healthy' as const,
+        location: coreSwitch.location || 'Primary Core Rack',
+        snmpEnabled: true,
+        snmpCommunity: coreSwitch.snmpCommunity || 'public',
+        snmpVersion: coreSwitch.snmpVersion || 'v2c',
+        snmpPort: coreSwitch.snmpPort ? parseInt(coreSwitch.snmpPort, 10) : 161,
+        snmpTimeout: 3000,
+        snmpRetries: 2,
+        lastSeen: new Date().toISOString()
+      };
+      if (metadataStore.getDevices().some(d => d.id === 'switch-core-01')) {
+        metadataStore.updateDevice('switch-core-01', switchPayload);
+      } else {
+        metadataStore.addDevice(switchPayload);
+      }
+    }
+
+    // 3. Update Super Admin & CISO Admin passwords if provided
+    const credUpdates: { superadmin?: string; admin?: string } = {};
     if (adminPassword && adminPassword.trim().length >= 6) {
       authStore.updateUser('usr-serc-superadmin', { password: adminPassword.trim() });
+      credUpdates.superadmin = adminPassword.trim();
+    }
+    if (cisoPassword && cisoPassword.trim().length >= 6) {
+      authStore.updateUser('usr-nccc-001', { password: cisoPassword.trim() });
+      credUpdates.admin = cisoPassword.trim();
+    }
+    if (Object.keys(credUpdates).length > 0) {
+      authStore.writeCredentialsFile(credUpdates);
     }
 
     res.json({
@@ -980,57 +1067,8 @@ apiRouter.get('/system/storage', async (req: Request, res: Response) => {
 });
 
 // ==========================================
-// 15. Security Operations Alert Center
+// 15. Security Operations Alert Actions
 // ==========================================
-apiRouter.get('/alerts', async (req: Request, res: Response) => {
-  try {
-    let dbAlerts = await postgresService.getAlerts(50);
-
-    if (dbAlerts.length === 0) {
-      dbAlerts = [
-        {
-          id: 'alt-ddos-101',
-          timestamp: new Date(Date.now() - 4 * 60000).toISOString(),
-          severity: 'critical',
-          title: 'Volumetric Ingress Spike (SYN Flood Attempt)',
-          detail: 'High PPS detected on port1 (WAN). 12,450 pps from 185.220.101.5. Rate-limiting policy applied.',
-          sourceIp: '185.220.101.5',
-          acknowledged: false
-        },
-        {
-          id: 'alt-cpu-102',
-          timestamp: new Date(Date.now() - 14 * 60000).toISOString(),
-          severity: 'warning',
-          title: 'SSL-VPN Concurrent Connection Surge',
-          detail: 'Concurrent sessions reached 84% of capacity threshold on FortiGate-CSIR-SERC (10.10.3.15).',
-          sourceIp: '10.10.3.15',
-          acknowledged: false
-        },
-        {
-          id: 'alt-geo-103',
-          timestamp: new Date(Date.now() - 28 * 60000).toISOString(),
-          severity: 'info',
-          title: 'Perimeter Rule Auto-Block Dispatched',
-          detail: 'Automated CERT-In rule #402 blocked 43 malicious scanners targeting TCP 22 & 443.',
-          sourceIp: '45.155.205.233',
-          acknowledged: false
-        }
-      ];
-      for (const a of dbAlerts) {
-        postgresService.storeAlert(a).catch(() => {});
-      }
-    }
-
-    res.json({
-      success: true,
-      alerts: dbAlerts,
-      unacknowledgedCount: dbAlerts.filter(a => !a.acknowledged).length
-    });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
 apiRouter.post('/alerts/:id/acknowledge', async (req: Request, res: Response) => {
   const id = req.params.id as string;
   await postgresService.acknowledgeAlert(id);

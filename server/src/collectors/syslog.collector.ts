@@ -3,9 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { SyslogEntry, FirewallVendor, RuleAction } from '../types/index.js';
 import { telemetryStore } from '../storage/telemetry.store.js';
 import { influxService } from '../storage/influx.service.js';
+import { postgresService } from '../storage/postgres.service.js';
 
 export class SyslogCollector {
   private server: dgram.Socket;
+  private server514: dgram.Socket | null = null;
   private port: number;
 
   constructor(port: number = 1514) {
@@ -36,10 +38,30 @@ export class SyslogCollector {
     } catch (e: any) {
       console.warn(`[SyslogCollector] Could not bind port ${this.port}: ${e.message}`);
     }
+
+    // Also attempt to bind standard syslog port 514 UDP
+    if (this.port !== 514) {
+      try {
+        this.server514 = dgram.createSocket('udp4');
+        this.server514.on('error', () => {});
+        this.server514.on('message', (msg, rinfo) => {
+          this.parseAndIngest(msg.toString('utf-8'), rinfo.address);
+        });
+        this.server514.on('listening', () => {
+          console.log('[SyslogCollector] Also listening on standard UDP port 514');
+        });
+        this.server514.bind(514);
+      } catch (e: any) {
+        // Fallback gracefully if 514 is unavailable
+      }
+    }
   }
 
   public stop() {
-    this.server.close();
+    try { this.server.close(); } catch {}
+    if (this.server514) {
+      try { this.server514.close(); } catch {}
+    }
   }
 
   public parseAndIngest(raw: string, sourceHostIp: string): SyslogEntry {
@@ -159,6 +181,22 @@ export class SyslogCollector {
     };
 
     telemetryStore.addLog(entry);
+
+    // Forward to PostgreSQL 18 & Local Raw Syslog Archive Stream
+    try {
+      postgresService.storeSyslogEvent({
+        timestamp: entry.timestamp,
+        host: sourceHostIp || '10.10.3.15',
+        facility: 'local7',
+        severity: entry.severity || 'info',
+        program: entry.vendor || 'fortigate',
+        message: entry.parsed ? `${entry.parsed.action?.toUpperCase()} ${entry.parsed.protocol} ${entry.parsed.sourceIp}:${entry.parsed.sourcePort} -> ${entry.parsed.destIp}:${entry.parsed.destPort} (${entry.parsed.ruleName})` : raw,
+        raw,
+        threatLevel: entry.severity === 'critical' ? 'critical' : entry.severity === 'warning' ? 'high' : 'low',
+        geoCountry: 'IN',
+        clientIp: entry.parsed?.sourceIp || sourceHostIp
+      }).catch(() => {});
+    } catch {}
 
     // Forward to InfluxDB Time-Series Engine
     try {

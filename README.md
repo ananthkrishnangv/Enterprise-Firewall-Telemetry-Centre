@@ -28,14 +28,21 @@ The application is architected as an **all-in-one Virtual Appliance (VM)** featu
 
 ## Visual Tour & Core Capabilities
 
-### 1. First-Time Setup Wizard (Virtual Appliance Ready)
-Upon importing the Virtual Machine (OVA/VMDK) and browsing to its IP address, operators are greeted with a frictionless 4-step first-time deployment wizard to configure organization branding, custom logo, SNMP polling targets, syslog ports, and super administrator credentials.
+### 1. Split-Screen Glassmorphic Operator Sign In
+A cybersecurity-themed sign-in portal featuring a live telemetry sidebar with WAN bandwidth gauges, CPU and memory gauges, sensor readings, and an isometric command background. No hardcoded or auto-filled passwords—operators enter their own passkeys set during initial deployment.
+
+![Operator Sign In Portal](docs/screenshots/01_login.png)
+
+---
+
+### 2. First-Time Setup Wizard (Virtual Appliance & Raw Linux Ready)
+Upon booting the appliance or raw Linux server and opening its IP in a browser, operators can configure organization branding, custom logo, SNMP polling targets, core switch monitoring, and administrative passkeys.
 
 ![First-Time Setup Wizard](docs/screenshots/02_wizard.png)
 
 ---
 
-### 2. Executive Telemetry Dashboard
+### 3. Executive Telemetry Dashboard
 Continuous real-time visualization of perimeter throughput, live incoming and outgoing bandwidth gauges with peak ingest tracking, operational alerts, and automated 15-minute speed test countdowns. Features hands-free auto-refreshing (5s, 10s, 30s, 60s) with live pulse indicators.
 
 ![Executive Telemetry Dashboard](docs/screenshots/03_dashboard.png)
@@ -166,6 +173,7 @@ Centralized settings console enabling custom institutional identity:
 - Storage breakdown modal showing exact disk paths and database volume utilization
 
 ![System Configuration & Branding](docs/screenshots/10_settings_branding.png)
+![Storage Registry & Engine Health](docs/screenshots/11_storage_registry.png)
 
 ---
 
@@ -248,17 +256,17 @@ Ensure the telemetry host or virtual machine has direct routing to monitored per
 
 ---
 
-## Deployment Guide
+## Turnkey Linux Deployment Guide
 
-### Option A: Universal Linux Installer (Ubuntu & Rocky Linux / RHEL) — Recommended
+### Option A: Automated One-Command Installer & Console Wizard (Recommended)
 
-Deploy the entire telemetry platform, databases, and time-series engines onto any Ubuntu (20.04/22.04/24.04) or Rocky Linux (8/9/RHEL/CentOS Stream) virtual machine with a single command:
+Deploy the entire telemetry platform, PostgreSQL 18, and InfluxDB 2.7 TSDB onto any bare-metal Linux PC or Virtual Machine (Ubuntu 20.04/22.04/24.04, Debian 11/12, Rocky Linux 8/9, AlmaLinux, RHEL, CentOS Stream) with an interactive console wizard:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ananthkrishnangv/Enterprise-Firewall-Telemetry-Centre/main/install.sh | sudo bash
 ```
 
-Or manually clone and run:
+Or manually clone and launch the interactive setup wizard:
 
 ```bash
 git clone https://github.com/ananthkrishnangv/Enterprise-Firewall-Telemetry-Centre.git
@@ -266,101 +274,93 @@ cd Enterprise-Firewall-Telemetry-Centre
 sudo bash install.sh
 ```
 
-#### What the Installer Does:
-1. **Host Preflight & OS Detection**: Validates system resources and detects package manager (`apt-get` on Debian/Ubuntu, `dnf`/`yum` on Rocky Linux/RHEL).
-2. **System Update & Core Utilities**: Applies OS security patches and installs required tools (`curl`, `git`, `jq`, `openssl`, `net-snmp-tools` / `net-snmp-utils`, `tar`, `gzip`).
-3. **Node.js 22 LTS Runtime**: Installs modern Node.js and npm via official NodeSource repositories.
-4. **Docker Engine & Docker Compose**: Configures official Docker CE container runtime and enables systemd boot services.
-5. **Perimeter Host Firewall Configuration**: Automatically configures `ufw` (Ubuntu) or `firewalld` (Rocky Linux) with permissions for ports `80/tcp`, `443/tcp`, `162/udp` (SNMP Trap), `1514/udp` (Syslog), `514/udp`, and `2055/udp` (NetFlow/IPFIX).
-6. **Multi-Tier Automated Build**: Clones repository to `/opt/firewall-telemetry`, builds Vue 3.5 frontend (`vite build`) and TypeScript backend (`tsc`).
-7. **Database & TSDB Orchestration**: Deploys `postgres:18-alpine` (metadata, RBAC, backups) and `influxdb:2.7-alpine` (time-series traffic logs with 180-day retention).
-8. **Interactive Post-Installation Whitelabeling & SNMP Wizard**: Colorized terminal wizard prompting for custom organization name, division, portal title, subtitle, vector logo preset, firewall IP, vendor, and SNMP community/v3 strings.
-9. **Permanent Universal Licensing**: Preserves the CSIR-SERC Free Community & Institutional License (v1.0) and institutional footer notice (*"Made by ICTD CSIR-SERC for CSIR with ❤️"*).
-10. **Systemd Daemon Registration**: Registers `/etc/systemd/system/firewall-telemetry.service` for automated recovery across system reboots and power outages.
+#### What the Interactive Console Wizard Configures:
+1. **Preflight Hardware & OS Validation**: Automatically checks CPU architecture, RAM, and disk storage; identifies Debian/Ubuntu (`apt`) or RHEL/Rocky (`dnf`/`yum`) and installs missing dependencies (`curl`, `git`, `jq`, `net-snmp`, `openssl`).
+2. **Container Engine Provisioning**: Detects Docker and Docker Compose; installs official Docker CE if not already present and enables systemd boot services.
+3. **Whitelabel Product Branding**: Prompts for custom Organization Name, Department/Division, Apex Directorate, Custom Portal Title, Subtitle, and UX4G Vector Logo preset.
+4. **Perimeter Firewall Gateway**: Supports Fortinet FortiGate, Palo Alto Networks, pfSense/OPNsense, Check Point, Cisco ASA/Firepower, and generic SNMP firewalls. Configures Management IP, friendly label, SNMP version (v2c/v3), polling community/credentials, SNMP port (161), Syslog ports (1514/514), and NetFlow port (2055).
+5. **Core Switch Monitoring (Optional)**: Seamlessly onboard enterprise core switches (Cisco Catalyst/Nexus, Aruba/HP, Juniper, Arista) with separate IP, SNMP community, and rack location.
+6. **Zero Hardcoded Passwords & Security Credential Initialization**:
+   - Prompts for Super Administrator (`superadmin`) password with masked entry and confirmation.
+   - Prompts for CISO Security Officer (`admin`) password with masked entry and confirmation.
+   - Prompts for Compliance Auditor (`auditor`) password.
+   - **Critical Security Notice**: Passwords are saved **only** to local `config/credentials.json` (with strict permissions `chmod 600`) and into `.env`. They are completely excluded from Git via `.gitignore` and **never committed to any repository**.
+7. **Automated Docker Orchestration**: Builds and launches containers using standard Docker bridge networking (`docker-compose.standalone.yml`)—runs reliably on any standard Linux machine without requiring complex network configuration.
+8. **Host Ingress Firewall Hardening**: Automatically configures `ufw` or `firewalld` for ports `80/tcp`, `443/tcp`, `162/udp` (SNMP Trap), `1514/udp` & `514/udp` (Syslog), and `2055/udp` (NetFlow).
+9. **Systemd Boot Recovery**: Registers and enables `/etc/systemd/system/firewall-telemetry.service` so all containers recover automatically across server reboots.
 
 ---
 
-### Option B: Manual Docker Compose Deployment (Custom/Macvlan Networks)
+### Option B: Pre-Configured Deployment via Credentials File
 
-1. **Clone the Repository**:
+For automated or headless environments, create your credentials configuration before launching:
+
+1. **Copy the Credentials Template**:
    ```bash
-   git clone https://github.com/ananthkrishnangv/Enterprise-Firewall-Telemetry-Centre.git
-   cd Enterprise-Firewall-Telemetry-Centre
+   cp config/credentials.example.json config/credentials.json
+   chmod 600 config/credentials.json
    ```
 
-2. **Configure Environment Variables**:
-   Create or verify `.env`:
-   ```env
-   NODE_ENV=production
-   PORT=80
-   WS_PORT=80
-   SYSLOG_PORT=1514
-   FLOW_PORT=2055
-
-   # InfluxDB 2.7 Time-Series TSDB Configuration
-   INFLUX_URL=http://10.40.0.152:8086
-   INFLUX_TOKEN=influx-firewall-token-2026-supersecret
-   INFLUX_ORG=csir-serc
-   INFLUX_BUCKET=firewall_logs
-
-   # PostgreSQL 18 Engine Configuration
-   DATABASE_URL=postgresql://postgres:firewall_secret_2026!@10.40.0.151:5432/firewall_telemetry
-
-   # Default Firewall Target
-   DEFAULT_FW_IP=10.10.3.15
-   DEFAULT_SNMP_COMMUNITY=fortinet
-   DEFAULT_SNMP_VERSION=v2c
+2. **Edit `config/credentials.json`** with your enterprise parameters:
+   ```json
+   {
+     "auth": {
+       "superadmin": { "username": "superadmin", "password": "YourStrongSuperAdminPass!" },
+       "admin": { "username": "admin", "password": "YourStrongCisoPass!" },
+       "auditor": { "username": "auditor", "password": "YourStrongAuditorPass!" }
+     },
+     "snmp": {
+       "firewall": {
+         "vendor": "fortinet",
+         "host": "10.10.3.15",
+         "port": 161,
+         "version": "v2c",
+         "community": "fortinet"
+       },
+       "coreSwitch": {
+         "enabled": true,
+         "vendor": "cisco",
+         "host": "10.10.3.1",
+         "port": 161,
+         "version": "v2c",
+         "community": "public"
+       }
+     }
+   }
    ```
 
-3. **Build and Launch Containers**:
+3. **Deploy Containers**:
    ```bash
-   docker compose up -d --build
+   docker compose -f docker-compose.standalone.yml up -d --build
    ```
-
-4. **Verify Container Health**:
-   ```bash
-   docker compose ps
-   ```
-
-5. **Access the Console**:
-   Open your browser and navigate to `http://<HOST_OR_MACVLAN_IP>/` (e.g. `http://10.40.0.150/`).
 
 ---
 
-### Option B: Local Development Setup
+### Option C: Advanced Datacenter Macvlan Network Deployment
 
-1. **Prerequisites**:
-   - Node.js >= 20.0.0
-   - npm >= 10.0.0
-   - Local PostgreSQL 18 instance
+For environments requiring dedicated static container IP addresses routed directly on the physical LAN (e.g. `10.40.0.150` for console, `10.40.0.151` for PostgreSQL, `10.40.0.152` for InfluxDB):
 
-2. **Install Dependencies**:
-   ```bash
-   npm install
-   cd client && npm install && cd ..
-   cd server && npm install && cd ..
-   ```
-
-3. **Start Development Servers**:
-   ```bash
-   # Run both frontend and backend concurrently
-   npm run dev
-   ```
-   - Frontend Vite Dev Server: `http://localhost:5173`
-   - Backend Express API: `http://localhost:3001`
+```bash
+docker compose -f docker-compose.yml up -d --build
+```
 
 ---
 
-## Default Access Credentials
+## Security & Decoupled Credentials Architecture
 
 > [!IMPORTANT]
-> Change default passwords immediately after initial deployment in the User Management console.
+> **Zero Hardcoded Passwords**: This platform enforces absolute credential decoupling. No default or static passwords exist in the source code or frontend bundles.
 
-| Role | Username | Password | Purpose |
+- **Storage Location**: Credentials reside strictly in `config/credentials.json` (permissions `0600`) and the persistent `data/` volume.
+- **Git Protection**: `config/credentials.json`, `data/credentials.json`, `.env`, and all private keys (`*.key`, `*.ppk`, `*.pem`, `*.pub`) are permanently ignored in `.gitignore`.
+- **Frontend Form Security**: The login view (`/login`) contains zero autofilled passwords and enforces `autocomplete="off"`. Quick role profiles only populate the username and require operators to provide their own configured password.
+- **Cryptographic Storage**: User passwords in PostgreSQL are salted and hashed using `bcrypt` (10 rounds). Web sessions are secured with cryptographically signed JSON Web Tokens (JWT).
+
+| Configured Identity | Default Username | Initial Credential Origin | Permissions Scope |
 | :--- | :--- | :--- | :--- |
-| **Super Administrator** | `superadmin` | `SuperAdmin@2026!` | Full administrative access, user creation, license management |
-| **Security Administrator** | `admin` | `NcccAdmin@2026!` | Day-to-day operations, threshold configuration, alert triage |
-| **Compliance Auditor** | `auditor` | `CertInAudit@2026!` | Read-only compliance scorecard, log review, drift inspection |
+| **Super Administrator** | `superadmin` | Set in `install.sh` / `credentials.json` | Full system control, whitelabeling, user management |
+| **CISO Security Admin** | `admin` | Set in `install.sh` / `credentials.json` | Security operations, policy review, threshold alerts |
+| **Compliance Auditor** | `auditor` | Set in `install.sh` / `credentials.json` | Read-only CERT-In compliance audit, 180-day log review |
 
 ---
 
@@ -391,19 +391,18 @@ The platform exposes a comprehensive, secured JSON REST API:
 
 ---
 
-## Comprehensive PDF Documentation
+## Comprehensive Presentation & Technical Documentation
 
-A complete, high-resolution printable PDF technical manual has been compiled and included in the repository:
+A complete, high-resolution visual presentation manual is available in the repository:
 
-📄 **[Enterprise Firewall Telemetry Centre Documentation (PDF)](docs/Enterprise_Firewall_Telemetry_Centre_Documentation.pdf)**
+- 📄 **[Enterprise Firewall Telemetry Center Presentation (PDF)](docs/Enterprise_Firewall_Telemetry_Center_Presentation.pdf)** (21.3 MB)
+- 🌐 **[Enterprise Firewall Telemetry Center Presentation (HTML)](docs/Enterprise_Firewall_Telemetry_Center_Presentation.html)** (Standalone interactive presentation with high-resolution imagery)
 
-The PDF manual covers:
-- System Architecture & Engineering Specifications
-- Appliance Network Hardening & Security ACLs
-- First-Time Configuration Wizard Walkthrough
-- FortiGate SNMP MIB-II & Enterprise OID Reference Tables
-- Backup & Disaster Recovery Procedures
-- CERT-In Baseline Audit Compliance Guidelines
+### What the Presentation Covers:
+- **Slide-by-Slide Visual Tour**: Each portal menu and interface highlighted with high-resolution full-screen screenshots.
+- **Architectural & Engineering Specifications**: Sub-second telemetry polling, NetFlow v5/v9 & IPFIX decoding, InfluxDB 2.7 TSDB pipeline, and PostgreSQL 18 persistence.
+- **CERT-In 180-Day Compliance Architecture**: Storage registry, forensic chain of custody, and IST NTP Stratum-1 synchronization.
+- **Turnkey Linux Deployment**: Walkthrough of the interactive console setup wizard (`install.sh`), whitelabeling, and hardware onboarding.
 
 ---
 

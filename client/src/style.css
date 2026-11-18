@@ -4,110 +4,92 @@
 
 @layer base {
   html, body, #app {
-    font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Primary Headings, Titles, Nav Menus, Table Headers & Buttons use Google Sans */
+  h1, h2, h3, h4, h5, h6, 
+  .font-heading,
+  .font-sans,
+  th,
+  button,
+  nav {
+    font-family: 'Google Sans', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+    letter-spacing: -0.01em;
+  }
+
+  /* Regular prose, descriptions, labels, input fields & table data cells use Roboto Sans */
+  p, label, input, select, textarea, td,
+  .font-body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  }
+
+  /* Monospace Telemetry, Line Rates, IP Addresses & Timestamps */
+  .font-mono, code, pre {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
   }
 
   body {
-    @apply bg-violet-950 text-slate-100 antialiased selection:bg-violet-500 selection:text-white min-h-screen;
+    @apply bg-[#080d1a] text-slate-100 antialiased selection:bg-cyan-500 selection:text-black min-h-screen;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(91, 33, 182, 0.22) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(217, 70, 239, 0.18) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.25) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(15, 23, 42, 0.9) 0px, transparent 50%);
     background-attachment: fixed;
   }
 }
 
-/* UX4G Glassmorphism Surface with Core Violet Rim */
+/* Professional Dark NOC Glass Surface with Subtle Slate Rim */
 .ux4g-glass {
-  background: rgba(18, 8, 43, 0.72);
+  background: rgba(11, 17, 32, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(139, 92, 246, 0.22);
-  box-shadow: 0 10px 30px -10px rgba(76, 29, 149, 0.35);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
 .ux4g-glass-interactive {
   @apply ux4g-glass transition-all duration-300;
 }
 .ux4g-glass-interactive:hover {
-  border-color: rgba(192, 132, 252, 0.45);
-  box-shadow: 0 12px 36px -8px rgba(124, 58, 237, 0.5);
+  border-color: rgba(6, 182, 212, 0.45);
+  box-shadow: 0 12px 36px -8px rgba(6, 182, 212, 0.2);
   transform: translateY(-2px);
 }
 
-/* Liquid Flow Wave Container */
-.liquid-tube-container {
+/* Professional Soft Gradient Border */
+.soft-gradient-border, .rainbow-border {
   position: relative;
-  overflow: hidden;
-  background: rgba(15, 7, 34, 0.85);
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 1rem;
 }
-
-/* Animated Rainbow Gradient Border */
-.rainbow-border {
-  position: relative;
-  border-radius: 0.75rem;
-}
-.rainbow-border::before {
+.soft-gradient-border::before, .rainbow-border::before {
   content: '';
   position: absolute;
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(90deg, #ec4899, #f97316, #eab308, #10b981, #06b6d4, #8b5cf6, #ec4899);
-  background-size: 300% 300%;
-  animation: rainbowShift 8s ease infinite;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(16, 185, 129, 0.25), rgba(99, 102, 241, 0.3));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
 }
 
-/* Liquid flow particles */
-@keyframes fluidParticle {
-  0% { transform: translateX(-100%); opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: translateX(250%); opacity: 0; }
-}
-
-.flow-packet-1 {
-  animation: fluidParticle 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-.flow-packet-2 {
-  animation: fluidParticle 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.6s;
-}
-.flow-packet-3 {
-  animation: fluidParticle 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.2s;
-}
-
-/* Wave keyframes */
-@keyframes waveAnimation {
-  0% { transform: translateX(0) translateZ(0) scaleY(1); }
-  50% { transform: translateX(-25%) translateZ(0) scaleY(1.15); }
-  100% { transform: translateX(-50%) translateZ(0) scaleY(1); }
-}
-
-.animate-wave-1 {
-  animation: waveAnimation 6s ease-in-out infinite;
-}
-.animate-wave-2 {
-  animation: waveAnimation 9s ease-in-out infinite reverse;
-}
-
-/* Custom Scrollbars in Violet Theme */
+/* Custom Scrollbars in Dark NOC Theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d051e;
+  background: rgba(8, 13, 26, 0.8);
 }
 ::-webkit-scrollbar-thumb {
-  background: #3b1670;
-  border-radius: 3px;
+  background: rgba(51, 65, 85, 0.7);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #6d28d9;
+  background: rgba(6, 182, 212, 0.6);
 }

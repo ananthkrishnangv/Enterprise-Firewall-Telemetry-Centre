@@ -51,7 +51,9 @@ export default {
         pfsense: '#06b6d4',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ['"Google Sans"', '"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        body: ['"Roboto"', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['"Roboto"', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace']
       },
       animation: {

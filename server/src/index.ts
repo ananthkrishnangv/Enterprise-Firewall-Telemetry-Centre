@@ -91,7 +91,7 @@ server.listen(config.port, () => {
   console.log(`💾 Auto Backup:       Schedule: ${backupService.getConfig().frequency} (Retention: ${backupService.getConfig().retentionCount})`);
   console.log(`📁 File Storage:       Data: /app/data | Uploads: /app/uploads | Backups: /app/backups`);
   console.log(`⚡ Speed Test Engine:  15-minute automated live internet speed check`);
-  console.log(`🎨 Theme:              UX4G Mandated Core Violet & Rainbow Data Flow`);
+  console.log(`🎨 Theme:              Professional Soft-Gradient NOC Command Center`);
   console.log(`📜 License:            CSIR-SERC Free Community & Institutional License v1.0`);
   console.log(`❤️  Attribution:        Made by ICTD CSIR-SERC for CSIR with ❤️`);
   console.log(`================================================================`);

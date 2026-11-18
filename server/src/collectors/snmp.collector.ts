@@ -1,6 +1,7 @@
 import snmp from 'net-snmp';
 import { metadataStore } from '../storage/metadata.store.js';
 import { telemetryStore } from '../storage/telemetry.store.js';
+import { postgresService } from '../storage/postgres.service.js';
 import { settingsStore } from '../storage/settings.store.js';
 import { notificationService } from '../services/notification.service.js';
 import { FORTIGATE_INTERFACE_CATALOG } from '../storage/interfaces.catalog.js';
@@ -91,6 +92,25 @@ export class SNMPCollector {
           const metrics = await this.pollDeviceWithFallback(dev);
           metadataStore.updateDeviceSNMP(dev.id, metrics);
           telemetryStore.recordSNMP(dev.id, metrics);
+
+          // Persist snapshot to PostgreSQL 18
+          let totalIn = 0;
+          let totalOut = 0;
+          if (metrics.interfaces && Array.isArray(metrics.interfaces)) {
+            for (const iface of metrics.interfaces) {
+              totalIn += iface.inBps || 0;
+              totalOut += iface.outBps || 0;
+            }
+          }
+          postgresService.storeTelemetryMetric({
+            deviceId: dev.id,
+            inBps: totalIn,
+            outBps: totalOut,
+            cpuPct: metrics.cpuUtilPercent || 0,
+            memPct: metrics.memoryUtilPercent || 0,
+            sessions: metrics.concurrentConnections || 0,
+            threatScore: metrics.threats ? (metrics.threats.virusesDetected + metrics.threats.intrusionsDetected) : 0
+          }).catch(() => {});
 
           // Check notification threshold triggers (rate-limited to every 2 mins per type)
           const settings = settingsStore.getSettings();

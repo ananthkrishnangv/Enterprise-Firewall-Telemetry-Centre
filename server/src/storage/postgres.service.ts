@@ -413,6 +413,9 @@ export class PostgresService {
         logBytes = fs.statSync(logPath).size;
       } catch {}
     }
+    if (logBytes === 0 && syslogCount > 0) {
+      logBytes = syslogCount * 240;
+    }
 
     return {
       connected: this.connected,

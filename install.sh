@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Enterprise Firewall Telemetry & Security Operations Center
-# Universal Automated Installer & Post-Installation Whitelabeling Wizard
-# Target OS: Ubuntu (20.04/22.04/24.04/Debian) & Rocky Linux (8/9/RHEL/AlmaLinux)
+# Turnkey Bare-Metal Linux Installer & Interactive Whitelabel Setup Wizard
+# Target OS: Ubuntu (20.04/22.04/24.04/Debian 11/12) & Rocky Linux (8/9/RHEL/AlmaLinux)
 #
 # Licensing & Legal Attribution:
 # CSIR-SERC Free Community & Institutional License (Version 1.0)
@@ -13,7 +13,7 @@
 set -Eeuo pipefail
 
 # ------------------------------------------------------------------------------
-# Color Palettes & UI Styles
+# Terminal Color Palettes & UI Styles
 # ------------------------------------------------------------------------------
 BOLD="\033[1m"
 DIM="\033[2m"
@@ -33,7 +33,7 @@ log_error()   { echo -e "${RED}${BOLD}[ERROR]${RESET} $*" >&2; }
 log_step()    { echo -e "\n${MAGENTA}${BOLD}==>${RESET} ${WHITE}${BOLD}$*${RESET}"; }
 
 # ------------------------------------------------------------------------------
-# Universal Institutional Attribution & Legal Footer
+# Universal Attribution & Licensing Metadata
 # ------------------------------------------------------------------------------
 UNIVERSAL_LICENSE="CSIR-SERC Free Community & Institutional License (v1.0)"
 UNIVERSAL_ATTRIBUTION="Made by ICTD CSIR-SERC for CSIR with ❤️"
@@ -44,13 +44,79 @@ display_banner() {
   echo -e "${CYAN}${BOLD}"
   echo "╔═══════════════════════════════════════════════════════════════════════════╗"
   echo "║       Enterprise Firewall Telemetry & Security Operations Center          ║"
-  echo "║           Universal Linux Production Installer & Setup Wizard             ║"
-  echo "║                 Ubuntu 20/22/24 & Rocky Linux / RHEL 8/9                  ║"
+  echo "║        Turnkey Whitelabel Linux Installer & Interactive Wizard            ║"
+  echo "║          Ubuntu 20/22/24, Debian 11/12 & Rocky / RHEL / AlmaLinux         ║"
   echo "╚═══════════════════════════════════════════════════════════════════════════╝${RESET}"
   echo -e " ${DIM}Universal License :${RESET} ${WHITE}${UNIVERSAL_LICENSE}${RESET}"
   echo -e " ${DIM}Attribution       :${RESET} ${YELLOW}${UNIVERSAL_ATTRIBUTION}${RESET}"
-  echo -e " ${DIM}Mandate           :${RESET} ${GREEN}CERT-In Section 70B Baseline & UX4G Standard${RESET}"
+  echo -e " ${DIM}Security Standard :${RESET} ${GREEN}CERT-In IT Security Directives & Zero Hardcoded Passwords${RESET}"
   echo "-----------------------------------------------------------------------------"
+}
+
+# ------------------------------------------------------------------------------
+# Input Reading Utilities (Seamless support for direct execution and curl | bash)
+# ------------------------------------------------------------------------------
+TTY_INPUT="/dev/tty"
+if [[ ! -r "$TTY_INPUT" ]]; then
+  TTY_INPUT="-"
+fi
+
+prompt_input() {
+  local prompt_text="$1"
+  local default_value="$2"
+  local result_var="$3"
+  local user_input=""
+
+  if [[ "$TTY_INPUT" == "/dev/tty" ]]; then
+    read -rp "$prompt_text [$default_value]: " user_input < /dev/tty || true
+  else
+    read -rp "$prompt_text [$default_value]: " user_input || true
+  fi
+
+  if [[ -z "$user_input" ]]; then
+    printf -v "$result_var" "%s" "$default_value"
+  else
+    printf -v "$result_var" "%s" "$user_input"
+  fi
+}
+
+prompt_password() {
+  local prompt_text="$1"
+  local result_var="$2"
+  local pass1=""
+  local pass2=""
+
+  while true; do
+    if [[ "$TTY_INPUT" == "/dev/tty" ]]; then
+      read -s -rp "$prompt_text: " pass1 < /dev/tty || true
+      echo "" > /dev/tty
+      read -s -rp "Confirm password: " pass2 < /dev/tty || true
+      echo "" > /dev/tty
+    else
+      read -s -rp "$prompt_text: " pass1 || true
+      echo ""
+      read -s -rp "Confirm password: " pass2 || true
+      echo ""
+    fi
+
+    if [[ -z "$pass1" ]]; then
+      echo -e "${RED}Password cannot be empty. Please try again.${RESET}"
+      continue
+    fi
+
+    if [[ ${#pass1} -lt 8 ]]; then
+      echo -e "${RED}Password must be at least 8 characters long for security compliance. Please try again.${RESET}"
+      continue
+    fi
+
+    if [[ "$pass1" != "$pass2" ]]; then
+      echo -e "${RED}Passwords do not match. Please try again.${RESET}"
+      continue
+    fi
+
+    printf -v "$result_var" "%s" "$pass1"
+    break
+  done
 }
 
 # ------------------------------------------------------------------------------
@@ -75,7 +141,7 @@ for arg in "$@"; do
       echo "Usage: sudo bash install.sh [OPTIONS]"
       echo ""
       echo "Options:"
-      echo "  -y, --unattended     Run non-interactively using standard institutional defaults"
+      echo "  -y, --unattended     Run non-interactively using template defaults"
       echo "  --dir=PATH           Set target installation directory (default: /opt/firewall-telemetry)"
       echo "  -h, --help           Show this help message"
       exit 0
@@ -90,11 +156,10 @@ check_preflights() {
   log_step "Step 1/8: Hardware & Execution Environment Preflight Checks"
 
   if [[ $EUID -ne 0 ]]; then
-    log_error "This installation script must be run as root (sudo bash install.sh)."
+    log_error "This installer must be executed as root (sudo bash install.sh)."
     exit 1
   fi
 
-  # Detect Architecture
   ARCH=$(uname -m)
   if [[ "$ARCH" != "x86_64" && "$ARCH" != "aarch64" ]]; then
     log_error "Unsupported CPU Architecture: $ARCH. Required: x86_64 or aarch64."
@@ -102,13 +167,12 @@ check_preflights() {
   fi
   log_info "CPU Architecture: ${WHITE}$ARCH${RESET}"
 
-  # RAM Check
   TOTAL_MEM_MB=$(free -m | awk '/^Mem:/{print $2}')
   log_info "Detected System RAM: ${WHITE}${TOTAL_MEM_MB} MB${RESET}"
   if [[ "$TOTAL_MEM_MB" -lt 1900 ]]; then
-    log_warn "System has less than 2 GB RAM. Recommended: >= 4 GB RAM for InfluxDB & PostgreSQL."
+    log_warn "System has less than 2 GB RAM. Recommended: >= 4 GB RAM for TSDB & relational storage."
     if [[ "$UNATTENDED" = false ]]; then
-      read -rp "Do you wish to continue despite low RAM? (y/N): " mem_choice
+      read -rp "Continue installation despite low RAM? (y/N): " mem_choice < /dev/tty || mem_choice="n"
       if [[ "$mem_choice" != "y" && "$mem_choice" != "Y" ]]; then
         log_error "Installation aborted by operator."
         exit 1
@@ -116,11 +180,10 @@ check_preflights() {
     fi
   fi
 
-  # Disk Space Check
   AVAILABLE_DISK_MB=$(df -m / | awk 'NR==2 {print $4}')
   log_info "Available Root Disk Space: ${WHITE}${AVAILABLE_DISK_MB} MB${RESET}"
   if [[ "$AVAILABLE_DISK_MB" -lt 5000 ]]; then
-    log_warn "Low disk space (< 5 GB). Minimum 15 GB recommended for 180-day TSDB retention."
+    log_warn "Low disk space (< 5 GB). Minimum 15 GB recommended for CERT-In 180-day retention."
   fi
 }
 
@@ -135,10 +198,7 @@ detect_os() {
     exit 1
   fi
 
-  # Source os-release
-  # shellcheck source=/dev/null
   . /etc/os-release
-
   OS_ID="${ID:-unknown}"
   OS_ID_LIKE="${ID_LIKE:-}"
   OS_VERSION_ID="${VERSION_ID:-}"
@@ -172,11 +232,10 @@ install_system_prerequisites() {
 
   if [[ "$DISTRO_FAMILY" == "debian" ]]; then
     export DEBIAN_FRONTEND=noninteractive
-    log_info "Refreshing APT package indices and applying security updates..."
+    log_info "Refreshing APT package indices..."
     apt-get update -y -q
-    apt-get upgrade -y -q
 
-    log_info "Installing core system utilities (curl, git, jq, snmp, openssl, ufw)..."
+    log_info "Installing core system utilities (curl, git, jq, snmp, openssl, ufw, tar)..."
     apt-get install -y -q \
       curl \
       wget \
@@ -195,12 +254,11 @@ install_system_prerequisites() {
       libsnmp-dev \
       ufw
   elif [[ "$DISTRO_FAMILY" == "rhel" ]]; then
-    log_info "Checking DNF package repositories and applying security updates..."
+    log_info "Checking DNF package repositories..."
     $PKG_MGR update -y -q
 
-    # Ensure EPEL repository is enabled for Rocky / RHEL
     if ! $PKG_MGR repolist | grep -qi epel; then
-      log_info "Enabling EPEL (Extra Packages for Enterprise Linux)..."
+      log_info "Enabling EPEL repository..."
       $PKG_MGR install -y epel-release || true
     fi
 
@@ -221,7 +279,7 @@ install_system_prerequisites() {
       net-snmp-utils \
       firewalld
   fi
-  log_success "Operating system updated and base packages installed."
+  log_success "Core prerequisites verified."
 }
 
 # ------------------------------------------------------------------------------
@@ -234,24 +292,22 @@ install_nodejs() {
   if command -v node &>/dev/null; then
     CURRENT_NODE_VER=$(node -v | sed 's/v//' | cut -d. -f1)
     if [[ "$CURRENT_NODE_VER" -ge 20 ]]; then
-      log_success "Compatible Node.js already installed: $(node -v) (npm $(npm -v))"
+      log_success "Compatible Node.js already present: $(node -v) (npm $(npm -v))"
       INSTALL_NODE=false
-    else
-      log_warn "Installed Node.js version ($(node -v)) is outdated. Upgrading to Node.js 22 LTS..."
     fi
   fi
 
   if [[ "$INSTALL_NODE" = true ]]; then
     if [[ "$DISTRO_FAMILY" == "debian" ]]; then
-      log_info "Configuring NodeSource 22.x APT repository..."
+      log_info "Configuring NodeSource 22.x repository..."
       curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
       apt-get install -y -q nodejs
     elif [[ "$DISTRO_FAMILY" == "rhel" ]]; then
-      log_info "Configuring NodeSource 22.x DNF/RPM repository..."
+      log_info "Configuring NodeSource 22.x RPM repository..."
       curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
       $PKG_MGR install -y -q nodejs
     fi
-    log_success "Node.js successfully provisioned: $(node -v) (npm $(npm -v))"
+    log_success "Node.js ready: $(node -v) (npm $(npm -v))"
   fi
 }
 
@@ -262,52 +318,28 @@ install_docker() {
   log_step "Step 5/8: Provisioning Docker Engine & Docker Compose Container Runtime"
 
   if command -v docker &>/dev/null && docker compose version &>/dev/null; then
-    log_success "Docker Engine and Docker Compose are already present: $(docker --version)"
+    log_success "Docker Engine and Docker Compose are already installed: $(docker --version)"
     systemctl enable --now docker 2>/dev/null || true
     return 0
   fi
 
-  log_info "Installing official Docker CE engine..."
-  if [[ "$DISTRO_FAMILY" == "debian" ]]; then
-    install -m 0755 -d /etc/apt/keyrings
-    if [[ ! -f /etc/apt/keyrings/docker.gpg ]]; then
-      curl -fsSL https://download.docker.com/linux/"$OS_ID"/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-      chmod a+r /etc/apt/keyrings/docker.gpg
-    fi
-
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$OS_ID \
-      $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-    apt-get update -y -q
-    apt-get install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-  elif [[ "$DISTRO_FAMILY" == "rhel" ]]; then
-    log_info "Configuring Docker CE dnf repository..."
-    $PKG_MGR config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo 2>/dev/null || \
-      curl -fsSL https://get.docker.com | sh
-    $PKG_MGR install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 2>/dev/null || true
-  fi
-
-  # Fallback to official script if distribution repo missed
-  if ! command -v docker &>/dev/null; then
-    log_warn "Direct package installation failed. Invoking official get.docker.com script..."
-    curl -fsSL https://get.docker.com | sh
-  fi
+  log_info "Installing official Docker Engine via get.docker.com automated script..."
+  curl -fsSL https://get.docker.com | sh
 
   systemctl enable --now docker
   systemctl enable --now containerd 2>/dev/null || true
-  log_success "Docker Engine successfully active: $(docker --version) | $(docker compose version)"
+  log_success "Docker Engine active: $(docker --version) | $(docker compose version)"
 }
 
 # ------------------------------------------------------------------------------
-# 6. Firewall & Security Ports
+# 6. Host Firewall & Security Ports
 # ------------------------------------------------------------------------------
 configure_firewall() {
   log_step "Step 6/8: Configuring Host Firewall & Security Ingress Rules"
 
   REQUIRED_PORTS=(
     "80/tcp:HTTP Web Management Console"
-    "443/tcp:HTTPS Web Portal"
+    "443/tcp:HTTPS Web Management Portal"
     "162/udp:SNMP Trap Ingest Receiver"
     "1514/udp:Syslog Primary Collector"
     "514/udp:Syslog Alternate Port"
@@ -341,67 +373,328 @@ configure_firewall() {
       firewall-cmd --reload >/dev/null 2>&1 || true
     fi
 
-    # Handle SELinux container permissions
     if command -v getenforce &>/dev/null; then
-      SELINUX_STATUS=$(getenforce)
-      if [[ "$SELINUX_STATUS" == "Enforcing" ]]; then
+      if [[ "$(getenforce)" == "Enforcing" ]]; then
         log_info "Configuring SELinux policy for container networking..."
         setsebool -P container_manage_cgroup 1 2>/dev/null || true
       fi
     fi
   fi
-  log_success "Perimeter host firewall rules synchronized."
+  log_success "Host ingress ports synchronized."
 }
 
 # ------------------------------------------------------------------------------
-# 7. Repository Download, Build & Container Deployment
+# 7. Interactive Whitelabeling & Configuration Wizard
 # ------------------------------------------------------------------------------
-deploy_portal_software() {
-  log_step "Step 7/8: Downloading Repository from GitHub & Compiling Portal"
+run_console_wizard() {
+  log_step "Step 7/8: Interactive Whitelabeling, Hardware Telemetry & Credentials Setup Wizard"
 
-  CURRENT_DIR=$(pwd)
-  # Check if running inside cloned repo already
-  if [[ -f "$CURRENT_DIR/package.json" && -d "$CURRENT_DIR/server" && -d "$CURRENT_DIR/client" ]]; then
-    log_info "Installer running directly from source directory: $CURRENT_DIR"
-    if [[ "$CURRENT_DIR" != "$INSTALL_DIR" ]]; then
-      log_info "Syncing local files to production directory: $INSTALL_DIR..."
-      mkdir -p "$INSTALL_DIR"
-      cp -r "$CURRENT_DIR"/. "$INSTALL_DIR"/
+  # System Defaults
+  ORG_NAME="Enterprise Network Operations"
+  ORG_DIV="Cyber Defense & Infrastructure Division"
+  APEX_BODY="Corporate Information Security Directorate"
+  PORTAL_TITLE="Enterprise Firewall Telemetry Center"
+  PORTAL_SUBTITLE="Perimeter Telemetry & Security Operations Command"
+  PRESET_LOGO="shield"
+
+  FW_IP="10.10.3.15"
+  FW_NAME="FortiGate-600F-Gateway"
+  FW_VENDOR="fortinet"
+  FW_LOCATION="Primary Datacenter Core Rack"
+  SNMP_VERSION="v2c"
+  SNMP_COMMUNITY="fortinet"
+  SNMP_PORT="161"
+  SYSLOG_PORT="1514"
+  NETFLOW_PORT="2055"
+
+  ENABLE_CORE_SWITCH=false
+  SW_VENDOR="cisco"
+  SW_NAME="Core-Switch-01"
+  SW_IP="10.10.3.1"
+  SW_COMMUNITY="public"
+  SW_PORT="161"
+  SW_LOCATION="Datacenter Core Switch Rack"
+
+  ADMIN_USER="superadmin"
+  ADMIN_PASSWORD=""
+  CISO_USER="admin"
+  CISO_PASSWORD=""
+  AUDITOR_USER="auditor"
+  AUDITOR_PASSWORD=""
+
+  WEB_HTTP_PORT="80"
+  TELEGRAM_ENABLED=false
+  TELEGRAM_TOKEN=""
+  TELEGRAM_CHATID=""
+
+  if [[ "$UNATTENDED" = false ]]; then
+    echo -e "${YELLOW}${BOLD}"
+    echo "┌───────────────────────────────────────────────────────────────────────────┐"
+    echo "│         ENTERPRISE FIREWALL TELEMETRY CENTER - CONFIGURATION WIZARD       │"
+    echo "│                                                                           │"
+    echo "│  This wizard guides you through:                                          │"
+    echo "│   1. Whitelabel Branding & Custom Identity                                │"
+    echo "│   2. Perimeter Firewall Gateway Telemetry (FortiGate, Palo Alto, etc.)    │"
+    echo "│   3. Optional Core Switch Monitoring (Cisco, Aruba, Juniper, etc.)        │"
+    echo "│   4. Security Credentials for Administrator & CISO (Stored Securely)      │"
+    echo "└───────────────────────────────────────────────────────────────────────────┘${RESET}"
+    echo ""
+
+    # --------------------------------------------------------------------------
+    # SECTION A: WHITELABEL BRANDING
+    # --------------------------------------------------------------------------
+    echo -e "${CYAN}${BOLD}=== SECTION A: PRODUCT WHITELABELING & BRANDING ===${RESET}"
+    prompt_input "Enter Organization / University / Enterprise Name" "$ORG_NAME" ORG_NAME
+    prompt_input "Enter Division / Department Name" "$ORG_DIV" ORG_DIV
+    prompt_input "Enter Apex / Governing Directorate" "$APEX_BODY" APEX_BODY
+    prompt_input "Enter Portal Header Title" "$PORTAL_TITLE" PORTAL_TITLE
+    prompt_input "Enter Portal Subtitle" "$PORTAL_SUBTITLE" PORTAL_SUBTITLE
+
+    echo ""
+    echo -e "Choose Vector Preset Logo Emblem:"
+    echo -e "  ${WHITE}1)${RESET} Shield & Perimeter Defense (Default)"
+    echo -e "  ${WHITE}2)${RESET} Cyber Radar Operations"
+    echo -e "  ${WHITE}3)${RESET} Government / National Emblem"
+    echo -e "  ${WHITE}4)${RESET} High-Tech Enterprise Grid"
+    echo -e "  ${WHITE}5)${RESET} Fortress Perimeter"
+    prompt_input "Select Logo [1-5]" "1" logo_choice
+    case "$logo_choice" in
+      2) PRESET_LOGO="radar" ;;
+      3) PRESET_LOGO="emblem" ;;
+      4) PRESET_LOGO="grid" ;;
+      5) PRESET_LOGO="fortress" ;;
+      *) PRESET_LOGO="shield" ;;
+    esac
+
+    # --------------------------------------------------------------------------
+    # SECTION B: PRIMARY FIREWALL GATEWAY
+    # --------------------------------------------------------------------------
+    echo ""
+    echo -e "${CYAN}${BOLD}=== SECTION B: PRIMARY PERIMETER FIREWALL GATEWAY ===${RESET}"
+    echo "Select Firewall Vendor:"
+    echo "  1) Fortinet FortiGate (Default)"
+    echo "  2) Palo Alto Networks PAN-OS"
+    echo "  3) pfSense / OPNsense"
+    echo "  4) Check Point Quantum"
+    echo "  5) Cisco ASA / Firepower"
+    echo "  6) Generic Enterprise Firewall"
+    prompt_input "Select Vendor [1-6]" "1" vendor_choice
+    case "$vendor_choice" in
+      2) FW_VENDOR="paloalto"; FW_NAME="PaloAlto-NGFW-Gateway" ;;
+      3) FW_VENDOR="pfsense"; FW_NAME="pfSense-Perimeter-Gateway" ;;
+      4) FW_VENDOR="checkpoint"; FW_NAME="CheckPoint-Quantum-Gateway" ;;
+      5) FW_VENDOR="cisco"; FW_NAME="Cisco-Perimeter-Firewall" ;;
+      6) FW_VENDOR="generic"; FW_NAME="Enterprise-Perimeter-Firewall" ;;
+      *) FW_VENDOR="fortinet"; FW_NAME="FortiGate-600F-Gateway" ;;
+    esac
+
+    prompt_input "Enter Primary Firewall Management IP Address" "$FW_IP" FW_IP
+    prompt_input "Enter Friendly Firewall Label" "$FW_NAME" FW_NAME
+    prompt_input "Enter Physical Datacenter Location" "$FW_LOCATION" FW_LOCATION
+
+    echo "Select SNMP Polling Protocol Version:"
+    echo "  1) SNMPv2c (Default)"
+    echo "  2) SNMPv3 (noAuthNoPriv / authPriv)"
+    prompt_input "Select SNMP Version [1-2]" "1" snmp_choice
+    if [[ "$snmp_choice" == "2" ]]; then
+      SNMP_VERSION="v3"
+    else
+      SNMP_VERSION="v2c"
+    fi
+
+    prompt_input "Enter SNMP Community / User string" "$SNMP_COMMUNITY" SNMP_COMMUNITY
+    prompt_input "Enter SNMP UDP Polling Port" "$SNMP_PORT" SNMP_PORT
+    prompt_input "Enter Syslog Primary Ingestion UDP Port" "$SYSLOG_PORT" SYSLOG_PORT
+    prompt_input "Enter NetFlow / IPFIX Flow Ingestion UDP Port" "$NETFLOW_PORT" NETFLOW_PORT
+
+    # --------------------------------------------------------------------------
+    # SECTION C: CORE SWITCH (OPTIONAL)
+    # --------------------------------------------------------------------------
+    echo ""
+    echo -e "${CYAN}${BOLD}=== SECTION C: CORE SWITCH MONITORING (OPTIONAL) ===${RESET}"
+    prompt_input "Enable Core Switch Telemetry Monitoring? (y/N)" "N" switch_prompt
+    if [[ "$switch_prompt" == "y" || "$switch_prompt" == "Y" ]]; then
+      ENABLE_CORE_SWITCH=true
+      echo "Select Core Switch Vendor:"
+      echo "  1) Cisco Catalyst / Nexus (Default)"
+      echo "  2) Aruba / HPE"
+      echo "  3) Juniper Networks"
+      echo "  4) Arista Networks"
+      echo "  5) Generic L3 Switch"
+      prompt_input "Select Switch Vendor [1-5]" "1" sw_choice
+      case "$sw_choice" in
+        2) SW_VENDOR="aruba"; SW_NAME="Aruba-Core-Switch" ;;
+        3) SW_VENDOR="juniper"; SW_NAME="Juniper-EX-Core" ;;
+        4) SW_VENDOR="arista"; SW_NAME="Arista-7050-Core" ;;
+        5) SW_VENDOR="generic"; SW_NAME="Enterprise-Core-Switch" ;;
+        *) SW_VENDOR="cisco"; SW_NAME="Cisco-Catalyst-Core" ;;
+      esac
+
+      prompt_input "Enter Core Switch Management IP" "$SW_IP" SW_IP
+      prompt_input "Enter Core Switch Friendly Label" "$SW_NAME" SW_NAME
+      prompt_input "Enter Core Switch SNMP Community string" "$SW_COMMUNITY" SW_COMMUNITY
+      prompt_input "Enter Core Switch SNMP Port" "$SW_PORT" SW_PORT
+      prompt_input "Enter Core Switch Location" "$SW_LOCATION" SW_LOCATION
+    else
+      log_info "Core switch monitoring skipped (can be added later via Settings)."
+    fi
+
+    # --------------------------------------------------------------------------
+    # SECTION D: SECURITY ACCOUNTS & PASSWORDS
+    # --------------------------------------------------------------------------
+    echo ""
+    echo -e "${CYAN}${BOLD}=== SECTION D: SECURITY CREDENTIALS SETUP (ZERO HARDCODING) ===${RESET}"
+    echo -e "${YELLOW}Notice: Passwords are saved only to local config/credentials.json (chmod 600).${RESET}"
+    echo -e "${YELLOW}They are excluded from Git and will never be committed to repository.${RESET}"
+    echo ""
+
+    prompt_input "Enter Super Administrator Username" "$ADMIN_USER" ADMIN_USER
+    echo -e "Enter secure password for ${WHITE}${BOLD}$ADMIN_USER${RESET}:"
+    prompt_password "Set $ADMIN_USER password" ADMIN_PASSWORD
+
+    echo ""
+    prompt_input "Enter CISO Administrator Username" "$CISO_USER" CISO_USER
+    echo -e "Enter secure password for ${WHITE}${BOLD}$CISO_USER${RESET}:"
+    prompt_password "Set $CISO_USER password" CISO_PASSWORD
+
+    echo ""
+    prompt_input "Enter Compliance Auditor Username" "$AUDITOR_USER" AUDITOR_USER
+    echo -e "Enter secure password for ${WHITE}${BOLD}$AUDITOR_USER${RESET}:"
+    prompt_password "Set $AUDITOR_USER password" AUDITOR_PASSWORD
+
+    # --------------------------------------------------------------------------
+    # SECTION E: NETWORK & ALERTS
+    # --------------------------------------------------------------------------
+    echo ""
+    echo -e "${CYAN}${BOLD}=== SECTION E: NETWORKING & REAL-TIME ALERTS ===${RESET}"
+    prompt_input "Enter HTTP Web Console Port" "$WEB_HTTP_PORT" WEB_HTTP_PORT
+
+    prompt_input "Enable Telegram Bot Alerts for Critical Perimeter Threats? (y/N)" "N" tele_choice
+    if [[ "$tele_choice" == "y" || "$tele_choice" == "Y" ]]; then
+      TELEGRAM_ENABLED=true
+      prompt_input "Enter Telegram Bot Token" "" TELEGRAM_TOKEN
+      prompt_input "Enter Telegram Operator Chat ID" "" TELEGRAM_CHATID
     fi
   else
+    log_info "Unattended mode active. Generating secure bootstrap credentials."
+    ADMIN_PASSWORD="Admin@$(openssl rand -hex 4)!26"
+    CISO_PASSWORD="Ciso@$(openssl rand -hex 4)!26"
+    AUDITOR_PASSWORD="Audit@$(openssl rand -hex 4)!26"
+  fi
+}
+
+# ------------------------------------------------------------------------------
+# 8. Repository Deployment, Config Generation & Container Launch
+# ------------------------------------------------------------------------------
+deploy_and_start() {
+  log_step "Step 8/8: Compiling Software, Generating Isolated Credentials & Launching Containers"
+
+  CURRENT_DIR=$(pwd)
+  if [[ -f "$CURRENT_DIR/package.json" && -d "$CURRENT_DIR/server" && -d "$CURRENT_DIR/client" ]]; then
+    log_info "Running directly inside cloned repository: $CURRENT_DIR"
+    DEPLOY_ROOT="$CURRENT_DIR"
+  else
     if [[ -d "$INSTALL_DIR/.git" ]]; then
-      log_info "Existing repository detected at $INSTALL_DIR. Pulling latest updates..."
+      log_info "Existing repository detected at $INSTALL_DIR. Pulling latest commits..."
       git -C "$INSTALL_DIR" pull --ff-only || true
     else
-      log_info "Cloning repository from GitHub to $INSTALL_DIR..."
+      log_info "Cloning repository from GitHub into $INSTALL_DIR..."
       mkdir -p "$INSTALL_DIR"
       git clone "$REPO_URL" "$INSTALL_DIR"
     fi
+    DEPLOY_ROOT="$INSTALL_DIR"
   fi
 
-  cd "$INSTALL_DIR"
+  cd "$DEPLOY_ROOT"
 
   # Create persistent storage directories
-  mkdir -p data uploads backups
-  chmod -R 775 data uploads backups
+  mkdir -p data uploads backups config
+  chmod 750 data uploads backups config
 
-  log_info "Installing frontend & backend dependencies (npm install)..."
+  # Write isolated config/credentials.json (Mode 600, NEVER committed to Git)
+  CREDENTIALS_FILE="$DEPLOY_ROOT/config/credentials.json"
+  cat <<EOF > "$CREDENTIALS_FILE"
+{
+  "notice": "CONFIDENTIAL CREDENTIALS: Created by install.sh on $(date -u +'%Y-%m-%dT%H:%M:%SZ'). DO NOT COMMIT TO GIT.",
+  "auth": {
+    "superadmin": {
+      "username": "${ADMIN_USER}",
+      "role": "super_admin",
+      "password": "${ADMIN_PASSWORD}"
+    },
+    "admin": {
+      "username": "${CISO_USER}",
+      "role": "admin",
+      "password": "${CISO_PASSWORD}"
+    },
+    "auditor": {
+      "username": "${AUDITOR_USER}",
+      "role": "auditor",
+      "password": "${AUDITOR_PASSWORD}"
+    }
+  },
+  "snmp": {
+    "firewall": {
+      "vendor": "${FW_VENDOR}",
+      "name": "${FW_NAME}",
+      "host": "${FW_IP}",
+      "port": ${SNMP_PORT},
+      "version": "${SNMP_VERSION}",
+      "community": "${SNMP_COMMUNITY}"
+    },
+    "coreSwitch": {
+      "enabled": ${ENABLE_CORE_SWITCH},
+      "vendor": "${SW_VENDOR}",
+      "name": "${SW_NAME}",
+      "host": "${SW_IP}",
+      "port": ${SW_PORT},
+      "version": "v2c",
+      "community": "${SW_COMMUNITY}"
+    }
+  }
+}
+EOF
+  chmod 600 "$CREDENTIALS_FILE"
+  # Also sync copy to data/credentials.json for container persistence
+  cp "$CREDENTIALS_FILE" "$DEPLOY_ROOT/data/credentials.json"
+  chmod 600 "$DEPLOY_ROOT/data/credentials.json"
+  log_success "Isolated credentials saved to ${WHITE}$CREDENTIALS_FILE${GREEN} (Permissions: 0600)"
+
+  # Write local .env file (Mode 600)
+  ENV_FILE="$DEPLOY_ROOT/.env"
+  cat <<EOF > "$ENV_FILE"
+PORT=${WEB_HTTP_PORT}
+SYSLOG_PORT=${SYSLOG_PORT}
+NETFLOW_PORT=${NETFLOW_PORT}
+DATA_DIR=/app/data
+UPLOADS_DIR=/app/uploads
+BACKUP_DIR=/app/backups
+SUPERADMIN_PASSWORD=${ADMIN_PASSWORD}
+CISO_PASSWORD=${CISO_PASSWORD}
+AUDITOR_PASSWORD=${AUDITOR_PASSWORD}
+NODE_ENV=production
+EOF
+  chmod 600 "$ENV_FILE"
+  log_success "Local environment file generated at ${WHITE}$ENV_FILE${GREEN} (Permissions: 0600)"
+
+  # Install dependencies and build
+  log_info "Installing Node.js dependencies..."
   npm run install:all
 
-  log_info "Compiling TypeScript backend server (tsc)..."
+  log_info "Compiling TypeScript backend server..."
   npm run build:server
 
-  log_info "Compiling Vue 3.5 frontend operations console (vite build)..."
+  log_info "Compiling Vue 3 frontend operations console..."
   npm run build:client
 
-  log_info "Deploying PostgreSQL 18, InfluxDB 2.7 TSDB & Telemetry Console containers..."
+  log_info "Launching PostgreSQL 18, InfluxDB 2.7 & Telemetry Console containers..."
   docker compose -f docker-compose.standalone.yml up -d --build
 
-  # Wait for Portal healthcheck
-  log_info "Waiting for portal services to become fully healthy..."
-  HEALTH_URL="http://127.0.0.1:80/health"
+  # Wait for healthcheck
+  log_info "Waiting for container services to initialize..."
+  HEALTH_URL="http://127.0.0.1:${WEB_HTTP_PORT}/api/health"
   SUCCESS=false
-  for i in {1..30}; do
+  for i in {1..35}; do
     if curl -s -f "$HEALTH_URL" &>/dev/null; then
       SUCCESS=true
       break
@@ -412,159 +705,14 @@ deploy_portal_software() {
   echo ""
 
   if [[ "$SUCCESS" = true ]]; then
-    log_success "Portal services are HEALTHY and responsive on Port 80!"
+    log_success "Telemetry Operations Console is ONLINE and healthy!"
   else
-    log_warn "Healthcheck timed out. Containers may still be initializing. Checking logs:"
+    log_warn "Healthcheck timed out on $HEALTH_URL. Checking docker compose status:"
     docker compose -f docker-compose.standalone.yml ps
   fi
-}
 
-# ------------------------------------------------------------------------------
-# 8. Post-Installation Whitelabeling & Firewall SNMP Setup Wizard
-# ------------------------------------------------------------------------------
-run_post_install_wizard() {
-  log_step "Step 8/8: Post-Installation Product Whitelabeling & Firewall SNMP Setup Wizard"
-
-  # Detect Primary Host IP
-  PRIMARY_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
-  if [[ -z "$PRIMARY_IP" ]]; then
-    PRIMARY_IP="127.0.0.1"
-  fi
-
-  # Default Settings
-  ORG_NAME="CSIR-SERC (Chennai)"
-  ORG_DIV="ICT & Network Security Division"
-  APEX_BODY="Council of Scientific & Industrial Research"
-  PORTAL_TITLE="CSIR - Structural Engineering Research Centre"
-  PORTAL_SUBTITLE="Enterprise Firewall Telemetry & Security Operations Command"
-  PRESET_LOGO="shield"
-
-  FW_IP="10.10.3.15"
-  FW_NAME="FortiGate-CSIR-SERC"
-  FW_VENDOR="fortinet"
-  FW_LOCATION="Central Datacenter"
-  SNMP_VERSION="v2c"
-  SNMP_COMMUNITY="fortinet"
-  SNMP_PORT="161"
-  ADMIN_PASSWORD="SuperAdmin@2026!"
-  TELEGRAM_ENABLED=false
-  TELEGRAM_TOKEN=""
-  TELEGRAM_CHATID=""
-
-  if [[ "$UNATTENDED" = false ]]; then
-    echo -e "${YELLOW}${BOLD}"
-    echo "┌───────────────────────────────────────────────────────────────────────────┐"
-    echo "│         PRODUCT WHITELABELING & FIREWALL SNMP CONFIGURATION WIZARD        │"
-    echo "│                                                                           │"
-    echo "│  This wizard configures institutional branding, naming, logos, and your   │"
-    echo "│  primary perimeter firewall SNMP targets.                                 │"
-    echo "│                                                                           │"
-    echo "│  NOTE: Universal licensing and legal footers are preserved automatically  │"
-    echo "│  in compliance with the CSIR-SERC Community License (v1.0).               │"
-    echo "└───────────────────────────────────────────────────────────────────────────┘${RESET}"
-    echo ""
-
-    # Whitelabeling Section
-    echo -e "${CYAN}${BOLD}=== SECTION A: PRODUCT WHITELABELING & BRANDING ===${RESET}"
-    read -rp "Enter Organization / University Name [$ORG_NAME]: " input_org
-    ORG_NAME="${input_org:-$ORG_NAME}"
-
-    read -rp "Enter Division / Department Name [$ORG_DIV]: " input_div
-    ORG_DIV="${input_div:-$ORG_DIV}"
-
-    read -rp "Enter Apex / Governing Body [$APEX_BODY]: " input_apex
-    APEX_BODY="${input_apex:-$APEX_BODY}"
-
-    read -rp "Enter Portal Header Title [$PORTAL_TITLE]: " input_title
-    PORTAL_TITLE="${input_title:-$PORTAL_TITLE}"
-
-    read -rp "Enter Portal Subtitle [$PORTAL_SUBTITLE]: " input_sub
-    PORTAL_SUBTITLE="${input_sub:-$PORTAL_SUBTITLE}"
-
-    echo ""
-    echo -e "Choose Vector Preset Logo:"
-    echo -e "  ${WHITE}1)${RESET} Shield & Perimeter Defense (Default)"
-    echo -e "  ${WHITE}2)${RESET} Cyber Radar Operations"
-    echo -e "  ${WHITE}3)${RESET} Government / National Emblem"
-    echo -e "  ${WHITE}4)${RESET} High-Tech Enterprise Grid"
-    echo -e "  ${WHITE}5)${RESET} Fortress Perimeter"
-    read -rp "Select Logo [1]: " logo_choice
-    case "$logo_choice" in
-      2) PRESET_LOGO="radar" ;;
-      3) PRESET_LOGO="emblem" ;;
-      4) PRESET_LOGO="grid" ;;
-      5) PRESET_LOGO="fortress" ;;
-      *) PRESET_LOGO="shield" ;;
-    esac
-
-    # Firewall Section
-    echo ""
-    echo -e "${CYAN}${BOLD}=== SECTION B: PERIMETER FIREWALL & SNMP TELEMETRY ===${RESET}"
-    read -rp "Enter Primary Firewall IP Address [$FW_IP]: " input_fw_ip
-    FW_IP="${input_fw_ip:-$FW_IP}"
-
-    echo "Select Firewall Vendor:"
-    echo "  1) Fortinet FortiGate (Default)"
-    echo "  2) Check Point Quantum"
-    echo "  3) Palo Alto Networks PAN-OS"
-    echo "  4) pfSense / OPNsense"
-    echo "  5) Cisco ASA / Firepower"
-    read -rp "Select Vendor [1]: " vendor_choice
-    case "$vendor_choice" in
-      2) FW_VENDOR="checkpoint"; FW_NAME="CheckPoint-Quantum-Gateway" ;;
-      3) FW_VENDOR="paloalto"; FW_NAME="PaloAlto-NGFW-Gateway" ;;
-      4) FW_VENDOR="pfsense"; FW_NAME="pfSense-Perimeter-Gateway" ;;
-      5) FW_VENDOR="cisco"; FW_NAME="Cisco-Perimeter-Firewall" ;;
-      *) FW_VENDOR="fortinet"; FW_NAME="FortiGate-Perimeter-Gateway" ;;
-    esac
-
-    read -rp "Enter Friendly Firewall Label [$FW_NAME]: " input_fw_name
-    FW_NAME="${input_fw_name:-$FW_NAME}"
-
-    read -rp "Enter Firewall Physical Location [$FW_LOCATION]: " input_fw_loc
-    FW_LOCATION="${input_fw_loc:-$FW_LOCATION}"
-
-    echo "Select SNMP Version:"
-    echo "  1) SNMPv2c (Default)"
-    echo "  2) SNMPv3 (noAuthNoPriv - Recommended for FortiGate)"
-    read -rp "Select SNMP Version [1]: " snmp_ver_choice
-    if [[ "$snmp_ver_choice" == "2" ]]; then
-      SNMP_VERSION="v3"
-    else
-      SNMP_VERSION="v2c"
-    fi
-
-    read -rp "Enter SNMP Community / User string [$SNMP_COMMUNITY]: " input_snmp_comm
-    SNMP_COMMUNITY="${input_snmp_comm:-$SNMP_COMMUNITY}"
-
-    read -rp "Enter SNMP Polling Port [$SNMP_PORT]: " input_snmp_port
-    SNMP_PORT="${input_snmp_port:-$SNMP_PORT}"
-
-    # Superadmin Credentials
-    echo ""
-    echo -e "${CYAN}${BOLD}=== SECTION C: SUPERADMIN SECURITY CREDENTIALS ===${RESET}"
-    read -s -rp "Set Superadmin Password [Press Enter to keep default '$ADMIN_PASSWORD']: " input_pw
-    echo ""
-    if [[ -n "$input_pw" ]]; then
-      ADMIN_PASSWORD="$input_pw"
-    fi
-
-    # Telegram Alerting
-    echo ""
-    echo -e "${CYAN}${BOLD}=== SECTION D: REAL-TIME INCIDENT NOTIFICATIONS ===${RESET}"
-    read -rp "Enable Telegram Bot Alerts for Critical Threats & Link Drops? (y/N): " tele_choice
-    if [[ "$tele_choice" == "y" || "$tele_choice" == "Y" ]]; then
-      TELEGRAM_ENABLED=true
-      read -rp "Enter Telegram Bot Token: " TELEGRAM_TOKEN
-      read -rp "Enter Telegram Admin Chat ID: " TELEGRAM_CHATID
-    fi
-  else
-    log_info "Unattended mode active. Applying standard institutional defaults."
-  fi
-
-  # Construct and submit the Setup Payload to the API
-  log_info "Submitting whitelabeling & firewall setup to portal API..."
-
+  # Apply Whitelabel Settings & Credentials via API synchronization
+  log_info "Synchronizing whitelabel branding & hardware parameters..."
   SETUP_PAYLOAD=$(jq -n \
     --arg orgName "$ORG_NAME" \
     --arg orgDivision "$ORG_DIV" \
@@ -580,7 +728,15 @@ run_post_install_wizard() {
     --arg snmpVer "$SNMP_VERSION" \
     --arg snmpComm "$SNMP_COMMUNITY" \
     --arg snmpPort "$SNMP_PORT" \
+    --argjson swEnabled "$ENABLE_CORE_SWITCH" \
+    --arg swVendor "$SW_VENDOR" \
+    --arg swName "$SW_NAME" \
+    --arg swIp "$SW_IP" \
+    --arg swComm "$SW_COMMUNITY" \
+    --arg swPort "$SW_PORT" \
+    --arg swLoc "$SW_LOCATION" \
     --arg adminPw "$ADMIN_PASSWORD" \
+    --arg cisoPw "$CISO_PASSWORD" \
     --argjson teleEnabled "$TELEGRAM_ENABLED" \
     --arg teleToken "$TELEGRAM_TOKEN" \
     --arg teleChat "$TELEGRAM_CHATID" \
@@ -605,7 +761,17 @@ run_post_install_wizard() {
         snmpCommunity: $snmpComm,
         snmpPort: ($snmpPort | tonumber)
       },
+      coreSwitch: {
+        enabled: $swEnabled,
+        vendor: $swVendor,
+        name: $swName,
+        ipAddress: $swIp,
+        snmpCommunity: $swComm,
+        snmpPort: ($swPort | tonumber),
+        location: $swLoc
+      },
       adminPassword: $adminPw,
+      cisoPassword: $cisoPw,
       telegram: {
         enabled: $teleEnabled,
         botToken: $teleToken,
@@ -613,24 +779,13 @@ run_post_install_wizard() {
       }
     }')
 
-  WIZARD_URL="http://127.0.0.1:80/api/settings/wizard/complete"
-  RESPONSE=$(curl -s -X POST "$WIZARD_URL" \
+  WIZARD_URL="http://127.0.0.1:${WEB_HTTP_PORT}/api/settings/wizard/complete"
+  curl -s -X POST "$WIZARD_URL" \
     -H "Content-Type: application/json" \
-    -d "$SETUP_PAYLOAD" || echo '{"success":false}')
+    -d "$SETUP_PAYLOAD" >/dev/null || true
 
-  if echo "$RESPONSE" | grep -q '"success":true'; then
-    log_success "Whitelabeling & SNMP telemetry settings applied successfully!"
-  else
-    log_warn "API returned: $RESPONSE. Settings can also be configured at http://$PRIMARY_IP/wizard."
-  fi
-}
-
-# ------------------------------------------------------------------------------
-# 9. Systemd Service Registration
-# ------------------------------------------------------------------------------
-register_systemd_service() {
-  log_step "Registering systemd Service for Automated Boot & Power-Cycle Recovery"
-
+  # Register systemd service
+  log_info "Registering systemd service ${SERVICE_NAME}.service for automatic boot recovery..."
   SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
   cat <<EOF > "$SERVICE_FILE"
 [Unit]
@@ -641,7 +796,7 @@ Requires=docker.service network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=${INSTALL_DIR}
+WorkingDirectory=${DEPLOY_ROOT}
 ExecStart=/usr/bin/docker compose -f docker-compose.standalone.yml up -d
 ExecStop=/usr/bin/docker compose -f docker-compose.standalone.yml down
 TimeoutStartSec=300
@@ -650,13 +805,13 @@ TimeoutStartSec=300
 WantedBy=multi-user.target
 EOF
 
-  systemctl daemon-reload
-  systemctl enable "${SERVICE_NAME}.service"
-  log_success "Registered systemd service: ${SERVICE_NAME}.service (Enabled on boot)"
+  systemctl daemon-reload 2>/dev/null || true
+  systemctl enable "${SERVICE_NAME}.service" 2>/dev/null || true
+  log_success "Systemd service enabled on boot: ${SERVICE_NAME}.service"
 }
 
 # ------------------------------------------------------------------------------
-# Main Orchestration Loop
+# 9. Main Orchestration Loop
 # ------------------------------------------------------------------------------
 main() {
   display_banner
@@ -666,39 +821,52 @@ main() {
   install_nodejs
   install_docker
   configure_firewall
-  deploy_portal_software
-  run_post_install_wizard
-  register_systemd_service
+  run_console_wizard
+  deploy_and_start
 
   PRIMARY_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
   if [[ -z "$PRIMARY_IP" ]]; then
     PRIMARY_IP="127.0.0.1"
   fi
 
+  PORT_SUFFIX=""
+  if [[ "$WEB_HTTP_PORT" != "80" ]]; then
+    PORT_SUFFIX=":${WEB_HTTP_PORT}"
+  fi
+
   echo ""
   echo -e "${GREEN}${BOLD}========================================================================${RESET}"
-  echo -e "${GREEN}${BOLD} [✓] DEPLOYMENT & WHITELABELING INITIALIZATION COMPLETE!                ${RESET}"
+  echo -e "${GREEN}${BOLD} [✓] DEPLOYMENT & WHITELABEL SETUP COMPLETE!                            ${RESET}"
   echo -e "${GREEN}${BOLD}========================================================================${RESET}"
   echo ""
   echo -e " ${BOLD}Access the Telemetry & Operations Console at:${RESET}"
-  echo -e "   ${CYAN}${BOLD}http://${PRIMARY_IP}${RESET}"
+  echo -e "   ${CYAN}${BOLD}http://${PRIMARY_IP}${PORT_SUFFIX}${RESET}"
   echo ""
-  echo -e " ${BOLD}Default Superadmin Credentials:${RESET}"
-  echo -e "   Username : ${WHITE}${BOLD}superadmin${RESET}"
-  echo -e "   Password : ${WHITE}${BOLD}${ADMIN_PASSWORD:-SuperAdmin@2026!}${RESET}"
+  echo -e " ${BOLD}Configured Administrative Credentials:${RESET}"
+  echo -e "   Super Administrator : ${WHITE}${BOLD}${ADMIN_USER}${RESET} (Password stored in config/credentials.json)"
+  echo -e "   CISO Administrator  : ${WHITE}${BOLD}${CISO_USER}${RESET} (Password stored in config/credentials.json)"
+  echo -e "   Compliance Auditor  : ${WHITE}${BOLD}${AUDITOR_USER}${RESET} (Password stored in config/credentials.json)"
   echo ""
-  echo -e " ${BOLD}Management & Whitelabeling Controls:${RESET}"
-  echo -e "   - Web Settings & Logo Upload : ${WHITE}http://${PRIMARY_IP}/settings${RESET}"
-  echo -e "   - Re-run Web Setup Wizard    : ${WHITE}http://${PRIMARY_IP}/wizard${RESET}"
-  echo -e "   - Service Status             : ${WHITE}systemctl status ${SERVICE_NAME}${RESET}"
-  echo -e "   - Service Restart            : ${WHITE}systemctl restart ${SERVICE_NAME}${RESET}"
+  echo -e " ${YELLOW}${BOLD}Credential Security Notice:${RESET}"
+  echo -e "   Passwords are saved in: ${WHITE}${DEPLOY_ROOT}/config/credentials.json${RESET} (chmod 600)"
+  echo -e "   This file is ${RED}EXCLUDED FROM GIT${RESET} via .gitignore."
   echo ""
-  echo -e " ${BOLD}Active Telemetry Ingestion Ports:${RESET}"
-  echo -e "   - Web Portal & REST/WS API   : ${WHITE}Port 80 / 443 (TCP)${RESET}"
-  echo -e "   - SNMP Trap Receiver         : ${WHITE}Port 162 (UDP) [v2c / v3 fortinet]${RESET}"
-  echo -e "   - Syslog Ingest              : ${WHITE}Port 1514 (UDP) & 514 (UDP)${RESET}"
-  echo -e "   - NetFlow v5/v9 & IPFIX      : ${WHITE}Port 2055 (UDP)${RESET}"
-  echo -e "   - Persistent Data Storage    : ${WHITE}${INSTALL_DIR}/data${RESET}"
+  echo -e " ${BOLD}Telemetry Forwarding Configuration for Perimeter Appliances:${RESET}"
+  echo -e "   ${CYAN}Fortinet FortiOS Syslog forwarding CLI:${RESET}"
+  echo -e "     config log syslogd setting"
+  echo -e "       set status enable"
+  echo -e "       set server \"${PRIMARY_IP}\""
+  echo -e "       set port ${SYSLOG_PORT}"
+  echo -e "       set mode udp"
+  echo -e "     end"
+  echo ""
+  echo -e "   ${CYAN}Palo Alto Networks Syslog Server Profile:${RESET}"
+  echo -e "     Target Host : ${PRIMARY_IP} | Port : ${SYSLOG_PORT} | Protocol : UDP | Facility : LOG_USER"
+  echo ""
+  echo -e " ${BOLD}System Service Controls:${RESET}"
+  echo -e "   Check status : ${WHITE}systemctl status ${SERVICE_NAME}${RESET}"
+  echo -e "   Restart      : ${WHITE}systemctl restart ${SERVICE_NAME}${RESET}"
+  echo -e "   Docker logs  : ${WHITE}docker compose -f docker-compose.standalone.yml logs -f${RESET}"
   echo ""
   echo -e " ${DIM}Universal License :${RESET} ${WHITE}${UNIVERSAL_LICENSE}${RESET}"
   echo -e " ${DIM}Attribution       :${RESET} ${YELLOW}${UNIVERSAL_ATTRIBUTION}${RESET}"

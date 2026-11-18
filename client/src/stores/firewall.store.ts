@@ -260,6 +260,7 @@ export const useFirewallStore = defineStore('firewall', () => {
   const interfaceTotals = ref<any>(null);
   const drilldownData = ref<InterfaceDrilldownData | null>(null);
   const isLoadingDrilldown = ref<boolean>(false);
+  const snmpHistory = ref<{ timestamp: string; cpu: number; mem: number; conns: number; inBps: number; outBps: number }[]>([]);
 
   async function fetchDevices() {
     try {
@@ -267,6 +268,16 @@ export const useFirewallStore = defineStore('firewall', () => {
       const data = await res.json();
       if (data.success) {
         devices.value = data.devices;
+        const activeDev = data.devices.find((d: any) => d.snmpEnabled) || data.devices[0];
+        if (activeDev) {
+          try {
+            const histRes = await fetch(`/api/devices/${activeDev.id}`);
+            const histData = await histRes.json();
+            if (histData.success && histData.snmpHistory) {
+              snmpHistory.value = histData.snmpHistory;
+            }
+          } catch {}
+        }
       }
     } catch (e) {
       console.error('Failed to fetch devices', e);
@@ -743,6 +754,7 @@ export const useFirewallStore = defineStore('firewall', () => {
     interfaceTotals,
     drilldownData,
     isLoadingDrilldown,
+    snmpHistory,
     backups,
     backupConfig,
     isCreatingBackup,

@@ -18,56 +18,7 @@ class TelemetryStore {
   private alertSubscribers: ((alert: AlertNotification) => void)[] = [];
 
   constructor() {
-    this.initDefaultAlerts();
-  }
-
-  private initDefaultAlerts() {
-    this.alerts = [
-      {
-        id: 'alt-101',
-        timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-        firewallId: 'fw-fg-01',
-        firewallName: 'FortiGate-CSIR-SERC (10.10.3.15)',
-        severity: 'critical',
-        title: 'FortiOS IPS: Anti-Bot Flagged C2 Outbound Traffic',
-        description: 'Host 10.10.40.85 attempted connection to known Tor/C2 node 198.51.100.244 on port 443 - Dropped by FortiGate UTM.',
-        category: 'security_threat',
-        acknowledged: false,
-      },
-      {
-        id: 'alt-102',
-        timestamp: new Date(Date.now() - 42 * 60 * 1000).toISOString(),
-        firewallId: 'fw-fg-01',
-        firewallName: 'FortiGate-CSIR-SERC (10.10.3.15)',
-        severity: 'warning',
-        title: 'Social Networking Bandwidth Throttle Triggered',
-        description: 'Host 10.10.40.85 exceeded 2.0 Mbps cap on LinkedIn/Video stream - traffic rate-limited via Policy 20.',
-        category: 'policy_violation',
-        acknowledged: false,
-      },
-      {
-        id: 'alt-103',
-        timestamp: new Date(Date.now() - 95 * 60 * 1000).toISOString(),
-        firewallId: 'fw-fg-01',
-        firewallName: 'FortiGate-CSIR-SERC (10.10.3.15)',
-        severity: 'high',
-        title: 'SNMP Probe: WAN port1 Interface Utilization > 88%',
-        description: 'Interface port1 (Primary WAN NKN) sustained 88.4% saturation during HPC dataset sync.',
-        category: 'snmp_threshold',
-        acknowledged: true,
-      },
-      {
-        id: 'alt-104',
-        timestamp: new Date(Date.now() - 180 * 60 * 1000).toISOString(),
-        firewallId: 'fw-fg-01',
-        firewallName: 'FortiGate-CSIR-SERC (10.10.3.15)',
-        severity: 'warning',
-        title: 'FortiOS SSL-VPN Concurrent Sessions Surge',
-        description: 'Remote SSL-VPN tunnels reached 38 concurrent user sessions through ssl.root interface.',
-        category: 'security_threat',
-        acknowledged: false,
-      }
-    ];
+    this.alerts = [];
   }
 
   public addFlow(flow: TrafficFlow) {
