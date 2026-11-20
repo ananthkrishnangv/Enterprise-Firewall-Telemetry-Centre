@@ -33,6 +33,10 @@ uploads/
 # Credentials, Keys & Secrets (CRITICAL: NEVER COMMIT TO GIT)
 credentials.json
 config/credentials.json
+data/credentials.json
+CREDENTIALS.md
+docs/CREDENTIALS.md
+*credential*.md
 *.key
 *.ppk
 *.pub
